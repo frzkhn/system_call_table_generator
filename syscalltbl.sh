@@ -4,7 +4,7 @@ in="$1"
 out="$2"
 my_abis=`echo "($3)" | tr ',' '|'`
 
-nxt=0
+nxt=0;
 
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo "ENTRY(sys_call_table)"

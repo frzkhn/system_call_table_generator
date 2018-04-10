@@ -5,7 +5,7 @@ uapis := arch/$(SRCARCH)/kernel
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
 	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
 
-syscall32 := $(srctree)/$(src)/syscall_32.tbl
+syscall := $(srctree)/$(src)/syscall.tbl
 
 syshdr := $(srctree)/$(src)/syscallhdr.sh
 systbl := $(srctree)/$(src)/syscalltbl.sh
@@ -19,13 +19,13 @@ quiet_cmd_systbl = SYSTBL  $@
       cmd_systbl = $(CONFIG_SHELL) '$(systbl)' $< $@ 
 
 syshdr_abi_unistd_32 := common
-$(uapih)/unistd_32.h: $(syscall32) $(syshdr)
+$(uapih)/unistd.h: $(syscall) $(syshdr)
 	$(call if_changed,syshdr)
 
-$(uapis)/syscall_table.S: $(syscall32) $(systbl)
+$(uapis)/syscall_table.S: $(syscall) $(systbl)
 	$(call if_changed,systbl)
 
-uapihsyshdr-y			+= unistd_32.h
+uapihsyshdr-y			+= unistd.h
 uapissyshdr-y			+= syscall_table.S
 
 targets	+= $(uapihsyshdr-y) $(uapissyshdr-y)
