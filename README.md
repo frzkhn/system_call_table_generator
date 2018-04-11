@@ -9,3 +9,5 @@
 - Add ia64 script
 
 - Add xtensa script
+
+- Add sh script
