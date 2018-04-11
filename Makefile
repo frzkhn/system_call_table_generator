@@ -3,7 +3,7 @@ uapih := arch/$(SRCARCH)/include/uapi/asm
 
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)')
 
-syscall32 := $(srctree)/$(src)/syscall_32.tbl
+syscall := $(srctree)/$(src)/syscall.tbl
 
 syshdr := $(srctree)/$(src)/syscallhdr.sh
 
@@ -14,10 +14,10 @@ quiet_cmd_syshdr = SYSHDR  $@
 		   '$(syshdr_offset_$(basetarget))'
 
 syshdr_abi_unistd_32 := common
-$(uapih)/unistd_32.h: $(syscall32) $(syshdr)
+$(uapih)/unistd.h: $(syscall) $(syshdr)
 	$(call if_changed,syshdr)
 
-uapihsyshdr-y			+= unistd_32.h
+uapihsyshdr-y			+= unistd.h
 
 targets	+= $(uapihsyshdr-y) $(uapissyshdr-y)
 
