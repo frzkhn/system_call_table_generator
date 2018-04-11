@@ -7,3 +7,5 @@
 - Add m68k script
 
 - Add ia64 script
+
+- Add xtensa script
