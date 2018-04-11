@@ -11,3 +11,5 @@
 - Add xtensa script
 
 - Add sh script
+
+- Add alpha script
