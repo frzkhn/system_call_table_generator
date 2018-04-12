@@ -15,13 +15,13 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_offset_$(basetarget))'
 
 syscall_abi_unistd_32 := common
-$(uapih)/unistd_32.h: $(syscalltbl) $(syscall)
+$(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
 $(uapis)/syscalltable.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-uapihsyscall-y			+= unistd_32.h
+uapihsyscall-y			+= unistd.h
 uapissyscall-y			+= syscalltable.S
 
 targets	+= $(uapihsyscall-y) $(uapissyscall-y)
