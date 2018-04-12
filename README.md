@@ -5,3 +5,5 @@
 - Add microblaze script
 
 - Add m68k script
+      - Create syscalltbl.sh(new) by combine syscallhdr.sh and syscalltbl.sh
+      - Modify to Makefile to support syscalltbl.sh
