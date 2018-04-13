@@ -2,8 +2,6 @@
 
 - Add x86 Reference script
 
-- Add microblaze script
-
-- Add m68k script
-
 - Add ia64 script
+      - Create syscalltbl.sh(new) by combine syscallhdr.sh and syscalltbl.sh
+      - Modify to Makefile to support syscalltbl.sh

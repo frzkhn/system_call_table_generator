@@ -1,37 +1,32 @@
-# ia64 architecture 
+# Microblaze Architecture 
 uapih := arch/$(SRCARCH)/include/uapi/asm
 uapis := arch/$(SRCARCH)/kernel
 
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
 	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
 
-syscall := $(srctree)/$(src)/syscall.tbl
+syscalltbl := $(srctree)/$(src)/syscall.tbl
+syscall := $(srctree)/$(src)/syscalltbl.sh
 
-syshdr := $(srctree)/$(src)/syscallhdr.sh
-systbl := $(srctree)/$(src)/syscalltbl.sh
+quiet_cmd_syscall = SYSCALL  $@
+      cmd_syscall = $(CONFIG_SHELL) '$(syscall)' '$<' '$@' \
+		   '$(syscall_abi_$(basetarget))' \
+		   '$(syscall_pfx_$(basetarget))' \
+		   '$(syscall_offset_$(basetarget))'
 
-quiet_cmd_syshdr = SYSHDR  $@
-      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@' \
-		   '$(syshdr_abi_$(basetarget))' \
-		   '$(syshdr_pfx_$(basetarget))' \
-		   '$(syshdr_offset_$(basetarget))'
+syscall_abi_unistd_32 := common
+$(uapih)/unistd.h: $(syscalltbl) $(syscall)
+	$(call if_changed,syscall)
 
-quiet_cmd_systbl = SYSTBL  $@
-      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' $< $@ 
+$(uapis)/syscall_table.S: $(syscalltbl) $(syscall)
+	$(call if_changed,syscall)
 
-syshdr_abi_unistd_32 := common
-$(uapih)/unistd.h: $(syscall) $(syshdr)
-	$(call if_changed,syshdr)
+uapihsyscall-y			+= unistd.h
+uapissyscall-y			+= syscall_table.S
 
-$(uapis)/entry.S: $(syscall) $(systbl)
-	$(call if_changed,systbl)
-
-uapihsyshdr-y			+= unistd.h
-uapissyshdr-y			+= entry.S
-
-targets	+= $(uapihsyshdr-y) $(uapissyshdr-y)
+targets	+= $(uapihsyscall-y) $(uapissyscall-y)
 
 PHONY += all
-all: $(addprefix $(uapih)/,$(uapihsyshdr-y))
-all: $(addprefix $(uapis)/,$(uapissyshdr-y))
+all: $(addprefix $(uapih)/,$(uapihsyscall-y))
+all: $(addprefix $(uapis)/,$(uapissyscall-y))
 	@:
