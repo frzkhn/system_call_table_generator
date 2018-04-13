@@ -3,24 +3,23 @@ uapih := arch/$(SRCARCH)/include/uapi/asm
 
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)')
 
-syscall := $(srctree)/$(src)/syscall.tbl
+syscalltbl := $(srctree)/$(src)/syscall.tbl
+syscall := $(srctree)/$(src)/syscalltbl.sh
 
-syshdr := $(srctree)/$(src)/syscallhdr.sh
+quiet_cmd_syscall = SYSCALL  $@
+      cmd_syscall = $(CONFIG_SHELL) '$(syscall)' '$<' '$@' \
+		   '$(syscall_abi_$(basetarget))' \
+		   '$(syscall_pfx_$(basetarget))' \
+		   '$(syscall_offset_$(basetarget))'
 
-quiet_cmd_syshdr = SYSHDR  $@
-      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@' \
-		   '$(syshdr_abi_$(basetarget))' \
-		   '$(syshdr_pfx_$(basetarget))' \
-		   '$(syshdr_offset_$(basetarget))'
+syscall_abi_unistd_32 := common
+$(uapih)/unistd.h: $(syscalltbl) $(syscall)
+	$(call if_changed,syscall)
 
-syshdr_abi_unistd_32 := common
-$(uapih)/unistd.h: $(syscall) $(syshdr)
-	$(call if_changed,syshdr)
+uapihsyscall-y			+= unistd.h
 
-uapihsyshdr-y			+= unistd.h
-
-targets	+= $(uapihsyshdr-y) $(uapissyshdr-y)
+targets	+= $(uapihsyscall-y) $(uapissyscall-y)
 
 PHONY += all
-all: $(addprefix $(uapih)/,$(uapihsyshdr-y))
+all: $(addprefix $(uapih)/,$(uapihsyscall-y))
 	@:

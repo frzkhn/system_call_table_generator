@@ -34,8 +34,7 @@ __SYSCALL(  5, sys_ni_syscall, 0)
 #define __NR_available8\t6
 __SYSCALL(  6, sys_ni_syscall, 0)
 #define __NR_available9\t7
-__SYSCALL(  7, sys_ni_syscall, 0)
-"
+__SYSCALL(  7, sys_ni_syscall, 0)"
 
     while read nr abi name entry ; do
 	if [ -z "$offset" ]; then
