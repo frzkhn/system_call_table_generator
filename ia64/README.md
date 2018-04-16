@@ -2,8 +2,11 @@
 
 - Add ia64 script
     - Add syscall_table along with entry.S
-    - Modify syscall.tbl to e_syscall.tbl by hand to have *no* change
+    > - Modify syscall.tbl to e_syscall.tbl by hand to have *no* change
       w/ old model.
+      - Join the syscall.tbl and e_syscall.tbl
+        $ join -a1 syscall.tbl e_syscall.tbl  | grep -v \# | while read a b c d e ; do echo -e "$a\t$b\t$c\tsys_$e" ; done > tmp.tbl
+	$ sed -e 's:\<sys_\>:sys_ni_syscall:' tmp.tbl > syscall.tbl
     NOTE: Marcin's script will generate syscall.tbl
     - Create syscalltbl.sh(new) by combine syscallhdr.sh and syscalltbl.sh
     - Modify Makefile to support syscalltbl.sh

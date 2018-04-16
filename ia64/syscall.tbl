@@ -1,327 +1,320 @@
-#
-# Linux system call numbers and entry vectors
-#
-# The format is:
-# <number> <abi> <name> <entry point> <compat entry point>
-#
-# The abi is always common for this file.
-#
-1024	common	ni_syscall
-1025	common	exit
-1026	common	read
-1027	common	write
-1028	common	open
-1029	common	close
-1030	common	creat
-1031	common	link
-1032	common	unlink
-1033	common	execve
-1034	common	chdir
-1035	common	fchdir
-1036	common	utimes
-1037	common	mknod
-1038	common	chmod
-1039	common	chown
-1040	common	lseek
-1041	common	getpid
-1042	common	getppid
-1043	common	mount
-1044	common	umount
-1045	common	setuid
-1046	common	getuid
-1047	common	geteuid
-1048	common	ptrace
-1049	common	access
-1050	common	sync
-1051	common	fsync
-1052	common	fdatasync
-1053	common	kill
-1054	common	rename
-1055	common	mkdir
-1056	common	rmdir
-1057	common	dup
-1058	common	pipe
-1059	common	times
-1060	common	brk
-1061	common	setgid
-1062	common	getgid
-1063	common	getegid
-1064	common	acct
-1065	common	ioctl
-1066	common	fcntl
-1067	common	umask
-1068	common	chroot
-1069	common	ustat
-1070	common	dup2
-1071	common	setreuid
-1072	common	setregid
-1073	common	getresuid
-1074	common	setresuid
-1075	common	getresgid
-1076	common	setresgid
-1077	common	getgroups
-1078	common	setgroups
-1079	common	getpgid
-1080	common	setpgid
-1081	common	setsid
-1082	common	getsid
-1083	common	sethostname
-1084	common	setrlimit
-1085	common	getrlimit
-1086	common	getrusage
-1087	common	gettimeofday
-1088	common	settimeofday
-1089	common	select
-1090	common	poll
-1091	common	symlink
-1092	common	readlink
-1093	common	uselib
-1094	common	swapon
-1095	common	swapoff
-1096	common	reboot
-1097	common	truncate
-1098	common	ftruncate
-1099	common	fchmod
-1100	common	fchown
-1101	common	getpriority
-1102	common	setpriority
-1103	common	statfs
-1104	common	fstatfs
-1105	common	gettid
-1106	common	semget
-1107	common	semop
-1108	common	semctl
-1109	common	msgget
-1110	common	msgsnd
-1111	common	msgrcv
-1112	common	msgctl
-1113	common	shmget
-1114	common	shmat
-1115	common	shmdt
-1116	common	shmctl
-1117	common	syslog
-1118	common	setitimer
-1119	common	getitimer
-1123	common	vhangup
-1124	common	lchown
-1125	common	remap_file_pages
-1126	common	wait4
-1127	common	sysinfo
-1128	common	clone
-1129	common	setdomainname
-1130	common	uname
-1131	common	adjtimex
-1133	common	init_module
-1134	common	delete_module
-1137	common	quotactl
-1138	common	bdflush
-1139	common	sysfs
-1140	common	personality
-1141	common	afs_syscall
-1142	common	setfsuid
-1143	common	setfsgid
-1144	common	getdents
-1145	common	flock
-1146	common	readv
-1147	common	writev
-1148	common	pread64
-1149	common	pwrite64
-1150	common	_sysctl
-1151	common	mmap
-1152	common	munmap
-1153	common	mlock
-1154	common	mlockall
-1155	common	mprotect
-1156	common	mremap
-1157	common	msync
-1158	common	munlock
-1159	common	munlockall
-1160	common	sched_getparam
-1161	common	sched_setparam
-1162	common	sched_getscheduler
-1163	common	sched_setscheduler
-1164	common	sched_yield
-1165	common	sched_get_priority_max
-1166	common	sched_get_priority_min
-1167	common	sched_rr_get_interval
-1168	common	nanosleep
-1169	common	nfsservctl
-1170	common	prctl
-1172	common	mmap2
-1173	common	pciconfig_read
-1174	common	pciconfig_write
-1175	common	perfmonctl
-1176	common	sigaltstack
-1177	common	rt_sigaction
-1178	common	rt_sigpending
-1179	common	rt_sigprocmask
-1180	common	rt_sigqueueinfo
-1181	common	rt_sigreturn
-1182	common	rt_sigsuspend
-1183	common	rt_sigtimedwait
-1184	common	getcwd
-1185	common	capget
-1186	common	capset
-1187	common	sendfile
-1188	common	getpmsg
-1189	common	putpmsg
-1190	common	socket
-1191	common	bind
-1192	common	connect
-1193	common	listen
-1194	common	accept
-1195	common	getsockname
-1196	common	getpeername
-1197	common	socketpair
-1198	common	send
-1199	common	sendto
-1200	common	recv
-1201	common	recvfrom
-1202	common	shutdown
-1203	common	setsockopt
-1204	common	getsockopt
-1205	common	sendmsg
-1206	common	recvmsg
-1207	common	pivot_root
-1208	common	mincore
-1209	common	madvise
-1210	common	stat
-1211	common	lstat
-1212	common	fstat
-1213	common	clone2
-1214	common	getdents64
-1215	common	getunwind
-1216	common	readahead
-1217	common	setxattr
-1218	common	lsetxattr
-1219	common	fsetxattr
-1220	common	getxattr
-1221	common	lgetxattr
-1222	common	fgetxattr
-1223	common	listxattr
-1224	common	llistxattr
-1225	common	flistxattr
-1226	common	removexattr
-1227	common	lremovexattr
-1228	common	fremovexattr
-1229	common	tkill
-1230	common	futex
-1231	common	sched_setaffinity
-1232	common	sched_getaffinity
-1233	common	set_tid_address
-1234	common	fadvise64
-1235	common	tgkill
-1236	common	exit_group
-1237	common	lookup_dcookie
-1238	common	io_setup
-1239	common	io_destroy
-1240	common	io_getevents
-1241	common	io_submit
-1242	common	io_cancel
-1243	common	epoll_create
-1244	common	epoll_ctl
-1245	common	epoll_wait
-1246	common	restart_syscall
-1247	common	semtimedop
-1248	common	timer_create
-1249	common	timer_settime
-1250	common	timer_gettime
-1251	common	timer_getoverrun
-1252	common	timer_delete
-1253	common	clock_settime
-1254	common	clock_gettime
-1255	common	clock_getres
-1256	common	clock_nanosleep
-1257	common	fstatfs64
-1258	common	statfs64
-1259	common	mbind
-1260	common	get_mempolicy
-1261	common	set_mempolicy
-1262	common	mq_open
-1263	common	mq_unlink
-1264	common	mq_timedsend
-1265	common	mq_timedreceive
-1266	common	mq_notify
-1267	common	mq_getsetattr
-1268	common	kexec_load
-1269	common	vserver
-1270	common	waitid
-1271	common	add_key
-1272	common	request_key
-1273	common	keyctl
-1274	common	ioprio_set
-1275	common	ioprio_get
-1276	common	move_pages
-1277	common	inotify_init
-1278	common	inotify_add_watch
-1279	common	inotify_rm_watch
-1280	common	migrate_pages
-1281	common	openat
-1282	common	mkdirat
-1283	common	mknodat
-1284	common	fchownat
-1285	common	futimesat
-1286	common	newfstatat
-1287	common	unlinkat
-1288	common	renameat
-1289	common	linkat
-1290	common	symlinkat
-1291	common	readlinkat
-1292	common	fchmodat
-1293	common	faccessat
-1294	common	pselect6
-1295	common	ppoll
-1296	common	unshare
-1297	common	splice
-1298	common	set_robust_list
-1299	common	get_robust_list
-1300	common	sync_file_range
-1301	common	tee
-1302	common	vmsplice
-1303	common	fallocate
-1304	common	getcpu
-1305	common	epoll_pwait
-1306	common	utimensat
-1307	common	signalfd
-1308	common	timerfd
-1309	common	eventfd
-1310	common	timerfd_create
-1311	common	timerfd_settime
-1312	common	timerfd_gettime
-1313	common	signalfd4
-1314	common	eventfd2
-1315	common	epoll_create1
-1316	common	dup3
-1317	common	pipe2
-1318	common	inotify_init1
-1319	common	preadv
-1320	common	pwritev
-1321	common	rt_tgsigqueueinfo
-1322	common	recvmmsg
-1323	common	fanotify_init
-1324	common	fanotify_mark
-1325	common	prlimit64
-1326	common	name_to_handle_at
-1327	common	open_by_handle_at
-1328	common	clock_adjtime
-1329	common	syncfs
-1330	common	setns
-1331	common	sendmmsg
-1332	common	process_vm_readv
-1333	common	process_vm_writev
-1334	common	accept4
-1335	common	finit_module
-1336	common	sched_setattr
-1337	common	sched_getattr
-1338	common	renameat2
-1339	common	getrandom
-1340	common	memfd_create
-1341	common	bpf
-1342	common	execveat
-1343	common	userfaultfd
-1344	common	membarrier
-1345	common	kcmp
-1346	common	mlock2
-1347	common	copy_file_range
-1348	common	preadv2
-1349	common	pwritev2
+1024	common	ni_syscall	sys_ni_syscall
+1025	common	exit	sys_exit
+1026	common	read	sys_read
+1027	common	write	sys_write
+1028	common	open	sys_open
+1029	common	close	sys_close
+1030	common	creat	sys_creat
+1031	common	link	sys_link
+1032	common	unlink	sys_unlink
+1033	common	execve	sys_execve
+1034	common	chdir	sys_chdir
+1035	common	fchdir	sys_fchdir
+1036	common	utimes	sys_utimes
+1037	common	mknod	sys_mknod
+1038	common	chmod	sys_chmod
+1039	common	chown	sys_chown
+1040	common	lseek	sys_lseek
+1041	common	getpid	sys_getpid
+1042	common	getppid	sys_getppid
+1043	common	mount	sys_mount
+1044	common	umount	sys_umount
+1045	common	setuid	sys_setuid
+1046	common	getuid	sys_getuid
+1047	common	geteuid	sys_geteuid
+1048	common	ptrace	sys_ptrace
+1049	common	access	sys_access
+1050	common	sync	sys_sync
+1051	common	fsync	sys_fsync
+1052	common	fdatasync	sys_fdatasync
+1053	common	kill	sys_kill
+1054	common	rename	sys_rename
+1055	common	mkdir	sys_mkdir
+1056	common	rmdir	sys_rmdir
+1057	common	dup	sys_dup
+1058	common	pipe	sys_ia64_pipe
+1059	common	times	sys_times
+1060	common	brk	sys_brk
+1061	common	setgid	sys_setgid
+1062	common	getgid	sys_getgid
+1063	common	getegid	sys_getegid
+1064	common	acct	sys_acct
+1065	common	ioctl	sys_ioctl
+1066	common	fcntl	sys_fcntl
+1067	common	umask	sys_umask
+1068	common	chroot	sys_chroot
+1069	common	ustat	sys_ustat
+1070	common	dup2	sys_dup2
+1071	common	setreuid	sys_setreuid
+1072	common	setregid	sys_setregid
+1073	common	getresuid	sys_getresuid
+1074	common	setresuid	sys_setresuid
+1075	common	getresgid	sys_getresgid
+1076	common	setresgid	sys_setresgid
+1077	common	getgroups	sys_getgroups
+1078	common	setgroups	sys_setgroups
+1079	common	getpgid	sys_getpgid
+1080	common	setpgid	sys_setpgid
+1081	common	setsid	sys_setsid
+1082	common	getsid	sys_getsid
+1083	common	sethostname	sys_sethostname
+1084	common	setrlimit	sys_setrlimit
+1085	common	getrlimit	sys_getrlimit
+1086	common	getrusage	sys_getrusage
+1087	common	gettimeofday	sys_gettimeofday
+1088	common	settimeofday	sys_settimeofday
+1089	common	select	sys_select
+1090	common	poll	sys_poll
+1091	common	symlink	sys_symlink
+1092	common	readlink	sys_readlink
+1093	common	uselib	sys_uselib
+1094	common	swapon	sys_swapon
+1095	common	swapoff	sys_swapoff
+1096	common	reboot	sys_reboot
+1097	common	truncate	sys_truncate
+1098	common	ftruncate	sys_ftruncate
+1099	common	fchmod	sys_fchmod
+1100	common	fchown	sys_fchown
+1101	common	getpriority	sys_getpriority
+1102	common	setpriority	sys_setpriority
+1103	common	statfs	sys_statfs
+1104	common	fstatfs	sys_fstatfs
+1105	common	gettid	sys_gettid
+1106	common	semget	sys_semget
+1107	common	semop	sys_semop
+1108	common	semctl	sys_semctl
+1109	common	msgget	sys_msgget
+1110	common	msgsnd	sys_msgsnd
+1111	common	msgrcv	sys_msgrcv
+1112	common	msgctl	sys_msgctl
+1113	common	shmget	sys_shmget
+1114	common	shmat	sys_shmat
+1115	common	shmdt	sys_shmdt
+1116	common	shmctl	sys_shmctl
+1117	common	syslog	sys_syslog
+1118	common	setitimer	sys_setitimer
+1119	common	getitimer	sys_getitimer
+1123	common	vhangup	sys_vhangup
+1124	common	lchown	sys_lchown
+1125	common	remap_file_pages	sys_remap_file_pages
+1126	common	wait4	sys_wait4
+1127	common	sysinfo	sys_sysinfo
+1128	common	clone	sys_clone
+1129	common	setdomainname	sys_setdomainname
+1130	common	uname	sys_newuname
+1131	common	adjtimex	sys_adjtimex
+1133	common	init_module	sys_init_module
+1134	common	delete_module	sys_delete_module
+1137	common	quotactl	sys_quotactl
+1138	common	bdflush	sys_bdflush
+1139	common	sysfs	sys_sysfs
+1140	common	personality	sys_personality
+1141	common	afs_syscall	sys_ni_syscall
+1142	common	setfsuid	sys_setfsuid
+1143	common	setfsgid	sys_setfsgid
+1144	common	getdents	sys_getdents
+1145	common	flock	sys_flock
+1146	common	readv	sys_readv
+1147	common	writev	sys_writev
+1148	common	pread64	sys_pread64
+1149	common	pwrite64	sys_pwrite64
+1150	common	_sysctl	sys_sysctl
+1151	common	mmap	sys_mmap
+1152	common	munmap	sys_munmap
+1153	common	mlock	sys_mlock
+1154	common	mlockall	sys_mlockall
+1155	common	mprotect	sys_mprotect
+1156	common	mremap	sys_mremap
+1157	common	msync	sys_msync
+1158	common	munlock	sys_munlock
+1159	common	munlockall	sys_munlockall
+1160	common	sched_getparam	sys_sched_getparam
+1161	common	sched_setparam	sys_sched_setparam
+1162	common	sched_getscheduler	sys_sched_getscheduler
+1163	common	sched_setscheduler	sys_sched_setscheduler
+1164	common	sched_yield	sys_sched_yield
+1165	common	sched_get_priority_max	sys_sched_get_priority_max
+1166	common	sched_get_priority_min	sys_sched_get_priority_min
+1167	common	sched_rr_get_interval	sys_sched_rr_get_interval
+1168	common	nanosleep	sys_nanosleep
+1169	common	nfsservctl	sys_ni_syscall
+1170	common	prctl	sys_prctl
+1171    common	getpagesize	sys_getpagesize
+1172	common	mmap2	sys_mmap2
+1173	common	pciconfig_read	sys_pciconfig_read
+1174	common	pciconfig_write	sys_pciconfig_write
+1175	common	perfmonctl	sys_perfmonctl
+1176	common	sigaltstack	sys_sigaltstack
+1177	common	rt_sigaction	sys_rt_sigaction
+1178	common	rt_sigpending	sys_rt_sigpending
+1179	common	rt_sigprocmask	sys_rt_sigprocmask
+1180	common	rt_sigqueueinfo	sys_rt_sigqueueinfo
+1181	common	rt_sigreturn	sys_rt_sigreturn
+1182	common	rt_sigsuspend	sys_rt_sigsuspend
+1183	common	rt_sigtimedwait	sys_rt_sigtimedwait
+1184	common	getcwd	sys_getcwd
+1185	common	capget	sys_capget
+1186	common	capset	sys_capset
+1187	common	sendfile	sys_sendfile64
+1188	common	getpmsg	sys_ni_syscall
+1189	common	putpmsg	sys_ni_syscall
+1190	common	socket	sys_socket
+1191	common	bind	sys_bind
+1192	common	connect	sys_connect
+1193	common	listen	sys_listen
+1194	common	accept	sys_accept
+1195	common	getsockname	sys_getsockname
+1196	common	getpeername	sys_getpeername
+1197	common	socketpair	sys_socketpair
+1198	common	send	sys_send
+1199	common	sendto	sys_sendto
+1200	common	recv	sys_recv
+1201	common	recvfrom	sys_recvfrom
+1202	common	shutdown	sys_shutdown
+1203	common	setsockopt	sys_setsockopt
+1204	common	getsockopt	sys_getsockopt
+1205	common	sendmsg	sys_sendmsg
+1206	common	recvmsg	sys_recvmsg
+1207	common	pivot_root	sys_pivot_root
+1208	common	mincore	sys_mincore
+1209	common	madvise	sys_madvise
+1210	common	stat	sys_newstat
+1211	common	lstat	sys_newlstat
+1212	common	fstat	sys_newfstat
+1213	common	clone2	sys_clone2
+1214	common	getdents64	sys_getdents64
+1215	common	getunwind	sys_getunwind
+1216	common	readahead	sys_readahead
+1217	common	setxattr	sys_setxattr
+1218	common	lsetxattr	sys_lsetxattr
+1219	common	fsetxattr	sys_fsetxattr
+1220	common	getxattr	sys_getxattr
+1221	common	lgetxattr	sys_lgetxattr
+1222	common	fgetxattr	sys_fgetxattr
+1223	common	listxattr	sys_listxattr
+1224	common	llistxattr	sys_llistxattr
+1225	common	flistxattr	sys_flistxattr
+1226	common	removexattr	sys_removexattr
+1227	common	lremovexattr	sys_lremovexattr
+1228	common	fremovexattr	sys_fremovexattr
+1229	common	tkill	sys_tkill
+1230	common	futex	sys_futex
+1231	common	sched_setaffinity	sys_sched_setaffinity
+1232	common	sched_getaffinity	sys_sched_getaffinity
+1233	common	set_tid_address	sys_set_tid_address
+1234	common	fadvise64	sys_fadvise64_64
+1235	common	tgkill	sys_tgkill
+1236	common	exit_group	sys_exit_group
+1237	common	lookup_dcookie	sys_lookup_dcookie
+1238	common	io_setup	sys_io_setup
+1239	common	io_destroy	sys_io_destroy
+1240	common	io_getevents	sys_io_getevents
+1241	common	io_submit	sys_io_submit
+1242	common	io_cancel	sys_io_cancel
+1243	common	epoll_create	sys_epoll_create
+1244	common	epoll_ctl	sys_epoll_ctl
+1245	common	epoll_wait	sys_epoll_wait
+1246	common	restart_syscall	sys_restart_syscall
+1247	common	semtimedop	sys_semtimedop
+1248	common	timer_create	sys_timer_create
+1249	common	timer_settime	sys_timer_settime
+1250	common	timer_gettime	sys_timer_gettime
+1251	common	timer_getoverrun	sys_timer_getoverrun
+1252	common	timer_delete	sys_timer_delete
+1253	common	clock_settime	sys_clock_settime
+1254	common	clock_gettime	sys_clock_gettime
+1255	common	clock_getres	sys_clock_getres
+1256	common	clock_nanosleep	sys_clock_nanosleep
+1257	common	fstatfs64	sys_fstatfs64
+1258	common	statfs64	sys_statfs64
+1259	common	mbind	sys_mbind
+1260	common	get_mempolicy	sys_get_mempolicy
+1261	common	set_mempolicy	sys_set_mempolicy
+1262	common	mq_open	sys_mq_open
+1263	common	mq_unlink	sys_mq_unlink
+1264	common	mq_timedsend	sys_mq_timedsend
+1265	common	mq_timedreceive	sys_mq_timedreceive
+1266	common	mq_notify	sys_mq_notify
+1267	common	mq_getsetattr	sys_mq_getsetattr
+1268	common	kexec_load	sys_kexec_load
+1269	common	vserver	sys_ni_syscall
+1270	common	waitid	sys_waitid
+1271	common	add_key	sys_add_key
+1272	common	request_key	sys_request_key
+1273	common	keyctl	sys_keyctl
+1274	common	ioprio_set	sys_ioprio_set
+1275	common	ioprio_get	sys_ioprio_get
+1276	common	move_pages	sys_move_pages
+1277	common	inotify_init	sys_inotify_init
+1278	common	inotify_add_watch	sys_inotify_add_watch
+1279	common	inotify_rm_watch	sys_inotify_rm_watch
+1280	common	migrate_pages	sys_migrate_pages
+1281	common	openat	sys_openat
+1282	common	mkdirat	sys_mkdirat
+1283	common	mknodat	sys_mknodat
+1284	common	fchownat	sys_fchownat
+1285	common	futimesat	sys_futimesat
+1286	common	newfstatat	sys_newfstatat
+1287	common	unlinkat	sys_unlinkat
+1288	common	renameat	sys_renameat
+1289	common	linkat	sys_linkat
+1290	common	symlinkat	sys_symlinkat
+1291	common	readlinkat	sys_readlinkat
+1292	common	fchmodat	sys_fchmodat
+1293	common	faccessat	sys_faccessat
+1294	common	pselect6	sys_pselect6
+1295	common	ppoll	sys_ppoll
+1296	common	unshare	sys_unshare
+1297	common	splice	sys_splice
+1298	common	set_robust_list	sys_set_robust_list
+1299	common	get_robust_list	sys_get_robust_list
+1300	common	sync_file_range	sys_sync_file_range
+1301	common	tee	sys_tee
+1302	common	vmsplice	sys_vmsplice
+1303	common	fallocate	sys_fallocate
+1304	common	getcpu	sys_getcpu
+1305	common	epoll_pwait	sys_epoll_pwait
+1306	common	utimensat	sys_utimensat
+1307	common	signalfd	sys_signalfd
+1308	common	timerfd	sys_ni_syscall
+1309	common	eventfd	sys_eventfd
+1310	common	timerfd_create	sys_timerfd_create
+1311	common	timerfd_settime	sys_timerfd_settime
+1312	common	timerfd_gettime	sys_timerfd_gettime
+1313	common	signalfd4	sys_signalfd4
+1314	common	eventfd2	sys_eventfd2
+1315	common	epoll_create1	sys_epoll_create1
+1316	common	dup3	sys_dup3
+1317	common	pipe2	sys_pipe2
+1318	common	inotify_init1	sys_inotify_init1
+1319	common	preadv	sys_preadv
+1320	common	pwritev	sys_pwritev
+1321	common	rt_tgsigqueueinfo	sys_rt_tgsigqueueinfo
+1322	common	recvmmsg	sys_recvmmsg
+1323	common	fanotify_init	sys_fanotify_init
+1324	common	fanotify_mark	sys_fanotify_mark
+1325	common	prlimit64	sys_prlimit64
+1326	common	name_to_handle_at	sys_name_to_handle_at
+1327	common	open_by_handle_at	sys_open_by_handle_at
+1328	common	clock_adjtime	sys_clock_adjtime
+1329	common	syncfs	sys_syncfs
+1330	common	setns	sys_setns
+1331	common	sendmmsg	sys_sendmmsg
+1332	common	process_vm_readv	sys_process_vm_readv
+1333	common	process_vm_writev	sys_process_vm_writev
+1334	common	accept4	sys_accept4
+1335	common	finit_module	sys_finit_module
+1336	common	sched_setattr	sys_sched_setattr
+1337	common	sched_getattr	sys_sched_getattr
+1338	common	renameat2	sys_renameat2
+1339	common	getrandom	sys_getrandom
+1340	common	memfd_create	sys_memfd_create
+1341	common	bpf	sys_bpf
+1342	common	execveat	sys_execveat
+1343	common	userfaultfd	sys_userfaultfd
+1344	common	membarrier	sys_membarrier
+1345	common	kcmp	sys_kcmp
+1346	common	mlock2	sys_mlock2
+1347	common	copy_file_range	sys_copy_file_range
+1348	common	preadv2	sys_preadv2
+1349	common	pwritev2	sys_pwritev2

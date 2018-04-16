@@ -21,9 +21,13 @@ if [ ${out: -2} == ".h" ]; then
 
 	while read nr abi name entry ; do
 	    if [ -z "$offset" ]; then
-		echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ "$name" != "getpagesize" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		fi
 	    else
-		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		if [ "$name" != "getpagesize" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		fi
             fi
 	done
 
@@ -51,7 +55,7 @@ elif [ ${out: -2} == ".S" ]; then
 		 [ "${name}" == "mremap" ]; then
 		echo -e "\tdata8 ia64_${name}"
 	    else
-		echo -e "\tdata8 sys_${name}"
+		echo -e "\tdata8 ${entry}"
 	    fi
 	    nxt="$nr"
 	    let nxt=nxt+1
