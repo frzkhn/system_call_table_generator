@@ -73,7 +73,7 @@ elif [ ${out: -2} == ".S" ]; then
 		[ "$abi" == "64" ]; then
                 echo -e "\t.long sh64_${name}"
             else
-		 echo -e "\t.long sys_${name}"
+		 echo -e "\t.long ${entry}"
             fi
 	    nxt="$nr"
 	    let nxt=nxt+1

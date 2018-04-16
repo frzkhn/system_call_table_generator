@@ -6,9 +6,7 @@ _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
 	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
 
 syscalltbl32 := $(srctree)/$(src)/syscall_32.tbl
-e_syscalltbl32 := $(srctree)/$(src)/e_syscall_32.tbl
 syscalltbl64 := $(srctree)/$(src)/syscall_64.tbl
-e_syscalltbl64 := $(srctree)/$(src)/e_syscall_64.tbl
 
 syscall := $(srctree)/$(src)/syscalltbl.sh
 
@@ -26,10 +24,10 @@ syscall_abi_unistd_64 := 64
 $(uapih)/unistd_64.h: $(syscalltbl64) $(syscall)
 	$(call if_changed,syscall)
 
-$(uapis)/syscalls_32.S: $(e_syscalltbl32) $(syscall)
+$(uapis)/syscalls_32.S: $(syscalltbl32) $(syscall)
 	$(call if_changed,syscall)
 
-$(uapis)/syscalls_64.S: $(e_syscalltbl64) $(syscall)
+$(uapis)/syscalls_64.S: $(syscalltbl64) $(syscall)
 	$(call if_changed,syscall)
 
 uapihsyscall-y			+= unistd_32.h unistd_64.h

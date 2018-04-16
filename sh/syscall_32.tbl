@@ -1,362 +1,354 @@
-#
-# Linux system call numbers and entry vectors
-#
-# The format is:
-# <number> <abi> <name> <entry point> <compat entry point>
-#
-# The abi is always common for this file.
-#
-0	32	restart_syscall
-1	32	exit
-2	32	fork
-3	32	read
-4	32	write
-5	32	open
-6	32	close
-7	32	waitpid
-8	32	creat
-9	32	link
-10	32	unlink
-11	32	execve
-12	32	chdir
-13	32	time
-14	32	mknod
-15	32	chmod
-16	32	lchown
-18	32	oldstat
-19	32	lseek
-20	32	getpid
-21	32	mount
-22	32	umount
-23	32	setuid
-24	32	getuid
-25	32	stime
-26	32	ptrace
-27	32	alarm
-28	32	oldfstat
-29	32	pause
-30	32	utime
-33	32	access
-34	32	nice
-36	32	sync
-37	32	kill
-38	32	rename
-39	32	mkdir
-40	32	rmdir
-41	32	dup
-42	32	pipe
-43	32	times
-45	32	brk
-46	32	setgid
-47	32	getgid
-48	32	signal
-49	32	geteuid
-50	32	getegid
-51	32	acct
-52	32	umount2
-54	32	ioctl
-55	32	fcntl
-57	32	setpgid
-60	32	umask
-61	32	chroot
-62	32	ustat
-63	32	dup2
-64	32	getppid
-65	32	getpgrp
-66	32	setsid
-67	32	sigaction
-68	32	sgetmask
-69	32	ssetmask
-70	32	setreuid
-71	32	setregid
-72	32	sigsuspend
-73	32	sigpending
-74	32	sethostname
-75	32	setrlimit
-76	32	getrlimit
-77	32	getrusage
-78	32	gettimeofday
-79	32	settimeofday
-80	32	getgroups
-81	32	setgroups
-83	32	symlink
-84	32	oldlstat
-85	32	readlink
-86	32	uselib
-87	32	swapon
-88	32	reboot
-89	32	readdir
-90	32	mmap
-91	32	munmap
-92	32	truncate
-93	32	ftruncate
-94	32	fchmod
-95	32	fchown
-96	32	getpriority
-97	32	setpriority
-99	32	statfs
-100	32	fstatfs
-102	32	socketcall
-103	32	syslog
-104	32	setitimer
-105	32	getitimer
-106	32	stat
-107	32	lstat
-108	32	fstat
-109	32	olduname
-111	32	vhangup
-114	32	wait4
-115	32	swapoff
-116	32	sysinfo
-117	32	ipc
-118	32	fsync
-119	32	sigreturn
-120	32	clone
-121	32	setdomainname
-122	32	uname
-123	32	cacheflush
-124	32	adjtimex
-125	32	mprotect
-126	32	sigprocmask
-128	32	init_module
-129	32	delete_module
-131	32	quotactl
-132	32	getpgid
-133	32	fchdir
-134	32	bdflush
-135	32	sysfs
-136	32	personality
-138	32	setfsuid
-139	32	setfsgid
-140	32	_llseek
-141	32	getdents
-142	32	_newselect
-143	32	flock
-144	32	msync
-145	32	readv
-146	32	writev
-147	32	getsid
-148	32	fdatasync
-149	32	_sysctl
-150	32	mlock
-151	32	munlock
-152	32	mlockall
-153	32	munlockall
-154	32	sched_setparam
-155	32	sched_getparam
-156	32	sched_setscheduler
-157	32	sched_getscheduler
-158	32	sched_yield
-159	32	sched_get_priority_max
-160	32	sched_get_priority_min
-161	32	sched_rr_get_interval
-162	32	nanosleep
-163	32	mremap
-164	32	setresuid
-165	32	getresuid
-168	32	poll
-169	32	nfsservctl
-170	32	setresgid
-171	32	getresgid
-172	32	prctl
-173	32	rt_sigreturn
-174	32	rt_sigaction
-175	32	rt_sigprocmask
-176	32	rt_sigpending
-177	32	rt_sigtimedwait
-178	32	rt_sigqueueinfo
-179	32	rt_sigsuspend
-180	32	pread64
-181	32	pwrite64
-182	32	chown
-183	32	getcwd
-184	32	capget
-185	32	capset
-186	32	sigaltstack
-187	32	sendfile
-190	32	vfork
-191	32	ugetrlimit
-192	32	mmap2
-193	32	truncate64
-194	32	ftruncate64
-195	32	stat64
-196	32	lstat64
-197	32	fstat64
-198	32	lchown32
-199	32	getuid32
-200	32	getgid32
-201	32	geteuid32
-202	32	getegid32
-203	32	setreuid32
-204	32	setregid32
-205	32	getgroups32
-206	32	setgroups32
-207	32	fchown32
-208	32	setresuid32
-209	32	getresuid32
-210	32	setresgid32
-211	32	getresgid32
-212	32	chown32
-213	32	setuid32
-214	32	setgid32
-215	32	setfsuid32
-216	32	setfsgid32
-217	32	pivot_root
-218	32	mincore
-219	32	madvise
-220	32	getdents64
-221	32	fcntl64
-224	32	gettid
-225	32	readahead
-226	32	setxattr
-227	32	lsetxattr
-228	32	fsetxattr
-229	32	getxattr
-230	32	lgetxattr
-231	32	fgetxattr
-232	32	listxattr
-233	32	llistxattr
-234	32	flistxattr
-235	32	removexattr
-236	32	lremovexattr
-237	32	fremovexattr
-238	32	tkill
-239	32	sendfile64
-240	32	futex
-241	32	sched_setaffinity
-242	32	sched_getaffinity
-245	32	io_setup
-246	32	io_destroy
-247	32	io_getevents
-248	32	io_submit
-249	32	io_cancel
-250	32	fadvise64
-252	32	exit_group
-253	32	lookup_dcookie
-254	32	epoll_create
-255	32	epoll_ctl
-256	32	epoll_wait
-257	32	remap_file_pages
-258	32	set_tid_address
-259	32	timer_create
-260	32	timer_settime
-261	32	timer_gettime
-262	32	timer_getoverrun
-263	32	timer_delete
-264	32	clock_settime
-265	32	clock_gettime
-266	32	clock_getres
-267	32	clock_nanosleep
-268	32	statfs64
-269	32	fstatfs64
-270	32	tgkill
-271	32	utimes
-272	32	fadvise64_64
-274	32	mbind
-275	32	get_mempolicy
-276	32	set_mempolicy
-277	32	mq_open
-278	32	mq_unlink
-279	32	mq_timedsend
-280	32	mq_timedreceive
-281	32	mq_notify
-282	32	mq_getsetattr
-283	32	kexec_load
-284	32	waitid
-285	32	add_key
-286	32	request_key
-287	32	keyctl
-288	32	ioprio_set
-289	32	ioprio_get
-290	32	inotify_init
-291	32	inotify_add_watch
-292	32	inotify_rm_watch
-294	32	migrate_pages
-295	32	openat
-296	32	mkdirat
-297	32	mknodat
-298	32	fchownat
-299	32	futimesat
-300	32	fstatat64
-301	32	unlinkat
-302	32	renameat
-303	32	linkat
-304	32	symlinkat
-305	32	readlinkat
-306	32	fchmodat
-307	32	faccessat
-308	32	pselect6
-309	32	ppoll
-310	32	unshare
-311	32	set_robust_list
-312	32	get_robust_list
-313	32	splice
-314	32	sync_file_range
-315	32	tee
-316	32	vmsplice
-317	32	move_pages
-318	32	getcpu
-319	32	epoll_pwait
-320	32	utimensat
-321	32	signalfd
-322	32	timerfd_create
-323	32	eventfd
-324	32	fallocate
-325	32	timerfd_settime
-326	32	timerfd_gettime
-327	32	signalfd4
-328	32	eventfd2
-329	32	epoll_create1
-330	32	dup3
-331	32	pipe2
-332	32	inotify_init1
-333	32	preadv
-334	32	pwritev
-335	32	rt_tgsigqueueinfo
-336	32	perf_event_open
-337	32	fanotify_init
-338	32	fanotify_mark
-339	32	prlimit64
-340	32	socket
-341	32	bind
-342	32	connect
-343	32	listen
-344	32	accept
-345	32	getsockname
-346	32	getpeername
-347	32	socketpair
-348	32	send
-349	32	sendto
-350	32	recv
-351	32	recvfrom
-352	32	shutdown
-353	32	setsockopt
-354	32	getsockopt
-355	32	sendmsg
-356	32	recvmsg
-357	32	recvmmsg
-358	32	accept4
-359	32	name_to_handle_at
-360	32	open_by_handle_at
-361	32	clock_adjtime
-362	32	syncfs
-363	32	sendmmsg
-364	32	setns
-365	32	process_vm_readv
-366	32	process_vm_writev
-367	32	kcmp
-368	32	finit_module
-369	32	sched_getattr
-370	32	sched_setattr
-371	32	renameat2
-372	32	seccomp
-373	32	getrandom
-374	32	memfd_create
-375	32	bpf
-376	32	execveat
-377	32	userfaultfd
-378	32	membarrier
-379	32	mlock2
-380	32	copy_file_range
-381	32	preadv2
-382	32	pwritev2
+0	32	restart_syscall	sys_restart_syscall
+1	32	exit	sys_exit
+2	32	fork	sys_fork
+3	32	read	sys_read
+4	32	write	sys_write
+5	32	open	sys_open
+6	32	close	sys_close
+7	32	waitpid	sys_waitpid
+8	32	creat	sys_creat
+9	32	link	sys_link
+10	32	unlink	sys_unlink
+11	32	execve	sys_execve
+12	32	chdir	sys_chdir
+13	32	time	sys_time
+14	32	mknod	sys_mknod
+15	32	chmod	sys_chmod
+16	32	lchown	sys_lchown16
+18	32	oldstat	sys_stat
+19	32	lseek	sys_lseek
+20	32	getpid	sys_getpid
+21	32	mount	sys_mount
+22	32	umount	sys_oldumount
+23	32	setuid	sys_setuid16
+24	32	getuid	sys_getuid16
+25	32	stime	sys_stime
+26	32	ptrace	sys_ptrace
+27	32	alarm	sys_alarm
+28	32	oldfstat	sys_fstat
+29	32	pause	sys_pause
+30	32	utime	sys_utime
+33	32	access	sys_access
+34	32	nice	sys_nice
+36	32	sync	sys_sync
+37	32	kill	sys_kill
+38	32	rename	sys_rename
+39	32	mkdir	sys_mkdir
+40	32	rmdir	sys_rmdir
+41	32	dup	sys_dup
+42	32	pipe	sys_sh_pipe
+43	32	times	sys_times
+45	32	brk	sys_brk
+46	32	setgid	sys_setgid16
+47	32	getgid	sys_getgid16
+48	32	signal	sys_signal
+49	32	geteuid	sys_geteuid16
+50	32	getegid	sys_getegid16
+51	32	acct	sys_acct
+52	32	umount2	sys_umount
+54	32	ioctl	sys_ioctl
+55	32	fcntl	sys_fcntl
+57	32	setpgid	sys_setpgid
+60	32	umask	sys_umask
+61	32	chroot	sys_chroot
+62	32	ustat	sys_ustat
+63	32	dup2	sys_dup2
+64	32	getppid	sys_getppid
+65	32	getpgrp	sys_getpgrp
+66	32	setsid	sys_setsid
+67	32	sigaction	sys_sigaction
+68	32	sgetmask	sys_sgetmask
+69	32	ssetmask	sys_ssetmask
+70	32	setreuid	sys_setreuid16
+71	32	setregid	sys_setregid16
+72	32	sigsuspend	sys_sigsuspend
+73	32	sigpending	sys_sigpending
+74	32	sethostname	sys_sethostname
+75	32	setrlimit	sys_setrlimit
+76	32	getrlimit	sys_old_getrlimit
+77	32	getrusage	sys_getrusage
+78	32	gettimeofday	sys_gettimeofday
+79	32	settimeofday	sys_settimeofday
+80	32	getgroups	sys_getgroups16
+81	32	setgroups	sys_setgroups16
+83	32	symlink	sys_symlink
+84	32	oldlstat	sys_lstat
+85	32	readlink	sys_readlink
+86	32	uselib	sys_uselib
+87	32	swapon	sys_swapon
+88	32	reboot	sys_reboot
+89	32	readdir	sys_old_readdir
+90	32	mmap	sys_mmap
+91	32	munmap	sys_munmap
+92	32	truncate	sys_truncate
+93	32	ftruncate	sys_ftruncate
+94	32	fchmod	sys_fchmod
+95	32	fchown	sys_fchown16
+96	32	getpriority	sys_getpriority
+97	32	setpriority	sys_setpriority
+99	32	statfs	sys_statfs
+100	32	fstatfs	sys_fstatfs
+102	32	socketcall	sys_socketcall
+103	32	syslog	sys_syslog
+104	32	setitimer	sys_setitimer
+105	32	getitimer	sys_getitimer
+106	32	stat	sys_newstat
+107	32	lstat	sys_newlstat
+108	32	fstat	sys_newfstat
+109	32	olduname	sys_uname
+111	32	vhangup	sys_vhangup
+114	32	wait4	sys_wait4
+115	32	swapoff	sys_swapoff
+116	32	sysinfo	sys_sysinfo
+117	32	ipc	sys_ipc
+118	32	fsync	sys_fsync
+119	32	sigreturn	sys_sigreturn
+120	32	clone	sys_clone
+121	32	setdomainname	sys_setdomainname
+122	32	uname	sys_newuname
+123	32	cacheflush	sys_cacheflush
+124	32	adjtimex	sys_adjtimex
+125	32	mprotect	sys_mprotect
+126	32	sigprocmask	sys_sigprocmask
+128	32	init_module	sys_init_module
+129	32	delete_module	sys_delete_module
+131	32	quotactl	sys_quotactl
+132	32	getpgid	sys_getpgid
+133	32	fchdir	sys_fchdir
+134	32	bdflush	sys_bdflush
+135	32	sysfs	sys_sysfs
+136	32	personality	sys_personality
+138	32	setfsuid	sys_setfsuid16
+139	32	setfsgid	sys_setfsgid16
+140	32	_llseek	sys_llseek
+141	32	getdents	sys_getdents
+142	32	_newselect	sys_select
+143	32	flock	sys_flock
+144	32	msync	sys_msync
+145	32	readv	sys_readv
+146	32	writev	sys_writev
+147	32	getsid	sys_getsid
+148	32	fdatasync	sys_fdatasync
+149	32	_sysctl	sys_sysctl
+150	32	mlock	sys_mlock
+151	32	munlock	sys_munlock
+152	32	mlockall	sys_mlockall
+153	32	munlockall	sys_munlockall
+154	32	sched_setparam	sys_sched_setparam
+155	32	sched_getparam	sys_sched_getparam
+156	32	sched_setscheduler	sys_sched_setscheduler
+157	32	sched_getscheduler	sys_sched_getscheduler
+158	32	sched_yield	sys_sched_yield
+159	32	sched_get_priority_max	sys_sched_get_priority_max
+160	32	sched_get_priority_min	sys_sched_get_priority_min
+161	32	sched_rr_get_interval	sys_sched_rr_get_interval
+162	32	nanosleep	sys_nanosleep
+163	32	mremap	sys_mremap
+164	32	setresuid	sys_setresuid16
+165	32	getresuid	sys_getresuid16
+168	32	poll	sys_poll
+169	32	nfsservctl	sys_ni_syscall
+170	32	setresgid	sys_setresgid16
+171	32	getresgid	sys_getresgid16
+172	32	prctl	sys_prctl
+173	32	rt_sigreturn	sys_rt_sigreturn
+174	32	rt_sigaction	sys_rt_sigaction
+175	32	rt_sigprocmask	sys_rt_sigprocmask
+176	32	rt_sigpending	sys_rt_sigpending
+177	32	rt_sigtimedwait	sys_rt_sigtimedwait
+178	32	rt_sigqueueinfo	sys_rt_sigqueueinfo
+179	32	rt_sigsuspend	sys_rt_sigsuspend
+180	32	pread64	sys_pread_wrapper
+181	32	pwrite64	sys_pwrite_wrapper
+182	32	chown	sys_chown16
+183	32	getcwd	sys_getcwd
+184	32	capget	sys_capget
+185	32	capset	sys_capset
+186	32	sigaltstack	sys_sigaltstack
+187	32	sendfile	sys_sendfile
+190	32	vfork	sys_vfork
+191	32	ugetrlimit	sys_getrlimit
+192	32	mmap2	sys_mmap2
+193	32	truncate64	sys_truncate64
+194	32	ftruncate64	sys_ftruncate64
+195	32	stat64	sys_stat64
+196	32	lstat64	sys_lstat64
+197	32	fstat64	sys_fstat64
+198	32	lchown32	sys_lchown
+199	32	getuid32	sys_getuid
+200	32	getgid32	sys_getgid
+201	32	geteuid32	sys_geteuid
+202	32	getegid32	sys_getegid
+203	32	setreuid32	sys_setreuid
+204	32	setregid32	sys_setregid
+205	32	getgroups32	sys_getgroups
+206	32	setgroups32	sys_setgroups
+207	32	fchown32	sys_fchown
+208	32	setresuid32	sys_setresuid
+209	32	getresuid32	sys_getresuid
+210	32	setresgid32	sys_setresgid
+211	32	getresgid32	sys_getresgid
+212	32	chown32	sys_chown
+213	32	setuid32	sys_setuid
+214	32	setgid32	sys_setgid
+215	32	setfsuid32	sys_setfsuid
+216	32	setfsgid32	sys_setfsgid
+217	32	pivot_root	sys_pivot_root
+218	32	mincore	sys_mincore
+219	32	madvise	sys_madvise
+220	32	getdents64	sys_getdents64
+221	32	fcntl64	sys_fcntl64
+224	32	gettid	sys_gettid
+225	32	readahead	sys_readahead
+226	32	setxattr	sys_setxattr
+227	32	lsetxattr	sys_lsetxattr
+228	32	fsetxattr	sys_fsetxattr
+229	32	getxattr	sys_getxattr
+230	32	lgetxattr	sys_lgetxattr
+231	32	fgetxattr	sys_fgetxattr
+232	32	listxattr	sys_listxattr
+233	32	llistxattr	sys_llistxattr
+234	32	flistxattr	sys_flistxattr
+235	32	removexattr	sys_removexattr
+236	32	lremovexattr	sys_lremovexattr
+237	32	fremovexattr	sys_fremovexattr
+238	32	tkill	sys_tkill
+239	32	sendfile64	sys_sendfile64
+240	32	futex	sys_futex
+241	32	sched_setaffinity	sys_sched_setaffinity
+242	32	sched_getaffinity	sys_sched_getaffinity
+245	32	io_setup	sys_io_setup
+246	32	io_destroy	sys_io_destroy
+247	32	io_getevents	sys_io_getevents
+248	32	io_submit	sys_io_submit
+249	32	io_cancel	sys_io_cancel
+250	32	fadvise64	sys_fadvise64
+252	32	exit_group	sys_exit_group
+253	32	lookup_dcookie	sys_lookup_dcookie
+254	32	epoll_create	sys_epoll_create
+255	32	epoll_ctl	sys_epoll_ctl
+256	32	epoll_wait	sys_epoll_wait
+257	32	remap_file_pages	sys_remap_file_pages
+258	32	set_tid_address	sys_set_tid_address
+259	32	timer_create	sys_timer_create
+260	32	timer_settime	sys_timer_settime
+261	32	timer_gettime	sys_timer_gettime
+262	32	timer_getoverrun	sys_timer_getoverrun
+263	32	timer_delete	sys_timer_delete
+264	32	clock_settime	sys_clock_settime
+265	32	clock_gettime	sys_clock_gettime
+266	32	clock_getres	sys_clock_getres
+267	32	clock_nanosleep	sys_clock_nanosleep
+268	32	statfs64	sys_statfs64
+269	32	fstatfs64	sys_fstatfs64
+270	32	tgkill	sys_tgkill
+271	32	utimes	sys_utimes
+272	32	fadvise64_64	sys_fadvise64_64_wrapper
+274	32	mbind	sys_mbind
+275	32	get_mempolicy	sys_get_mempolicy
+276	32	set_mempolicy	sys_set_mempolicy
+277	32	mq_open	sys_mq_open
+278	32	mq_unlink	sys_mq_unlink
+279	32	mq_timedsend	sys_mq_timedsend
+280	32	mq_timedreceive	sys_mq_timedreceive
+281	32	mq_notify	sys_mq_notify
+282	32	mq_getsetattr	sys_mq_getsetattr
+283	32	kexec_load	sys_kexec_load
+284	32	waitid	sys_waitid
+285	32	add_key	sys_add_key
+286	32	request_key	sys_request_key
+287	32	keyctl	sys_keyctl
+288	32	ioprio_set	sys_ioprio_set
+289	32	ioprio_get	sys_ioprio_get
+290	32	inotify_init	sys_inotify_init
+291	32	inotify_add_watch	sys_inotify_add_watch
+292	32	inotify_rm_watch	sys_inotify_rm_watch
+294	32	migrate_pages	sys_migrate_pages
+295	32	openat	sys_openat
+296	32	mkdirat	sys_mkdirat
+297	32	mknodat	sys_mknodat
+298	32	fchownat	sys_fchownat
+299	32	futimesat	sys_futimesat
+300	32	fstatat64	sys_fstatat64
+301	32	unlinkat	sys_unlinkat
+302	32	renameat	sys_renameat
+303	32	linkat	sys_linkat
+304	32	symlinkat	sys_symlinkat
+305	32	readlinkat	sys_readlinkat
+306	32	fchmodat	sys_fchmodat
+307	32	faccessat	sys_faccessat
+308	32	pselect6	sys_pselect6
+309	32	ppoll	sys_ppoll
+310	32	unshare	sys_unshare
+311	32	set_robust_list	sys_set_robust_list
+312	32	get_robust_list	sys_get_robust_list
+313	32	splice	sys_splice
+314	32	sync_file_range	sys_sync_file_range
+315	32	tee	sys_tee
+316	32	vmsplice	sys_vmsplice
+317	32	move_pages	sys_move_pages
+318	32	getcpu	sys_getcpu
+319	32	epoll_pwait	sys_epoll_pwait
+320	32	utimensat	sys_utimensat
+321	32	signalfd	sys_signalfd
+322	32	timerfd_create	sys_timerfd_create
+323	32	eventfd	sys_eventfd
+324	32	fallocate	sys_fallocate
+325	32	timerfd_settime	sys_timerfd_settime
+326	32	timerfd_gettime	sys_timerfd_gettime
+327	32	signalfd4	sys_signalfd4
+328	32	eventfd2	sys_eventfd2
+329	32	epoll_create1	sys_epoll_create1
+330	32	dup3	sys_dup3
+331	32	pipe2	sys_pipe2
+332	32	inotify_init1	sys_inotify_init1
+333	32	preadv	sys_preadv
+334	32	pwritev	sys_pwritev
+335	32	rt_tgsigqueueinfo	sys_rt_tgsigqueueinfo
+336	32	perf_event_open	sys_perf_event_open
+337	32	fanotify_init	sys_fanotify_init
+338	32	fanotify_mark	sys_fanotify_mark
+339	32	prlimit64	sys_prlimit64
+340	32	socket	sys_socket
+341	32	bind	sys_bind
+342	32	connect	sys_connect
+343	32	listen	sys_listen
+344	32	accept	sys_accept
+345	32	getsockname	sys_getsockname
+346	32	getpeername	sys_getpeername
+347	32	socketpair	sys_socketpair
+348	32	send	sys_send
+349	32	sendto	sys_sendto
+350	32	recv	sys_recv
+351	32	recvfrom	sys_recvfrom
+352	32	shutdown	sys_shutdown
+353	32	setsockopt	sys_setsockopt
+354	32	getsockopt	sys_getsockopt
+355	32	sendmsg	sys_sendmsg
+356	32	recvmsg	sys_recvmsg
+357	32	recvmmsg	sys_recvmmsg
+358	32	accept4	sys_accept4
+359	32	name_to_handle_at	sys_name_to_handle_at
+360	32	open_by_handle_at	sys_open_by_handle_at
+361	32	clock_adjtime	sys_clock_adjtime
+362	32	syncfs	sys_syncfs
+363	32	sendmmsg	sys_sendmmsg
+364	32	setns	sys_setns
+365	32	process_vm_readv	sys_process_vm_readv
+366	32	process_vm_writev	sys_process_vm_writev
+367	32	kcmp	sys_kcmp
+368	32	finit_module	sys_finit_module
+369	32	sched_getattr	sys_sched_getattr
+370	32	sched_setattr	sys_sched_setattr
+371	32	renameat2	sys_renameat2
+372	32	seccomp	sys_seccomp
+373	32	getrandom	sys_getrandom
+374	32	memfd_create	sys_memfd_create
+375	32	bpf	sys_bpf
+376	32	execveat	sys_execveat
+377	32	userfaultfd	sys_userfaultfd
+378	32	membarrier	sys_membarrier
+379	32	mlock2	sys_mlock2
+380	32	copy_file_range	sys_copy_file_range
+381	32	preadv2	sys_preadv2
+382	32	pwritev2	sys_pwritev2
