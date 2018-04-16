@@ -73,7 +73,7 @@ elif [ ${out: -2} == ".S" ]; then
 		 [ "${name}" == "clone" ]; then
                 echo -e "\t.quad alpha_${name}"
             else
-                echo -e "\t.quad sys_${name}"
+                echo -e "\t.quad ${entry}"
             fi
 	    nxt="$nr"
 	    let nxt=nxt+1
