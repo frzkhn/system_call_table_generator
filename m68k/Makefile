@@ -6,7 +6,6 @@ _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
 	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
 
 syscalltbl := $(srctree)/$(src)/syscall.tbl
-e_syscalltbl := $(srctree)/$(src)/e_syscall.tbl
 syscall := $(srctree)/$(src)/syscalltbl.sh
 
 quiet_cmd_syscall = SYSCALL  $@
@@ -19,7 +18,7 @@ syscall_abi_unistd_32 := common
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-$(uapis)/syscalltable.S: $(e_syscalltbl) $(syscall)
+$(uapis)/syscalltable.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
 uapihsyscall-y			+= unistd.h
