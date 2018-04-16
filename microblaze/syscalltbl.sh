@@ -38,7 +38,7 @@ elif [ ${out: -2} == ".S" ]; then
 		    let nxt=nxt+1
 		done
 	    fi
-	    echo -e "\t.long sys_${name}"
+	    echo -e "\t.long ${entry}"
 	    nxt="$nr"
 	    let nxt=nxt+1
 	done
