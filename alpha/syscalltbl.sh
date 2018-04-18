@@ -16,23 +16,6 @@ if [ ${out: -2} == ".h" ]; then
 	echo ""
 
 	while read nr abi name entry ; do
-	    if [ "$nr" -eq 300 ]; then
-		echo "
-#define __IGNORE_alarm
-#define __IGNORE_creat
-#define __IGNORE_getegid
-#define __IGNORE_geteuid
-#define __IGNORE_getgid
-#define __IGNORE_getpid
-#define __IGNORE_getppid
-#define __IGNORE_getuid
-#define __IGNORE_pause
-#define __IGNORE_time
-#define __IGNORE_utime
-#define __IGNORE_umount2
-"
-	    fi
-
 	    if [ -z "$offset" ]; then
 		echo -e "#define __NR_${prefix}${name}\t$nr"
 	    else
@@ -40,11 +23,6 @@ if [ ${out: -2} == ".h" ]; then
             fi
 	done
 
-	echo "
-#define __IGNORE_pkey_mprotect
-#define __IGNORE_pkey_alloc
-#define __IGNORE_pkey_free
-"
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
 elif [ ${out: -2} == ".S" ]; then
@@ -60,21 +38,11 @@ elif [ ${out: -2} == ".S" ]; then
 	while read nr abi name entry ; do
 	    if [ "$nxt" -ne "$nr" ]; then
 		while [ "$nxt" -lt "$nr" ]; do
-		    if [ "$nr" -gt 300 ]; then
-			echo -e "\t.quad sys_ni_syscall"
-		    else 
-			echo -e "\t.quad alpha_ni_syscall"
-		    fi
+		    echo -e "\t.quad alpha_ni_syscall"
 		    let nxt=nxt+1
 		done
 	    fi
-	    if [ "${name}" == "fork" ] ||
-		 [ "${name}" == "vfork" ] || 
-		 [ "${name}" == "clone" ]; then
-                echo -e "\t.quad alpha_${name}"
-            else
-                echo -e "\t.quad ${entry}"
-            fi
+            echo -e "\t.quad ${entry}"
 	    nxt="$nr"
 	    let nxt=nxt+1
 	done
