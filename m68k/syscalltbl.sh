@@ -45,13 +45,7 @@ ENTRY(sys_call_table)"
 		    let nxt=nxt+1
 		done
 	    fi
-	    if [ "${name}" == "fork" ] || 
-		[ "${name}" == "vfork" ] || 
-		[ "${name}" == "clone" ]; then
-		echo -e "\t.long __${entry}"
-	    else
-		echo -e "\t.long ${entry}"
-	    fi
+	    echo -e "\t.long ${entry}"
 	    nxt="$nr"
 	    let nxt=nxt+1
 	done
