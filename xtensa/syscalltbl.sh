@@ -6,7 +6,7 @@ my_abis=`echo "($3)" | tr ',' '|'`
 prefix="$4"
 offset="$5"
 
-nxt=8
+nxt=0
 
 fileguard=_UAPI_ASM_XTENSA_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
@@ -18,37 +18,27 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 #ifndef __SYSCALL
 # define __SYSCALL(nr,func,nargs)
 #endif
-
-#define __NR_spill\t0
-__SYSCALL(  0, sys_ni_syscall, 0)
-#define __NR_xtensa\t1
-__SYSCALL(  1, sys_ni_syscall, 0)
-#define __NR_available4\t2
-__SYSCALL(  2, sys_ni_syscall, 0)
-#define __NR_available5\t3
-__SYSCALL(  3, sys_ni_syscall, 0)
-#define __NR_available6\t4
-__SYSCALL(  4, sys_ni_syscall, 0)
-#define __NR_available7\t5
-__SYSCALL(  5, sys_ni_syscall, 0)
-#define __NR_available8\t6
-__SYSCALL(  6, sys_ni_syscall, 0)
-#define __NR_available9\t7
-__SYSCALL(  7, sys_ni_syscall, 0)"
+"
+    while [ "$nxt" -lt 8 ]; do
+	read nr abi name entry
+	echo -e "#define __NR_${prefix}${name}\t$nr"
+	echo -e "__SYSCALL($nr, ${entry}, 0)"
+	let nxt=nxt+1
+    done
 
     while read nr abi name entry ; do
-	if [ "$nxt" -ne "$nr" ]; then
-            while [ "$nxt" -lt "$nr" ]; do
-		echo -e "#define __NR_available$nxt\t$nxt"
-		echo -e "__SYSCALL($nxt, sys_ni_syscall, 0)"
-                let nxt=nxt+1
-            done
-        fi
 	if [ -z "$offset" ]; then
-	    echo -e "#define __NR_${prefix}${name}\t$nr"
-	    echo -e "__SYSCALL($nr, sys_${name}, 0)"
+	    if [ "${name}" == "reserved" ] ||
+		[ "${name}" == "available" ]; then
+		echo -e "#define __NR_${prefix}${name}$nr\t$nr"
+		echo -e "__SYSCALL($nr, ${entry}, 0)"
+	    else
+		echo -e "#define __NR_${prefix}${name}\t$nr"
+                echo -e "__SYSCALL($nr, ${entry}, 0)"
+	    fi
 	else
 	    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+	    echo -e "__SYSCALL($nr, ${entry}, 0)"
         fi
 	nxt="$nr"
 	let nxt=nxt+1
