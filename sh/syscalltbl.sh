@@ -67,14 +67,7 @@ elif [ ${out: -2} == ".S" ]; then
 		    let nxt=nxt+1
 		done
 	    fi
-	    if [ "${name}" == "mmap" ]; then
-		echo -e "\t.long old_${name}"
-	    elif [ "${name}" == "ptrace" ] && 
-		[ "$abi" == "64" ]; then
-                echo -e "\t.long sh64_${name}"
-            else
-		 echo -e "\t.long ${entry}"
-            fi
+	    echo -e "\t.long ${entry}"
 	    nxt="$nr"
 	    let nxt=nxt+1
 	done
