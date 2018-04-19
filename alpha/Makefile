@@ -1,4 +1,4 @@
-# alpha architecture 
+# SPDX-License-Identifier: GPL-2.0
 uapih := arch/$(SRCARCH)/include/uapi/asm
 uapis := arch/$(SRCARCH)/kernel
 
