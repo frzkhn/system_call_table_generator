@@ -1,4 +1,4 @@
-# pa-risc architecture 
+# SPDX-License-Identifier: GPL-2.0
 uapih := arch/$(SRCARCH)/include/uapi/asm
 uapis := arch/$(SRCARCH)/kernel
 
@@ -14,11 +14,12 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_pfx_$(basetarget))' \
 		   '$(syscall_offset_$(basetarget))'
 
-syscall_abi_unistd_64 := common
-syscall_offset_unistd_64 := __NR_Linux
+syscall_abi_unistd := common
+syscall_offset_unistd := __NR_Linux
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
+syscall_abi_unistd := common
 $(uapis)/syscall_table.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 

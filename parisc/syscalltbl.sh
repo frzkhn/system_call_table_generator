@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
 
 in="$1"
 out="$2"
@@ -22,12 +23,6 @@ if [ ${out: -2} == ".h" ]; then
 
 	echo -e "
 #define __NR_Linux_syscalls\t(__NR_statx + 1)
-
-#define __IGNORE_select
-#define __IGNORE_fadvise64
-#define __IGNORE_pkey_mprotect
-#define __IGNORE_pkey_alloc
-#define __IGNORE_pkey_free
 
 #define LINUX_GATEWAY_ADDR      0x100
 "
