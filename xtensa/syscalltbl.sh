@@ -20,13 +20,6 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 # define __SYSCALL(nr,func,nargs)
 #endif
 "
-    while [ "$nxt" -lt 8 ]; do
-	read nr abi name entry
-	echo -e "#define __NR_${prefix}${name}\t$nr"
-	echo -e "__SYSCALL($nr, ${entry}, 0)"
-	let nxt=nxt+1
-    done
-
     while read nr abi name entry ; do
 	if [ -z "$offset" ]; then
 	    if [ "${name}" == "reserved" ] ||
