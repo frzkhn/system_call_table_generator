@@ -5,8 +5,7 @@ uapis := arch/$(SRCARCH)/kernel
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
 	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
 
-syscalltbl32 := $(srctree)/$(src)/syscall_32.tbl
-syscalltbl64 := $(srctree)/$(src)/syscall_64.tbl
+syscalltbl := $(srctree)/$(src)/syscall.tbl
 
 syscall := $(srctree)/$(src)/syscalltbl.sh
 
@@ -16,24 +15,16 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_pfx_$(basetarget))' \
 		   '$(syscall_offset_$(basetarget))'
 
-syscall_abi_unistd_32 := 32
-$(uapih)/unistd_32.h: $(syscalltbl32) $(syscall)
+syscall_abi_unistd := 32
+$(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_unistd_64 := 64
-$(uapih)/unistd_64.h: $(syscalltbl64) $(syscall)
+syscall_abi_syscalls := 32
+$(uapis)/syscalls.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_syscalls_32 := 32
-$(uapis)/syscalls_32.S: $(syscalltbl32) $(syscall)
-	$(call if_changed,syscall)
-
-syscall_abi_syscalls_64 := 64
-$(uapis)/syscalls_64.S: $(syscalltbl64) $(syscall)
-	$(call if_changed,syscall)
-
-uapihsyscall-y			+= unistd_32.h unistd_64.h
-uapissyscall-y			+= syscalls_32.S syscalls_64.S
+uapihsyscall-y			+= unistd.h
+uapissyscall-y			+= syscalls.S
 
 targets	+= $(uapihsyscall-y) $(uapissyscall-y)
 

@@ -36,20 +36,11 @@ if [ ${out: -2} == ".h" ]; then
 elif [ ${out: -2} == ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-	if [ "$3" -eq 32 ]; then
 	    echo "#include <linux/sys.h>"
 	    echo "#include <linux/linkage.h>"
 	    echo ""
             echo -e "\t.data"
 	    echo "ENTRY(sys_call_table)"
-	elif [ "$3" -eq 64 ]; then 
-	    echo "#include <linux/sys.h>"
-	    echo ""
-	    echo -e "\t.section .data, \"aw"\"
-	    echo -e "\t.balign 32"
-	    echo -e "\t.globl sys_call_table"
-	    echo "sys_call_table:"
-	fi
 
 	while read nr abi name entry ; do
 	    if [ "$nxt" -ne "$nr" ]; then
