@@ -1,4 +1,4 @@
-# xtensa architecture 
+# SPDX-License-Identifier: GPL-2.0
 uapih := arch/$(SRCARCH)/include/uapi/asm
 
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)')
@@ -12,7 +12,7 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_pfx_$(basetarget))' \
 		   '$(syscall_offset_$(basetarget))'
 
-syscall_abi_unistd_32 := common
+syscall_abi_unistd := common
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
