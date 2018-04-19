@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
 
 in="$1"
 out="$2"
@@ -9,7 +10,7 @@ offset="$5"
 if [ ${out: -2} == ".h" ]; then
     fileguard=_UAPI_ASM_M68K_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
-    -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
+    -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`_
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "#ifndef ${fileguard}"
 	echo "#define ${fileguard}"
