@@ -1,4 +1,4 @@
- # sh architecture 
+# SPDX-License-Identifier: GPL-2.0
 uapih := arch/$(SRCARCH)/include/uapi/asm
 uapis := arch/$(SRCARCH)/kernel
 
@@ -24,9 +24,11 @@ syscall_abi_unistd_64 := 64
 $(uapih)/unistd_64.h: $(syscalltbl64) $(syscall)
 	$(call if_changed,syscall)
 
+syscall_abi_syscalls_32 := 32
 $(uapis)/syscalls_32.S: $(syscalltbl32) $(syscall)
 	$(call if_changed,syscall)
 
+syscall_abi_syscalls_64 := 64
 $(uapis)/syscalls_64.S: $(syscalltbl64) $(syscall)
 	$(call if_changed,syscall)
 
