@@ -19,7 +19,7 @@ syscall_offset_unistd := __NR_Linux
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_unistd := common
+syscall_abi_syscall_table := common
 $(uapis)/syscall_table.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
