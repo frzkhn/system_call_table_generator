@@ -1,3 +1,11 @@
+#
+# Linux system call numbers and entry vectors
+#
+# The format is:
+# <number> <abi> <name> <entry point>
+#
+# The abi is always common for this file.
+#
 0       common   restart_syscall          sys_restart_syscall
 1       common   exit                     sys_exit
 2       common   fork                     sys_fork
