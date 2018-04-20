@@ -18,6 +18,7 @@ syscall_abi_unistd := common
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
+syscall_abi_syscalltable := common
 $(uapis)/syscalltable.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
