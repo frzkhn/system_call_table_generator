@@ -1,3 +1,11 @@
+#
+# Linux system call numbers and entry vectors
+#
+# The format is:
+# <number> <abi> <name> <entry point>
+#
+# The abi is always common for this file.
+#
 1024    common   ni_syscall               sys_ni_syscall
 1025    common   exit                     sys_exit
 1026    common   read                     sys_read
