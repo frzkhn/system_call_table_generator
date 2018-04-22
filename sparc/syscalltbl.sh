@@ -24,7 +24,17 @@ if [ ${out: -2} == ".h" ]; then
 "
 	while read nr abi name entry ; do
 	    if [ -z "$offset" ]; then
-		echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ "$abi" == 32 ]; then
+		    echo "#ifdef __32bit_syscall_numbers__"
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		    echo "#endif"
+		elif [ "$abi" == 64 ]; then
+		    echo "#ifndef __32bit_syscall_numbers__"
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		    echo "#endif"
+		else 
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		fi
 	    else
 		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
             fi
@@ -44,12 +54,12 @@ if [ ${out: -2} == ".h" ]; then
 elif [ ${out: -2} == ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-	if [ "$3" -eq 32 ]; then
+	if [ ${out: -4} == "32.S" ]; then
 	    echo -e "\t.data"
 	    echo -e "\t.align 4"
 	    echo -e "\t.globl sys_call_table"
 	    echo "sys_call_table:"
-	elif [ "$3" -eq 64 ]; then
+	elif [ ${out: -4} == "64.S" ]; then
 	    echo -e "\t.text"
 	    echo -e "\t.align 4"
 	    echo "#ifdef CONFIG_COMPAT"
@@ -60,13 +70,17 @@ elif [ ${out: -2} == ".S" ]; then
 	while read nr abi name entry ; do
 	    if [ "$nxt" -ne "$nr" ]; then
 		while [ "$nxt" -lt "$nr" ]; do
-		    echo -e "\t.long sys_ni_syscall"
+		    if [ ${out: -4} == "32.S" ]; then
+			echo -e "\t.long sys_ni_syscall"
+		    elif [ ${out: -4} == "64.S" ]; then
+			echo -e "\t.word sys_ni_syscall"
+		    fi
 		    let nxt=nxt+1
 		done
 	    fi
-	    if [ "$3" -eq 32 ]; then
+	    if [ ${out: -4} == "32.S" ]; then
 		echo -e "\t.long ${entry}"
-	    elif [ "$3" -eq 64 ]; then
+	    elif [ ${out: -4} == "64.S" ]; then
 		echo -e "\t.word ${entry}"
 	    fi
 	    nxt="$nr"
