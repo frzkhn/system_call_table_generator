@@ -45,7 +45,6 @@ if [ ${out: -2} == ".h" ]; then
 	echo -e "
 #define NR_syscalls\t$nxt
 "
-
 	echo -e "
 #define KERN_FEATURE_MIXED_MODE_STACK\t0x00000001
 "
@@ -71,9 +70,9 @@ elif [ ${out: -2} == ".S" ]; then
 	    if [ "$nxt" -ne "$nr" ]; then
 		while [ "$nxt" -lt "$nr" ]; do
 		    if [ ${out: -4} == "32.S" ]; then
-			echo -e "\t.long sys_ni_syscall"
+			echo -e "\t.long sys_nis_syscall"
 		    elif [ ${out: -4} == "64.S" ]; then
-			echo -e "\t.word sys_ni_syscall"
+			echo -e "\t.word sys_nis_syscall"
 		    fi
 		    let nxt=nxt+1
 		done
