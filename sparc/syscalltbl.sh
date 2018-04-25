@@ -22,13 +22,13 @@ if [ ${out: -2} == ".h" ]; then
 #endif
 #endif
 "
-	while read nr abi name entry ; do
+	while read nr name entry_64 entry_32 entry_x32 ; do
 	    if [ -z "$offset" ]; then
-		if [ "$abi" == 32 ]; then
+		if [ "$entry_32" != "sys_nis_syscall" -a "$entry_64" == "sys_nis_syscall" ]; then
 		    echo "#ifdef __32bit_syscall_numbers__"
 		    echo -e "#define __NR_${prefix}${name}\t$nr"
 		    echo "#endif"
-		elif [ "$abi" == 64 ]; then
+		elif [ "$entry_32" == "sys_nis_syscall" -a "$entry_64" != "sys_nis_syscall" ]; then
 		    echo "#ifndef __32bit_syscall_numbers__"
 		    echo -e "#define __NR_${prefix}${name}\t$nr"
 		    echo "#endif"
@@ -53,37 +53,56 @@ if [ ${out: -2} == ".h" ]; then
 elif [ ${out: -2} == ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-	if [ ${out: -4} == "32.S" ]; then
+	if [ "$3" = "32" ]; then
 	    echo -e "\t.data"
-	    echo -e "\t.align 4"
-	    echo -e "\t.globl sys_call_table"
-	    echo "sys_call_table:"
-	elif [ ${out: -4} == "64.S" ]; then
-	    echo -e "\t.text"
-	    echo -e "\t.align 4"
-	    echo "#ifdef CONFIG_COMPAT"
-	    echo -e ".globl sys_call_table32"
-	    echo "sys_call_table32:"
-	fi
-
-	while read nr abi name entry ; do
-	    if [ "$nxt" -ne "$nr" ]; then
-		while [ "$nxt" -lt "$nr" ]; do
-		    if [ ${out: -4} == "32.S" ]; then
+            echo -e "\t.align 4"
+            echo -e "\t.globl sys_call_table"
+            echo "sys_call_table:"
+            while read nr name entry_64 entry_32 entry_x32 ; do
+		if [ "$nxt" -ne "$nr" ]; then
+                    while [ "$nxt" -lt "$nr" ]; do
 			echo -e "\t.long sys_nis_syscall"
-		    elif [ ${out: -4} == "64.S" ]; then
-			echo -e "\t.word sys_nis_syscall"
-		    fi
-		    let nxt=nxt+1
-		done
-	    fi
-	    if [ ${out: -4} == "32.S" ]; then
-		echo -e "\t.long ${entry}"
-	    elif [ ${out: -4} == "64.S" ]; then
-		echo -e "\t.word ${entry}"
-	    fi
-	    nxt="$nr"
-	    let nxt=nxt+1
-	done
+			let nxt=nxt+1
+                    done
+		fi
+		echo -e "\t.long ${entry_32}"
+		nxt="$nr"
+		let nxt=nxt+1
+            done
+	elif [ "$3" = "x32" ]; then
+	    echo -e "\t.text"
+	    echo -e "\t.align  4"
+	    echo "#ifdef CONFIG_COMPAT"
+	    echo -e "\t.globl sys_call_table32"
+	    echo "sys_call_table32:"
+	    while read nr name entry_64 entry_32 entry_x32 ; do
+                if [ "$nxt" -ne "$nr" ]; then
+                    while [ "$nxt" -lt "$nr" ]; do
+                        echo -e "\t.long sys_nis_syscall"
+                        let nxt=nxt+1
+                    done
+                fi
+                echo -e "\t.long ${entry_x32}"
+                nxt="$nr"
+                let nxt=nxt+1
+            done
+	    echo "#endif /* CONFIG_COMPAT */"
+	elif [ "$3" = "64" ]; then
+	    echo -e "\t.align  4"
+	    echo -e "\t.globl sys_call_table64, sys_call_table"
+	    echo "sys_call_table64:"
+	    echo "sys_call_table:"
+	    while read nr name entry_64 entry_32 entry_x32 ; do
+		if [ "$nxt" -ne "$nr" ]; then
+                    while [ "$nxt" -lt "$nr" ]; do
+			echo -e "\t.long sys_nis_syscall"
+			let nxt=nxt+1
+                    done
+		fi
+		echo -e "\t.long ${entry_64}"
+		nxt="$nr"
+		let nxt=nxt+1
+            done
+	fi
     ) > "$out"
 fi
