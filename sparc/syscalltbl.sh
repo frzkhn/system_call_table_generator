@@ -52,8 +52,9 @@ if [ ${out: -2} == ".h" ]; then
     ) > "$out"
 elif [ ${out: -2} == ".S" ]; then
     nxt=0
+    arr_entry64=()
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-	if [ "$3" = "32" ]; then
+	if [ "$abi" == "32" ]; then
 	    echo -e "\t.data"
             echo -e "\t.align 4"
             echo -e "\t.globl sys_call_table"
@@ -69,40 +70,37 @@ elif [ ${out: -2} == ".S" ]; then
 		nxt="$nr"
 		let nxt=nxt+1
             done
-	elif [ "$3" = "x32" ]; then
-	    echo -e "\t.text"
-	    echo -e "\t.align  4"
-	    echo "#ifdef CONFIG_COMPAT"
-	    echo -e "\t.globl sys_call_table32"
-	    echo "sys_call_table32:"
-	    while read nr name entry_64 entry_32 entry_x32 ; do
+	elif [ "$abi" == "64" ]; then
+            echo -e "\t.text"
+            echo -e "\t.align  4"
+            echo "#ifdef CONFIG_COMPAT"
+            echo -e "\t.globl sys_call_table32"
+            echo "sys_call_table32:"
+            while read nr name entry_64 entry_32 entry_x32 ; do
                 if [ "$nxt" -ne "$nr" ]; then
                     while [ "$nxt" -lt "$nr" ]; do
-                        echo -e "\t.long sys_nis_syscall"
-                        let nxt=nxt+1
+                        echo -e "\t.word sys_nis_syscall"
+                        arr_entry64+=("sys_nis_syscall")
+			let nxt=nxt+1
                     done
                 fi
-                echo -e "\t.long ${entry_x32}"
+                echo -e "\t.word ${entry_x32}"
                 nxt="$nr"
+		arr_entry64+=("${entry_64}")
                 let nxt=nxt+1
             done
-	    echo "#endif /* CONFIG_COMPAT */"
-	elif [ "$3" = "64" ]; then
+            echo "#endif /* CONFIG_COMPAT */"
+	    echo ""
 	    echo -e "\t.align  4"
 	    echo -e "\t.globl sys_call_table64, sys_call_table"
 	    echo "sys_call_table64:"
 	    echo "sys_call_table:"
-	    while read nr name entry_64 entry_32 entry_x32 ; do
-		if [ "$nxt" -ne "$nr" ]; then
-                    while [ "$nxt" -lt "$nr" ]; do
-			echo -e "\t.long sys_nis_syscall"
-			let nxt=nxt+1
-                    done
-		fi
-		echo -e "\t.long ${entry_64}"
-		nxt="$nr"
+	    nr_max=$nxt
+	    nxt=0
+	    while [ "$nxt" -lt "$nr_max" ]; do
+		echo -e "\t.word ${arr_entry64[nxt]}"
 		let nxt=nxt+1
-            done
+	    done
 	fi
     ) > "$out"
 fi
