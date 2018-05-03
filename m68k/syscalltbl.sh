@@ -39,6 +39,7 @@ elif [ ${out: -2} == ".S" ]; then
 .section .rodata
 ALIGN
 ENTRY(sys_call_table)"
+
 	while read nr abi name entry ; do
 	    if [ "$nxt" -ne "$nr" ]; then
 	        while [ "$nxt" -lt "$nr" ]; do
