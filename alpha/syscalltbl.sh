@@ -12,6 +12,7 @@ if [ ${out: -2} == ".h" ]; then
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+	echo "/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */"
 	echo "#ifndef ${fileguard}"
 	echo "#define ${fileguard}"
 	echo ""
