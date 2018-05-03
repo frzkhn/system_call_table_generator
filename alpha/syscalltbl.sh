@@ -16,19 +16,31 @@ if [ ${out: -2} == ".h" ]; then
 	echo "#define ${fileguard}"
 	echo ""
 
-	while read nr abi name entry ; do
+	while read nr abi name entry comment ; do
 	    if [ -z "$offset" ]; then
-		echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ -z "$comment" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		else
+		    echo -e "#define __NR_${prefix}${name}\t$nr\t$comment"
+		fi
 	    else
 		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
             fi
 	done
 
+	echo ""
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
 elif [ ${out: -2} == ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+	echo "/* SPDX-License-Identifier: GPL-2.0 */"
+	echo "/*"
+	echo " * arch/alpha/kernel/systbls.S"
+	echo " *"
+	echo " * The system call table."
+	echo " */"
+	echo ""
 	echo "#include <asm/unistd.h>"
 	echo ""
 	echo -e "\t.data"
@@ -36,14 +48,22 @@ elif [ ${out: -2} == ".S" ]; then
 	echo -e "\t.globl sys_call_table"
 	echo -e "sys_call_table:"
 
-	while read nr abi name entry ; do
+	while read nr abi name entry comment ; do
 	    if [ "$nxt" -ne "$nr" ]; then
 		while [ "$nxt" -lt "$nr" ]; do
-		    echo -e "\t.quad alpha_ni_syscall"
+		    if [ $(($nxt % 5)) -eq 0 ]; then
+			echo -e "\t.quad alpha_ni_syscall\t/* $nxt */"
+		    else
+			echo -e "\t.quad alpha_ni_syscall"
+		    fi
 		    let nxt=nxt+1
 		done
 	    fi
-            echo -e "\t.quad ${entry}"
+	    if [ $(($nr % 5)) -eq 0 ]; then
+		 echo -e "\t.quad ${entry}\t/* $nr */"
+	    else
+		echo -e "\t.quad ${entry}"
+	    fi
 	    nxt="$nr"
 	    let nxt=nxt+1
 	done

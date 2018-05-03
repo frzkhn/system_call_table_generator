@@ -6,59 +6,91 @@
 #
 # The abi is always common for this file.
 #
+0	common	 osf_syscall			  alpha_ni_syscall			/* not implemented */
 1       common   exit                             sys_exit
 2       common   fork                             alpha_fork
 3       common   read                             sys_read
 4       common   write                            sys_write
+5	common   osf_old_open			  alpha_ni_syscall			/* not implemented */
 6       common   close                            sys_close
 7       common   osf_wait4                        sys_osf_wait4
+8	common	 osf_old_creat			  alpha_ni_syscall			/* not implemented */		
 9       common   link                             sys_link
 10      common   unlink                           sys_unlink
+11	common 	 osf_execve			  alpha_ni_syscall			/* not implemented */		
 12      common   chdir                            sys_chdir
 13      common   fchdir                           sys_fchdir
 14      common   mknod                            sys_mknod
 15      common   chmod                            sys_chmod
 16      common   chown                            sys_chown
 17      common   brk                              sys_osf_brk
+18	common	 osf_getfsstat			  alpha_ni_syscall			/* not implemented */
 19      common   lseek                            sys_lseek
 20      common   getxpid                          sys_getxpid
 21      common   osf_mount                        sys_osf_mount
 22      common   umount                           sys_umount
 23      common   setuid                           sys_setuid
 24      common   getxuid                          sys_getxuid
+25	common   exec_with_loader		  alpha_ni_syscall			/* not implemented */
 26      common   ptrace                           sys_ptrace
+27	common   osf_nrecvmsg			  alpha_ni_syscall			/* not implemented */
+28	common	 osf_nsendmsg			  alpha_ni_syscall			/* not implemented */
+29	common 	 osf_nrecvfrom			  alpha_ni_syscall			/* not implemented */
+30	common 	 osf_naccept			  alpha_ni_syscall			/* not implemented */
+31	common 	 osf_ngetpeername		  alpha_ni_syscall			/* not implemented */
+32	common	 osf_ngetsockname		  alpha_ni_syscall			/* not implemented */
 33      common   access                           sys_access
+34	common 	 osf_chflags			  alpha_ni_syscall			/* not implemented */
+35	common   osf_fchflags			  alpha_ni_syscall			/* not implemented */
 36      common   sync                             sys_sync
 37      common   kill                             sys_kill
+38	common 	 osf_old_stat			  alpha_ni_syscall			/* not implemented */
 39      common   setpgid                          sys_setpgid
+40	common 	 osf_old_lstat			  alpha_ni_syscall			/* not implemented */
 41      common   dup                              sys_dup
 42      common   pipe                             sys_alpha_pipe
 43      common   osf_set_program_attributes       sys_osf_set_program_attributes
+44      common   osf_profil                       alpha_ni_syscall			/* not implemented */
 45      common   open                             sys_open
+46	common 	 osf_old_sigaction		  alpha_ni_syscall			/* not implemented */		
 47      common   getxgid                          sys_getxgid
 48      common   osf_sigprocmask                  sys_osf_sigprocmask
+49	common 	 osf_getlogin			  alpha_ni_syscall			/* not implemented */
+50	common	 osf_setlogin			  alpha_ni_syscall			/* not implemented */
 51      common   acct                             sys_acct
 52      common   sigpending                       sys_sigpending
 54      common   ioctl                            sys_ioctl
+55	common 	 osf_reboot			  alpha_ni_syscall			/* not implemented */
+56	common	 osf_revoke			  alpha_ni_syscall			/* not implemented */
 57      common   symlink                          sys_symlink
 58      common   readlink                         sys_readlink
 59      common   execve                           sys_execve
 60      common   umask                            sys_umask
 61      common   chroot                           sys_chroot
+62	common	 osf_old_fstat			  alpha_ni_syscall			/* not implemented */
 63      common   getpgrp                          sys_getpgrp
 64      common   getpagesize                      sys_getpagesize
+65	common   osf_mremap			  alpha_ni_syscall			/* not implemented */
 66      common   vfork                            alpha_vfork
 67      common   stat                             sys_newstat
 68      common   lstat                            sys_newlstat
+69	common   osf_sbrk			  alpha_ni_syscall			/* not implemented */
+70	common   osf_sstk			  alpha_ni_syscall			/* not implemented */
 71      common   mmap                             sys_osf_mmap
+72	common   osf_old_vadvise		  alpha_ni_syscall			/* not implemented */
 73      common   munmap                           sys_munmap
 74      common   mprotect                         sys_mprotect
 75      common   madvise                          sys_madvise
 76      common   vhangup                          sys_vhangup
+77	common	 osf_kmodcall			  alpha_ni_syscall			/* not implemented */
+78	common   osf_mincore			  alpha_ni_syscall			/* not implemented */
 79      common   getgroups                        sys_getgroups
 80      common   setgroups                        sys_setgroups
+81	common   osf_old_getpgrp		  alpha_ni_syscall			/* not implemented */
 82      common   setpgrp                          sys_setpgid
 83      common   osf_setitimer                    sys_osf_setitimer
+84	common	 osf_old_wait			  alpha_ni_syscall			/* not implemented */
+85	common	 osf_table			  alpha_ni_syscall			/* not implemented */
 86      common   osf_getitimer                    sys_osf_getitimer
 87      common   gethostname                      sys_gethostname
 88      common   sethostname                      sys_sethostname
@@ -80,10 +112,15 @@
 104     common   bind                             sys_bind
 105     common   setsockopt                       sys_setsockopt
 106     common   listen                           sys_listen
+107 	common 	 osf_plock			  alpha_ni_syscall			/* not implemented */
+108 	common   osf_old_sigvec			  alpha_ni_syscall			/* not implemented */
+109	common 	 osf_old_sigblock		  alpha_ni_syscall			/* not implemented */
+110	common	 osf_old_sigsetmask		  alpha_ni_syscall			/* not implemented */
 111     common   sigsuspend                       sys_sigsuspend
 112     common   osf_sigstack                     sys_osf_sigstack
 113     common   recvmsg                          sys_recvmsg
 114     common   sendmsg                          sys_sendmsg
+115	common	 osf_old_vtrace			  alpha_ni_syscall                      /* not implemented */
 116     common   osf_gettimeofday                 sys_osf_gettimeofday
 117     common   osf_getrusage                    sys_osf_getrusage
 118     common   getsockopt                       sys_getsockopt
@@ -106,18 +143,35 @@
 136     common   mkdir                            sys_mkdir
 137     common   rmdir                            sys_rmdir
 138     common   osf_utimes                       sys_osf_utimes
+139	common	 osf_old_sigreturn		  alpha_ni_syscall                      /* not implemented */
+140	common 	 osf_adjtime			  alpha_ni_syscall                      /* not implemented */
 141     common   getpeername                      sys_getpeername
+142	common	 osf_gethostid			  alpha_ni_syscall                      /* not implemented */
+143	common   osf_sethostid			  alpha_ni_syscall                      /* not implemented */
 144     common   getrlimit                        sys_getrlimit
 145     common   setrlimit                        sys_setrlimit
+146	common 	 osf_old_killpg			  alpha_ni_syscall                      /* not implemented */
 147     common   setsid                           sys_setsid
 148     common   quotactl                         sys_quotactl
+149	common   osf_oldquota			  alpha_ni_syscall                      /* not implemented */
 150     common   getsockname                      sys_getsockname
+153	common 	 osf_pid_block			  alpha_ni_syscall                      /* not implemented */
+154	common   osf_pid_unblock		  alpha_ni_syscall                      /* not implemented */
 156     common   sigaction                        sys_osf_sigaction
+157	common   osf_sigwaitprim		  alpha_ni_syscall                      /* not implemented */
+158	common	 osf_nfssvc			  alpha_ni_syscall                      /* not implemented */
 159     common   osf_getdirentries                sys_osf_getdirentries
 160     common   osf_statfs                       sys_osf_statfs
 161     common   osf_fstatfs                      sys_osf_fstatfs
+163	common   osf_asynch_daemon		  alpha_ni_syscall                      /* not implemented */
+164	common   osf_getfh			  alpha_ni_syscall                      /* not implemented */
 165     common   osf_getdomainname                sys_osf_getdomainname
 166     common   setdomainname                    sys_setdomainname
+169	common	 osf_exportfs			  alpha_ni_syscall                      /* not implemented */
+181	common   osf_alt_plock			  alpha_ni_syscall                      /* not implemented */
+184	common	 osf_getmnt			  alpha_ni_syscall                      /* not implemented */
+187	common	 osf_alt_sigpending		  alpha_ni_syscall                      /* not implemented */
+188	common	 osf_alt_setsid			  alpha_ni_syscall                      /* not implemented */
 199     common   osf_swapon                       sys_swapon
 200     common   msgctl                           sys_msgctl
 201     common   msgget                           sys_msgget
@@ -132,7 +186,16 @@
 210     common   shmctl                           sys_shmctl
 211     common   shmdt                            sys_shmdt
 212     common   shmget                           sys_shmget
+213	common 	 osf_mvalid			  alpha_ni_syscall                      /* not implemented */
+214	common 	 osf_getaddressconf		  alpha_ni_syscall                      /* not implemented */
+215	common	 osf_msleep			  alpha_ni_syscall                      /* not implemented */
+216	common	 osf_mwakeup			  alpha_ni_syscall                      /* not implemented */
 217     common   msync                            sys_msync
+218	common	 osf_signal			  alpha_ni_syscall                      /* not implemented */
+219	common	 osf_utc_gettime		  alpha_ni_syscall                      /* not implemented */
+220	common	 osf_utc_adjtime		  alpha_ni_syscall                      /* not implemented */
+222	common	 osf_security			  alpha_ni_syscall                      /* not implemented */
+223	common 	 osf_kloadcall			  alpha_ni_syscall                      /* not implemented */
 224     common   osf_stat                         sys_osf_stat
 225     common   osf_lstat                        sys_osf_lstat
 226     common   osf_fstat                        sys_osf_fstat
@@ -141,12 +204,31 @@
 233     common   getpgid                          sys_getpgid
 234     common   getsid                           sys_getsid
 235     common   sigaltstack                      sys_sigaltstack
+236	common 	 osf_waitid			  alpha_ni_syscall                      /* not implemented */
+237	common	 osf_priocntlset		  alpha_ni_syscall                      /* not implemented */
+238	common	 osf_sigsendset			  alpha_ni_syscall                      /* not implemented */
+239	common 	 osf_set_speculative		  alpha_ni_syscall                      /* not implemented */
+240	common	 osf_msfs_syscall		  alpha_ni_syscall                      /* not implemented */
 241     common   osf_sysinfo                      sys_osf_sysinfo
+242	common	 osf_uadmin			  alpha_ni_syscall                      /* not implemented */
+243	common	 osf_fuser			  alpha_ni_syscall                      /* not implemented */
 244     common   osf_proplist_syscall             sys_osf_proplist_syscall
+245	common 	 osf_ntp_adjtime		  alpha_ni_syscall                      /* not implemented */
+246	common	 osf_ntp_gettime		  alpha_ni_syscall                      /* not implemented */
+247	common	 osf_pathconf			  alpha_ni_syscall                      /* not implemented */
+248	common	 osf_fpathconf			  alpha_ni_syscall                      /* not implemented */
+250	common	 osf_uswitch			  alpha_ni_syscall                      /* not implemented */
 251     common   osf_usleep_thread                sys_osf_usleep_thread
+252	common	 osf_audcntl			  alpha_ni_syscall                      /* not implemented */
+253	common	 osf_audgen			  alpha_ni_syscall                      /* not implemented */
 254     common   sysfs                            sys_sysfs
+255	common	 osf_subsys_info		  alpha_ni_syscall                      /* not implemented */
 256     common   osf_getsysinfo                   sys_osf_getsysinfo
 257     common   osf_setsysinfo                   sys_osf_setsysinfo
+258	common	 osf_afs_syscall		  alpha_ni_syscall                      /* not implemented */
+259	common	 osf_swapctl			  alpha_ni_syscall                      /* not implemented */
+260	common	 osf_memcntl			  alpha_ni_syscall                      /* not implemented */
+261	common	 osf_fdatasync			  alpha_ni_syscall                      /* not implemented */
 300     common   bdflush                          sys_bdflush
 301     common   sethae                           sys_sethae
 302     common   mount                            sys_mount
@@ -366,3 +448,4 @@
 520     common   preadv2                          sys_preadv2
 521     common   pwritev2                         sys_pwritev2
 522     common   statx                            sys_statx
+		 				  
