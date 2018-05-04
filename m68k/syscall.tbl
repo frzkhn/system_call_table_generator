@@ -23,6 +23,7 @@
 14      common   mknod                    sys_mknod
 15      common   chmod                    sys_chmod
 16      common   chown                    sys_chown16
+17	common	 break			  sys_ni_syscall			/* not implemented */
 18      common   oldstat                  sys_stat
 19      common   lseek                    sys_lseek
 20      common   getpid                   sys_getpid
@@ -36,8 +37,11 @@
 28      common   oldfstat                 sys_fstat
 29      common   pause                    sys_pause
 30      common   utime                    sys_utime
+31	common 	 stty			  sys_ni_syscall                        /* not implemented */
+32	common	 gtty			  sys_ni_syscall                        /* not implemented */
 33      common   access                   sys_access
 34      common   nice                     sys_nice
+35	common	 ftime			  sys_ni_syscall                        /* not implemented */
 36      common   sync                     sys_sync
 37      common   kill                     sys_kill
 38      common   rename                   sys_rename
@@ -46,6 +50,7 @@
 41      common   dup                      sys_dup
 42      common   pipe                     sys_pipe
 43      common   times                    sys_times
+44	common	 prof			  sys_ni_syscall                        /* not implemented */
 45      common   brk                      sys_brk
 46      common   setgid                   sys_setgid16
 47      common   getgid                   sys_getgid16
@@ -54,9 +59,13 @@
 50      common   getegid                  sys_getegid16
 51      common   acct                     sys_acct
 52      common   umount2                  sys_umount
+53	common	 lock			  sys_ni_syscall                        /* not implemented */
 54      common   ioctl                    sys_ioctl
 55      common   fcntl                    sys_fcntl
+56	common	 mpx			  sys_ni_syscall                        /* not implemented */
 57      common   setpgid                  sys_setpgid
+58	common	 ulimit			  sys_ni_syscall                        /* not implemented */
+59	common	 oldolduname		  sys_ni_syscall                        /* not implemented */
 60      common   umask                    sys_umask
 61      common   chroot                   sys_chroot
 62      common   ustat                    sys_ustat
@@ -95,8 +104,10 @@
 95      common   fchown                   sys_fchown16
 96      common   getpriority              sys_getpriority
 97      common   setpriority              sys_setpriority
+98	common	 profil			  sys_ni_syscall                        /* not implemented */
 99      common   statfs                   sys_statfs
 100     common   fstatfs                  sys_fstatfs
+101	common	 ioperm			  sys_ni_syscall                        /* not implemented */
 102     common   socketcall               sys_socketcall
 103     common   syslog                   sys_syslog
 104     common   setitimer                sys_setitimer
@@ -104,7 +115,11 @@
 106     common   stat                     sys_newstat
 107     common   lstat                    sys_newlstat
 108     common   fstat                    sys_newfstat
+109	common	 olduname		  sys_ni_syscall                        /* not implemented */
+110	common	 iopl			  sys_ni_syscall                        /* not implemented */
 111     common   vhangup                  sys_vhangup
+112	common	 idle			  sys_ni_syscall                        /* not implemented */
+113	common	 vm86			  sys_ni_syscall                        /* not implemented */
 114     common   wait4                    sys_wait4
 115     common   swapoff                  sys_swapoff
 116     common   sysinfo                  sys_sysinfo
@@ -128,6 +143,7 @@
 134     common   bdflush                  sys_bdflush
 135     common   sysfs                    sys_sysfs
 136     common   personality              sys_personality
+137	common	 afs_syscall		  sys_ni_syscall                        /* not implemented */
 138     common   setfsuid                 sys_setfsuid16
 139     common   setfsgid                 sys_setfsgid16
 140     common   _llseek                  sys_llseek
@@ -266,6 +282,7 @@
 275     common   mq_notify                sys_mq_notify
 276     common   mq_getsetattr            sys_mq_getsetattr
 277     common   waitid                   sys_waitid
+278	common	 vserver		  sys_ni_syscall                        /* not implemented */
 279     common   add_key                  sys_add_key
 280     common   request_key              sys_request_key
 281     common   keyctl                   sys_keyctl
