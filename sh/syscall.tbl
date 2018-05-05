@@ -23,6 +23,7 @@
 14      common       mknod                    sys_mknod
 15      common       chmod                    sys_chmod
 16      common       lchown                   sys_lchown16
+17      common	     break                    sys_ni_syscall			/* 17 was sys_break */
 18      common       oldstat                  sys_stat
 19      common       lseek                    sys_lseek
 20      common       getpid                   sys_getpid
@@ -36,8 +37,11 @@
 28      common       oldfstat                 sys_fstat
 29      common       pause                    sys_pause
 30      common       utime                    sys_utime
+31      common       stty                     sys_ni_syscall			/* 31 was sys_stty */                  
+32      common       gtty                     sys_ni_syscall			/* 32 was sys_gtty */
 33      common       access                   sys_access
 34      common       nice                     sys_nice
+35      common       ftime                    sys_ni_syscall			/* 35 was sys_ftime */
 36      common       sync                     sys_sync
 37      common       kill                     sys_kill
 38      common       rename                   sys_rename
@@ -46,6 +50,7 @@
 41      common       dup                      sys_dup
 42      common       pipe                     sys_sh_pipe
 43      common       times                    sys_times
+44      common       prof                     sys_ni_syscall			/* 44 was sys_prof */
 45      common       brk                      sys_brk
 46      common       setgid                   sys_setgid16
 47      common       getgid                   sys_getgid16
@@ -54,9 +59,13 @@
 50      common       getegid                  sys_getegid16
 51      common       acct                     sys_acct
 52      common       umount2                  sys_umount
+53      common       lock                     sys_ni_syscall			/* 53 was sys_lock */
 54      common       ioctl                    sys_ioctl
 55      common       fcntl                    sys_fcntl
+56      common       mpx                      sys_ni_syscall			/* 56 was sys_mpx */
 57      common       setpgid                  sys_setpgid
+58      common       ulimit                   sys_ni_syscall			/* 58 was sys_ulimit */
+59      common       oldolduname              sys_ni_syscall			/* 59 was sys_olduname */
 60      common       umask                    sys_umask
 61      common       chroot                   sys_chroot
 62      common       ustat                    sys_ustat
@@ -79,6 +88,7 @@
 79      common       settimeofday             sys_settimeofday
 80      common       getgroups                sys_getgroups16
 81      common       setgroups                sys_setgroups16
+82      common       select                   sys_ni_syscall			/* 82 was sys_oldselect */
 83      common       symlink                  sys_symlink
 84      common       oldlstat                 sys_lstat
 85      common       readlink                 sys_readlink
@@ -94,8 +104,10 @@
 95      common       fchown                   sys_fchown16
 96      common       getpriority              sys_getpriority
 97      common       setpriority              sys_setpriority
+98      common       profil                   sys_ni_syscall			/* 98 was sys_profil */
 99      common       statfs                   sys_statfs
 100     common       fstatfs                  sys_fstatfs
+101     common       ioperm                   sys_ni_syscall			/* 101 was sys_ioperm */
 102     common       socketcall               sys_socketcall
 103     common       syslog                   sys_syslog
 104     common       setitimer                sys_setitimer
@@ -104,7 +116,10 @@
 107     common       lstat                    sys_newlstat
 108     common       fstat                    sys_newfstat
 109     common       olduname                 sys_uname
+110     common       iopl                     sys_ni_syscall			/* 110 was sys_iopl */
 111     common       vhangup                  sys_vhangup
+112     common       idle                     sys_ni_syscall			/* 112 was sys_idle */
+113     common       vm86old                  sys_ni_syscall			/* 113 was sys_vm86old */
 114     common       wait4                    sys_wait4
 115     common       swapoff                  sys_swapoff
 116     common       sysinfo                  sys_sysinfo
@@ -118,14 +133,17 @@
 124     common       adjtimex                 sys_adjtimex
 125     common       mprotect                 sys_mprotect
 126     common       sigprocmask              sys_sigprocmask
+127     common       create_module            sys_ni_syscall			/* 127 was sys_create_module */
 128     common       init_module              sys_init_module
 129     common       delete_module            sys_delete_module
+130     common       get_kernel_syms          sys_ni_syscall			/* 130 was sys_get_kernel_syms */
 131     common       quotactl                 sys_quotactl
 132     common       getpgid                  sys_getpgid
 133     common       fchdir                   sys_fchdir
 134     common       bdflush                  sys_bdflush
 135     common       sysfs                    sys_sysfs
 136     common       personality              sys_personality
+137     common       afs_syscall              sys_ni_syscall			/* 137 was sys_afs_syscall */
 138     common       setfsuid                 sys_setfsuid16
 139     common       setfsgid                 sys_setfsgid16
 140     common       _llseek                  sys_llseek
@@ -154,6 +172,8 @@
 163     common       mremap                   sys_mremap
 164     common       setresuid                sys_setresuid16
 165     common       getresuid                sys_getresuid16
+166     common       vm86                     sys_ni_syscall			/* 166 was sys_vm86 */
+167     common       query_module             sys_ni_syscall			/* 167 was sys_query_module */
 168     common       poll                     sys_poll
 169     common       nfsservctl               sys_ni_syscall
 170     common       setresgid                sys_setresgid16
@@ -174,6 +194,8 @@
 185     common       capset                   sys_capset
 186     common       sigaltstack              sys_sigaltstack
 187     common       sendfile                 sys_sendfile
+188     common       getpmsg                  sys_ni_syscall			/* 188 reserved for sys_getpmsg */
+189     common       putpmsg                  sys_ni_syscall			/* 189 reserved for sys_putpmsg */
 190     common       vfork                    sys_vfork
 191     common       ugetrlimit               sys_getrlimit
 192     common       mmap2                    sys_mmap2
@@ -206,6 +228,8 @@
 219     common       madvise                  sys_madvise
 220     common       getdents64               sys_getdents64
 221     common       fcntl64                  sys_fcntl64
+222	common	     tux		      sys_ni_syscall			/* 222 is reserved for tux */
+223	common 	     unused		      sys_ni_syscall			/* 223 is unused */
 224     common       gettid                   sys_gettid
 225     common       readahead                sys_readahead
 226     common       setxattr                 sys_setxattr
@@ -225,12 +249,15 @@
 240     common       futex                    sys_futex
 241     common       sched_setaffinity        sys_sched_setaffinity
 242     common       sched_getaffinity        sys_sched_getaffinity
+243     common       set_thread_area          sys_ni_syscall			/* 243 is reserved for set_thread_area */
+244     common       get_thread_area          sys_ni_syscall			/* 244 is reserved for get_thread_area */
 245     common       io_setup                 sys_io_setup
 246     common       io_destroy               sys_io_destroy
 247     common       io_getevents             sys_io_getevents
 248     common       io_submit                sys_io_submit
 249     common       io_cancel                sys_io_cancel
 250     common       fadvise64                sys_fadvise64
+251	common	     unused		      sys_ni_syscall			/* 251 is unused */
 252     common       exit_group               sys_exit_group
 253     common       lookup_dcookie           sys_lookup_dcookie
 254     common       epoll_create             sys_epoll_create
@@ -252,6 +279,7 @@
 270     common       tgkill                   sys_tgkill
 271     common       utimes                   sys_utimes
 272     common       fadvise64_64             sys_fadvise64_64_wrapper
+273     common       vserver                  sys_ni_syscall			/* 273 is reserved for vserver */
 274     common       mbind                    sys_mbind
 275     common       get_mempolicy            sys_get_mempolicy
 276     common       set_mempolicy            sys_set_mempolicy
@@ -271,6 +299,7 @@
 290     common       inotify_init             sys_inotify_init
 291     common       inotify_add_watch        sys_inotify_add_watch
 292     common       inotify_rm_watch         sys_inotify_rm_watch
+293	common	     unused		      sys_ni_syscall			/* 293 is unused */
 294     common       migrate_pages            sys_migrate_pages
 295     common       openat                   sys_openat
 296     common       mkdirat                  sys_mkdirat
