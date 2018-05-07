@@ -12,43 +12,61 @@ nxt=0
 fileguard=_UAPI_XTENSA_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-    echo -e "#if !defined(${fileguard}) || defined(__SYSCALL)
-#define ${fileguard}
+if [ ${out: -2} = ".h" ]; then
+    grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+	echo "/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */"
+	echo "#ifndef ${fileguard}"
+	echo "#define ${fileguard}"
+	echo ""
 
-#ifndef __SYSCALL
-# define __SYSCALL(nr,func,nargs)
-#endif
-"
-    while read nr abi name entry ; do
-	if [ -z "$offset" ]; then
-	    if [ "${name}" == "reserved" ] ||
-		[ "${name}" == "available" ]; then
-		echo -e "#define __NR_${prefix}${name}$nr\t$nr"
-		echo -e "__SYSCALL($nr, ${entry}, 0)"
-	    else
+	while read nr abi name entry ; do
+	    if [ -z "$offset" ]; then
 		echo -e "#define __NR_${prefix}${name}\t$nr"
-                echo -e "__SYSCALL($nr, ${entry}, 0)"
+	    else
+		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+            fi
+	    nxt="$nr"
+	    let nxt=nxt+1
+	done
+
+	echo ""
+	echo -e "#define __NR_syscall_count\t$nxt"
+	echo ""
+	echo -e "#define SYS_XTENSA_RESERVED\t0"
+	echo -e "#define SYS_XTENSA_ATOMIC_SET\t1"
+	echo -e "#define SYS_XTENSA_ATOMIC_EXG_ADD\t2"
+	echo -e "#define SYS_XTENSA_ATOMIC_ADD\t3"
+	echo -e "#define SYS_XTENSA_ATOMIC_CMP_SWP\t4"
+	echo -e "#define SYS_XTENSA_COUNT\t5"
+	echo ""
+	echo "#endif /* ${fileguard} */"
+    ) > "$out"
+elif [ ${out: -2} = ".c" ]; then
+    nxt=0
+    grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+	echo "/* SPDX-License-Identifier: GPL-2.0 */"
+	echo ""
+	echo "#include <linux/linkage.h>"
+	echo "#include <linux/syscalls.h>"
+	echo "#include <uapi/asm/unistd.h>"
+	echo ""
+	echo "typedef void (*syscall_t)(void);"
+	echo ""
+	echo "syscall_t sys_call_table[__NR_syscall_count] = {"
+	echo "  [0 ... __NR_syscall_count - 1] = (syscall_t)&sys_ni_syscall," 
+	echo ""
+
+	while read nr abi name entry comment ; do
+	    if [ "$nxt" -ne "$nr" ]; then
+		while [ "$nxt" -lt "$nr" ]; do
+		    echo -e "  [ "$nxt" ] = (syscall_t)sys_ni_syscall,"
+		    let nxt=nxt+1
+		done
 	    fi
-	else
-	    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
-	    echo -e "__SYSCALL($nr, ${entry}, 0)"
-        fi
-	nxt="$nr"
-	let nxt=nxt+1
-    done
-
-    echo -e "
-#define __NR_syscall_count\t$nxt
-
-#define SYS_XTENSA_RESERVED\t0
-#define SYS_XTENSA_ATOMIC_SET\t1
-#define SYS_XTENSA_ATOMIC_EXG_ADD\t2
-#define SYS_XTENSA_ATOMIC_ADD\t3
-#define SYS_XTENSA_ATOMIC_CMP_SWP\t4
-#define SYS_XTENSA_COUNT\t5
-
-#undef __SYSCALL
-"
-    echo "#endif /* ${fileguard} */"
-) > "$out"
+	    echo -e "  [ "$nxt" ] = (syscall_t)${entry},"
+	    nxt="$nr"
+	    let nxt=nxt+1
+	done
+	echo "};"
+    ) > "$out"
+fi
