@@ -14,17 +14,24 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_pfx_$(basetarget))' \
 		   '$(syscall_offset_$(basetarget))'
 
-syscall_abi_unistd := common
 syscall_offset_unistd := __NR_Linux
 $(uapih)/unistd.h: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_syscall_table := common
-$(uapis)/syscall_table.S: $(syscalltbl) $(syscall)
+syscall_abi_systbls_64 := 64
+$(uapis)/systbls_64.S: $(syscalltbl) $(syscall)
+	$(call if_changed,syscall)
+
+syscall_abi_systbls_32 := 32
+$(uapis)/systbls_32.S: $(syscalltbl) $(syscall)
+	$(call if_changed,syscall)
+
+syscall_abi_systbls_x32 := x32
+$(uapis)/systbls_x32.S: $(syscalltbl) $(syscall)
 	$(call if_changed,syscall)
 
 uapihsyscall-y			+= unistd.h
-uapissyscall-y			+= syscall_table.S
+uapissyscall-y			+= systbls_64.S	systbls_32.S systbls_x32.S
 
 targets	+= $(uapihsyscall-y) $(uapissyscall-y)
 
