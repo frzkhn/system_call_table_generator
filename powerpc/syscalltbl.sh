@@ -20,7 +20,7 @@ if [ ${out: -2} = ".h" ]; then
 	echo " * modify it under the terms of the GNU General Public License"
 	echo " * as published by the Free Software Foundation; either version"
 	echo " * 2 of the License, or (at your option) any later version."
-	echo "*/"
+	echo " */"
 	echo "#ifndef ${fileguard}"
         echo "#define ${fileguard}"
 	echo ""
