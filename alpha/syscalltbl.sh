@@ -7,7 +7,7 @@ my_abis=`echo "($3)" | tr ',' '|'`
 prefix="$4"
 offset="$5"
 
-if [ ${out: -2} == ".h" ]; then
+if [ "${out: -2}" = ".h" ]; then
     fileguard=_UAPI_ALPHA_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
@@ -17,7 +17,7 @@ if [ ${out: -2} == ".h" ]; then
 	echo "#define ${fileguard}"
 	echo ""
 
-	while read nr abi name entry comment ; do
+	while read nr abi name entry config comment ; do
 	    if [ -z "$offset" ]; then
 		if [ -z "$comment" ]; then
 		    echo -e "#define __NR_${prefix}${name}\t$nr"
@@ -25,14 +25,18 @@ if [ ${out: -2} == ".h" ]; then
 		    echo -e "#define __NR_${prefix}${name}\t$nr\t$comment"
 		fi
 	    else
-		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		if [ -z "$comment" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		else
+		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)\t$comment"
+		fi
             fi
 	done
 
 	echo ""
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
-elif [ ${out: -2} == ".S" ]; then
+elif [ "${out: -2}" = ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "/* SPDX-License-Identifier: GPL-2.0 */"
@@ -49,24 +53,39 @@ elif [ ${out: -2} == ".S" ]; then
 	echo -e "\t.globl sys_call_table"
 	echo -e "sys_call_table:"
 
-	while read nr abi name entry comment ; do
-	    if [ "$nxt" -ne "$nr" ]; then
-		while [ "$nxt" -lt "$nr" ]; do
-		    if [ $(($nxt % 5)) -eq 0 ]; then
-			echo -e "\t.quad alpha_ni_syscall\t/* $nxt */"
-		    else
-			echo -e "\t.quad alpha_ni_syscall"
-		    fi
-		    let nxt=nxt+1
-		done
-	    fi
-	    if [ $(($nr % 5)) -eq 0 ]; then
-		 echo -e "\t.quad ${entry}\t/* $nr */"
+	while read nr abi name entry config comment ; do
+	    while [ "$nxt" -lt "$nr" ]; do
+		if [ $(($nxt % 5)) -eq 0 ]; then
+		    echo -e "\t.quad alpha_ni_syscall\t/* $nxt */"
+		else
+		    echo -e "\t.quad alpha_ni_syscall"
+		fi
+		let nxt=nxt+1
+	    done
+
+	    if [ -z "$config" -o "$config" = "-" ]; then
+		if [ $(($nr % 5)) -eq 0 ]; then
+		    echo -e "\t.quad ${entry}\t/* $nr */"
+		else
+		    echo -e "\t.quad ${entry}"
+		fi
 	    else
-		echo -e "\t.quad ${entry}"
+		echo -e "#ifdef $config"
+		i_entry="$(cut -d',' -f1 <<< $entry)"
+		e_entry="$(cut -d',' -f2 <<< $entry)"
+		if [ $(($nr % 5)) -eq 0 ]; then
+                    echo -e "\t.quad ${i_entry}\t/* $nr */"
+		    echo "#else"
+		    echo -e "\t.quad ${e_entry}\t/* $nr */"
+                else
+                    echo -e "\t.quad ${i_entry}"
+		    echo "#else"
+		    echo -e "\t.quad ${e_entry}"
+                fi
+		echo "#endif"
 	    fi
 	    nxt="$nr"
-	    let nxt=nxt+1
+            let nxt=nxt+1
 	done
 
 	echo ""
