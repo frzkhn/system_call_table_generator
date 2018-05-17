@@ -54,7 +54,7 @@ elif [ "${out: -2}" = ".S" ]; then
 	echo -e "sys_call_table:"
 
 	while read nr abi name entry config comment ; do
-	    while [ "$nxt" -lt "$nr" ]; do
+	    while [ $nxt -lt $nr ]; do
 		if [ $(($nxt % 5)) -eq 0 ]; then
 		    echo -e "\t.quad alpha_ni_syscall\t/* $nxt */"
 		else
