@@ -84,7 +84,7 @@ elif [ "${out: -2}" = ".S" ]; then
                 fi
 		echo "#endif"
 	    fi
-	    nxt="$nr"
+	    nxt=$nr
             let nxt=nxt+1
 	done
 
