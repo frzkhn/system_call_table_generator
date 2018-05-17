@@ -7,7 +7,7 @@ my_abis=`echo "($3)" | tr ',' '|'`
 prefix="$4"
 offset="$5"
 
-if [ ${out: -2} == ".h" ]; then
+if [ "${out: -2}" = ".h" ]; then
     nxt=0
     fileguard=__ASM_SH_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
@@ -36,17 +36,16 @@ if [ ${out: -2} == ".h" ]; then
 	    else
 		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
             fi
-	    nxt="$nr"
+	    nxt=$nr
 	    let nxt=nxt+1
 	done
 	
 	echo ""
 	echo -e "#define NR_syscalls\t$nxt"
-
 	echo ""
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
-elif [ ${out: -2} == ".S" ]; then
+elif [ "${out: -2}" = ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "/*"
@@ -69,22 +68,20 @@ elif [ ${out: -2} == ".S" ]; then
 	echo "ENTRY(sys_call_table)"
 
 	while read nr abi name entry comment ; do
-	    if [ "$nxt" -ne "$nr" ]; then
-		while [ "$nxt" -lt "$nr" ]; do
-		    if [ $(($nxt % 5)) -eq 0 ]; then
-			echo -e "\t.long sys_ni_syscall\t/* $nxt */"
-		    else
-			echo -e "\t.long sys_ni_syscall"
-		    fi
-		    let nxt=nxt+1
-		done
-	    fi
+	    while [ $nxt -lt $nr ]; do
+		if [ $(($nxt % 5)) -eq 0 ]; then
+		    echo -e "\t.long sys_ni_syscall\t/* $nxt */"
+		else
+		    echo -e "\t.long sys_ni_syscall"
+		fi
+		let nxt=nxt+1
+	    done
 	    if [ $(($nr % 5)) -eq 0 ]; then
 		echo -e "\t.long ${entry}\t/* $nr */"
 	    else
 		echo -e "\t.long ${entry}"
 	    fi
-	    nxt="$nr"
+	    nxt=$nr
 	    let nxt=nxt+1
 	done
     ) > "$out"
