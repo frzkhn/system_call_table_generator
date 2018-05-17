@@ -7,7 +7,7 @@ my_abis=`echo "($3)" | tr ',' '|'`
 prefix="$4"
 offset="$5"
 
-if [ ${out: -2} == ".h" ]; then
+if [ "${out: -2}" = ".h" ]; then
     fileguard=_UAPI_ASM_IA64_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
@@ -27,14 +27,22 @@ if [ ${out: -2} == ".h" ]; then
 	echo -e "#define __BREAK_SYSCALL\t__IA64_BREAK_SYSCALL"
 	echo ""
 
-	while read nr abi name entry ; do
+	while read nr abi name entry comment ; do
 	    if [ -z "$offset" ]; then
-		if [ "$name" != "reserved" ]; then
-		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ "$name" != "-" ]; then
+		    if [ -z "$comment" ]; then
+			echo -e "#define __NR_${prefix}${name}\t$nr"
+		    else
+			echo -e "/* $nr was __NR_${prefix}${name} */"
+		    fi
 		fi
 	    else
-		if [ "$name" != "reserved" ]; then
-		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		if [ "$name" != "-" ]; then
+		    if [ -z "$comment" ]; then
+			echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		    else
+			echo -e "/* $nr was __NR_${prefix}${name} */"
+		    fi
 		fi
             fi
 	done
@@ -42,7 +50,7 @@ if [ ${out: -2} == ".h" ]; then
 	echo ""
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
-elif [ ${out: -2} == ".S" ]; then
+elif [ "${out: -2}" = ".S" ]; then
     nxt=1024
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "/* SPDX-License-Identifier: GPL-2.0 */"
@@ -51,23 +59,21 @@ elif [ ${out: -2} == ".S" ]; then
 	echo -e "\t.globl sys_call_table"
 	echo "sys_call_table:"
 
-	while read nr abi name entry ; do
-	    if [ "$nxt" -ne "$nr" ]; then
-	        while [ "$nxt" -lt "$nr" ]; do
-		    if [ $(($nxt % 5)) -eq 0 ]; then
-			echo -e "\tdata8 sys_ni_syscall\t/* $nxt */"
-		    else
-			echo -e "\tdata8 sys_ni_syscall"
-		    fi
-		    let nxt=nxt+1
-		done
-	    fi
+	while read nr abi name entry comment ; do
+	    while [ $nxt -lt $nr ]; do
+		if [ $(($nxt % 5)) -eq 0 ]; then
+		    echo -e "\tdata8 sys_ni_syscall\t/* $nxt */"
+		else
+		    echo -e "\tdata8 sys_ni_syscall"
+		fi
+		let nxt=nxt+1
+	    done
 	    if [ $(($nxt % 5)) -eq 0 ]; then
 		echo -e "\tdata8 ${entry}\t/* $nxt */"
 	    else
 		echo -e "\tdata8 ${entry}"
 	    fi
-	    nxt="$nr"
+	    nxt=$nr
 	    let nxt=nxt+1
 	done
 
