@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0
 uapih := arch/$(SRCARCH)/include/uapi/asm
-uapis := arch/$(SRCARCH)/kernel
+scall := arch/$(SRCARCH)/kernel
 
 _dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
-	  $(shell [ -d '$(uapis)' ] || mkdir -p '$(uapis)')
+	  $(shell [ -d '$(scall)' ] || mkdir -p '$(scall)')
 
-syscalltbl := $(srctree)/$(src)/syscall.tbl
+systbl := $(srctree)/$(src)/syscall.tbl
 syscall := $(srctree)/$(src)/syscalltbl.sh
 
 quiet_cmd_syscall = SYSCALL  $@
@@ -14,23 +14,23 @@ quiet_cmd_syscall = SYSCALL  $@
 		   '$(syscall_pfx_$(basetarget))' \
 		   '$(syscall_offset_$(basetarget))'
 
-$(uapih)/unistd.h: $(syscalltbl) $(syscall)
+$(uapih)/unistd.h: $(systbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_systbl_32 := 64x32
-$(uapis)/systbl_32.S: $(syscalltbl) $(syscall)
+syscall_abi_systbl_32 := 32
+$(scall)/systbl_32.S: $(systbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_systbl_64 := 32
-$(uapis)/systbl_64.S: $(syscalltbl) $(syscall)
+syscall_abi_systbl_64 := 64x32
+$(scall)/systbl_64.S: $(systbl) $(syscall)
 	$(call if_changed,syscall)
 
 uapihsyscall-y			+= unistd.h
-uapissyscall-y			+= systbl_64.S systbl_32.S
+syscall-y			+= systbl_32.S systbl_64.S
 
-targets	+= $(uapihsyscall-y) $(uapissyscall-y)
+targets	+= $(uapihsyscall-y) $(syscall-y)
 
 PHONY += all
 all: $(addprefix $(uapih)/,$(uapihsyscall-y))
-all: $(addprefix $(uapis)/,$(uapissyscall-y))
+all: $(addprefix $(scall)/,$(syscall-y))
 	@:
