@@ -3,11 +3,11 @@
 
 in="$1"
 out="$2"
-my_abis=`echo "($3)" | tr ',' '|'`
+abi="$3"
 prefix="$4"
 offset="$5"
 
-if [ ${out: -2} = ".h" ]; then
+if [ "${out: -2}" = ".h" ]; then
     fileguard=_UAPI_ASM_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
@@ -29,7 +29,7 @@ if [ ${out: -2} = ".h" ]; then
         echo ""
 	echo "#include <asm/sgidefs.h>"
 	echo ""
-	if [ "$3" = "32-o32" ]; then
+	if [ "$abi" = "32_o32" ]; then
 	    echo "#if _MIPS_SIM == _MIPS_SIM_ABI32"
 	    echo ""
 	    echo "/*"
@@ -40,7 +40,11 @@ if [ ${out: -2} = ".h" ]; then
 	
 	while read nr name entry compat comment ; do
 	    if [ -z "$offset" ]; then
-		echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ -z "$comment" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		else
+		    echo -e "/* #define __NR_${prefix}${name}\t$nr */"
+		fi
 	    else
 		if [ -z "$comment" ]; then
 		    echo -e "#define __NR_${prefix}${name}\t($offset + $(($nr-4000)))"
@@ -50,7 +54,7 @@ if [ ${out: -2} = ".h" ]; then
 	    fi
 	done
 	
-	if [ "$3" = "32-o32" ]; then
+	if [ "$abi" = "32_o32" ]; then
 	    echo ""
 	    echo "/*"
 	    echo " * Offset of the last Linux o32 flavoured syscall"
@@ -62,34 +66,34 @@ if [ ${out: -2} = ".h" ]; then
 	echo ""
 	echo "#endif /* ${fileguard} */"
     ) > "$out"
-elif [ ${out: -2} = ".S" ]; then
+elif [ "${out: -2}" = ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "/* SPDX-License-Identifier: GPL-2.0 */"
 	echo ""
-	if [ "$3" = "32-o32" ]; then
+	if [ "$abi" = "32_o32" ]; then
 	    nxt=4000
 	    echo -e "\t.align\t2"
 	    echo -e "\t.type\tsys_call_table, @object"
 	    echo "EXPORT(sys_call_table)"
-	elif [ "$3" = "64-o32" ]; then
+	elif [ "$abi" = "64_o32" ]; then
 	    nxt=4000
             echo -e "\t.align\t3"
             echo -e "\t.type\tsys32_call_table,@object"
             echo "EXPORT(sys32_call_table)"
-	elif [ "$3" = "64-64" ]; then
+	elif [ "$abi" = "64_64" ]; then
 	    nxt=5000
 	    echo -e "\t.align\t3"
             echo -e "\t.type\tsys_call_table, @object"
             echo "EXPORT(sys_call_table)"
-	elif [ "$3" = "64-n32" ]; then
+	elif [ "$abi" = "64_n32" ]; then
 	    nxt=6000
             echo -e "\t.type\tsysn32_call_table, @object"
             echo "EXPORT(sysn32_call_table)"
 	fi
 
 	while read nr name entry compat comment ; do
-	    while [ "$nxt" -lt "$nr" ]; do
+	    while [ $nxt -lt $nr ]; do
 		if [ $(($nxt % 5)) -eq 0 ]; then
 		    echo -e "\tPTR\tsys_ni_syscall\t/* $nxt */"
 		else
@@ -98,7 +102,7 @@ elif [ ${out: -2} = ".S" ]; then
 		let nxt=nxt+1
 	    done
 
-	    if [ "$3" = "64-o32" ]; then
+	    if [ "$abi" = "64_o32" ]; then
 		if [ $(($nr % 5)) -eq 0 ]; then
 		    echo -e "\tPTR\t${compat}\t/* $nxt */"
                 else
@@ -111,15 +115,15 @@ elif [ ${out: -2} = ".S" ]; then
 		    echo -e "\tPTR\t${entry}"
 		fi
 	    fi
-	    nxt="$nr"
+	    nxt=$nr
 	    let nxt=nxt+1
 	done
 
-	if [ "$3" = "64-o32" ]; then
+	if [ "$abi" = "64_o32" ]; then
 	    echo -e "\t.size\tsys32_call_table,.-sys32_call_table"
-	elif [ "$3" = "64-64" ]; then
+	elif [ "$abi" = "64_64" ]; then
 	    echo -e "\t.size\tsys_call_table,.-sys_call_table"
-	elif [ "$3" = "64-n32" ]; then
+	elif [ "$abi" = "64_n32" ]; then
 	    echo -e "\t.size\tsysn32_call_table,.-sysn32_call_table"
 	fi
     ) > "$out"

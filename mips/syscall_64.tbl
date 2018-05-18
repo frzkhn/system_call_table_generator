@@ -2,7 +2,7 @@
 # Linux system call numbers and entry vectors
 #
 # The format is:
-# <number> <name> <entry point>
+# <number> <name> <entry point> <comment>
 #
 # The abi is always common for this file.
 #
