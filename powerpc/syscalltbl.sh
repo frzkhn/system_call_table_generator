@@ -25,9 +25,29 @@ if [ "${out: -2}" = ".h" ]; then
         echo "#define ${fileguard}"
 	echo ""
 
-	while read nr name entry_64x32 entry_32 ; do
+	while read nr name entry_64x32 entry_32 config ; do
 	    if [ -z "$offset" ]; then
-		echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ -z "$config" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		else
+		    e_config="$(cut -d',' -f1 <<< $config)"
+                    n_config="$(cut -d',' -f2 <<< $config)"
+		    if [ "$e_config" != "-" ]; then
+			echo "#ifdef $e_config"
+		    elif [ "$n_config" != "-" ]; then
+			echo "#ifndef $n_config"
+		    fi
+		    i_name="$(cut -d',' -f1 <<< $name)"
+		    e_name="$(cut -d',' -f2 <<< $name)"
+		    if [ "$i_name" != "-" ]; then
+			echo -e "#define __NR_${prefix}${i_name}\t$nr"
+		    fi
+		    if [ "$e_name" != "-" ]; then
+			echo "#else"
+			echo -e "#define __NR_${prefix}${e_name}\t$nr"
+		    fi
+		    echo "#endif"
+		fi
 	    else
 		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
 	    fi
@@ -48,7 +68,7 @@ elif [ "${out: -2}" = ".S" ]; then
 	echo -e "\t.globl sys_call_table"
 	echo "sys_call_table:"
 	
-	while read nr name entry_64x32 entry_32 ; do
+	while read nr name entry_64x32 entry_32 config ; do
 	    while [ $nxt -lt $nr ]; do
 		if [ "$abi" = "64x32" ]; then
 		    echo -e "\t.8byte sys_ni_syscall,sys_ni_syscall"
