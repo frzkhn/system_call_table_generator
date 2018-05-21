@@ -2,248 +2,248 @@
 # Linux system call numbers and entry vectors
 #
 # The format is:
-# <number> <name> <entry_point_64> <entry_point_32> <compat_entry_point>
+# <number> <name> <entry_point_64> <entry_point_32> <compat_entry_point> <comment>
 #
 # The abi is always common for this file.
 #
-0       restart_syscall         sys_restart_syscall             sys_restart_syscall             sys_restart_syscall
-1       exit                    sparc_exit                      sys_exit                        sparc_exit
-2       fork                    sys_fork                        sys_fork                        sys_fork
-3       read                    sys_read                        sys_read                        sys_read
-4       write                   sys_write                       sys_write                       sys_write
-5       open                    sys_open                        sys_open                        compat_sys_open
-6       close                   sys_close                       sys_close                       sys_close
-7       wait4                   sys_wait4                       sys_wait4                       compat_sys_wait4
-8       creat                   sys_creat                       sys_creat                       sys_creat
-9       link                    sys_link                        sys_link                        sys_link
-10      unlink                  sys_unlink                      sys_unlink                      sys_unlink
-11      execv                   sys_nis_syscall                 sunos_execv                     sunos_execv
-12      chdir                   sys_chdir                       sys_chdir                       sys_chdir
-13      chown                   sys_chown                       sys_chown16                     sys_chown16
-14      mknod                   sys_mknod                       sys_mknod                       sys_mknod
-15      chmod                   sys_chmod                       sys_chmod                       sys_chmod
-16      lchown                  sys_lchown                      sys_lchown16                    sys_lchown16
-17      brk                     sys_brk                         sys_brk                         sys_brk
-18      perfctr                 sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall
-19      lseek                   sys_lseek                       sys_lseek                       compat_sys_lseek
-20      getpid                  sys_getpid                      sys_getpid                      sys_getpid
-21      capget                  sys_capget                      sys_capget                      sys_capget
-22      capset                  sys_capset                      sys_capset                      sys_capset
-23      setuid                  sys_setuid                      sys_setuid16                    sys_setuid16
-24      getuid                  sys_getuid                      sys_getuid16                    sys_getuid16
-25      vmsplice                sys_vmsplice                    sys_vmsplice                    compat_sys_vmsplice
-26      ptrace                  sys_ptrace                      sys_ptrace                      compat_sys_ptrace
-27      alarm                   sys_alarm                       sys_alarm                       sys_alarm
-28      sigaltstack             sys_sigaltstack                 sys_sigaltstack                 compat_sys_sigaltstack
-29      pause                   sys_nis_syscall                 sys_pause                       sys_pause
-30      utime                   sys_utime                       sys_utime                       compat_sys_utime
-31      lchown32                sys_nis_syscall                 sys_lchown                      sys_lchown
-32      fchown32                sys_nis_syscall                 sys_fchown                      sys_fchown
-33      access                  sys_access                      sys_access                      sys_access
-34      nice                    sys_nice                        sys_nice                        sys_nice
-35      chown32                 sys_nis_syscall                 sys_chown                       sys_chown
-36      sync                    sys_sync                        sys_sync                        sys_sync
-37      kill                    sys_kill                        sys_kill                        sys_kill
-38      stat                    sys_newstat                     sys_newstat                     compat_sys_newstat
-39      sendfile                sys_sendfile64                  sys_sendfile                    compat_sys_sendfile
-40      lstat                   sys_newlstat                    sys_newlstat                    compat_sys_newlstat
-41      dup                     sys_dup                         sys_dup                         sys_dup
-42      pipe                    sys_sparc_pipe                  sys_sparc_pipe                  sys_sparc_pipe
-43      times                   sys_times                       sys_times                       compat_sys_times
-44      getuid32                sys_nis_syscall                 sys_getuid                      sys_getuid
-45      umount2                 sys_umount                      sys_umount                      sys_umount
-46      setgid                  sys_setgid                      sys_setgid16                    sys_setgid16
-47      getgid                  sys_getgid                      sys_getgid16                    sys_getgid16
-48      signal                  sys_signal                      sys_signal                      sys_signal
-49      geteuid                 sys_geteuid                     sys_geteuid16                   sys_geteuid16
-50      getegid                 sys_getegid                     sys_getegid16                   sys_getegid16
-51      acct                    sys_acct                        sys_acct                        sys_acct
-52      memory_ordering         sys_memory_ordering             sys_nis_syscall                 sys_nis_syscall
-53      getgid32                sys_nis_syscall                 sys_getgid                      sys_getgid
-54      ioctl                   sys_ioctl                       sys_ioctl                       compat_sys_ioctl
-55      reboot                  sys_reboot                      sys_reboot                      sys_reboot
-56      mmap2                   sys_nis_syscall                 sys_mmap2                       sys32_mmap2
-57      symlink                 sys_symlink                     sys_symlink                     sys_symlink
-58      readlink                sys_readlink                    sys_readlink                    sys_readlink
-59      execve                  sys64_execve                    sys_execve                      sys32_execve
-60      umask                   sys_umask                       sys_umask                       sys_umask
-61      chroot                  sys_chroot                      sys_chroot                      sys_chroot
-62      fstat                   sys_newfstat                    sys_newfstat                    compat_sys_newfstat
-63	fstat64			sys_fstat64			sys_fstat64			compat_sys_fstat64
-64      getpagesize             sys_getpagesize                 sys_getpagesize                 sys_getpagesize
-65      msync                   sys_msync                       sys_msync                       sys_msync
-66      vfork                   sys_vfork                       sys_vfork                       sys_vfork
-67      pread64                 sys_pread64                     sys_pread64                     sys32_pread64
-68      pwrite64                sys_pwrite64                    sys_pwrite64                    sys32_pwrite64
-69      geteuid32               sys_nis_syscall                 sys_geteuid                     sys_geteuid
-70      getegid32               sys_nis_syscall                 sys_getegid                     sys_getegid
-71      mmap                    sys_mmap                        sys_mmap                        sys_mmap
-72      setreuid32              sys_nis_syscall                 sys_setreuid                    sys_setreuid
-73      munmap                  sys_64_munmap                   sys_munmap                      sys_munmap
-74      mprotect                sys_mprotect                    sys_mprotect                    sys_mprotect
-75      madvise                 sys_madvise                     sys_madvise                     sys_madvise
-76      vhangup                 sys_vhangup                     sys_vhangup                     sys_vhangup
-77      truncate64              sys_nis_syscall                 sys_truncate64                  sys32_truncate64
-78      mincore                 sys_mincore                     sys_mincore                     sys_mincore
-79      getgroups               sys_getgroups                   sys_getgroups16                 sys_getgroups16
-80      setgroups               sys_setgroups                   sys_setgroups16                 sys_setgroups16
-81      getpgrp                 sys_getpgrp                     sys_getpgrp                     sys_getpgrp
-82      setgroups32             sys_nis_syscall                 sys_setgroups                   sys_setgroups
-83      setitimer               sys_setitimer                   sys_setitimer                   compat_sys_setitimer
-84      ftruncate64             sys_nis_syscall                 sys_ftruncate64                 sys32_ftruncate64
-85      swapon                  sys_swapon                      sys_swapon                      sys_swapon
-86      getitimer               sys_getitimer                   sys_getitimer                   compat_sys_getitimer
-87      setuid32                sys_nis_syscall                 sys_setuid                      sys_setuid
-88      sethostname             sys_sethostname                 sys_sethostname                 sys_sethostname
-89      setgid32                sys_nis_syscall                 sys_setgid                      sys_setgid
-90      dup2                    sys_dup2                        sys_dup2                        sys_dup2
-91      setfsuid32              sys_nis_syscall                 sys_setfsuid                    sys_setfsuid
-92      fcntl                   sys_fcntl                       sys_fcntl                       compat_sys_fcntl
-93      select                  sys_select                      sys_select                      sys32_select
-94      setfsgid32              sys_nis_syscall                 sys_setfsgid                    sys_setfsgid
-95      fsync                   sys_fsync                       sys_fsync                       sys_fsync
-96      setpriority             sys_setpriority                 sys_setpriority                 sys_setpriority
-97      socket                  sys_socket                      sys_socket                      sys_socket
-98      connect                 sys_connect                     sys_connect                     sys_connect
-99      accept                  sys_accept                      sys_accept                      sys_accept
-100     getpriority             sys_getpriority                 sys_getpriority                 sys_getpriority
-101     rt_sigreturn            sys_rt_sigreturn                sys_rt_sigreturn                sys32_rt_sigreturn
-102     rt_sigaction            sys_rt_sigaction                sys_rt_sigaction                compat_sys_rt_sigaction
-103     rt_sigprocmask          sys_rt_sigprocmask              sys_rt_sigprocmask              compat_sys_rt_sigprocmask
-104     rt_sigpending           sys_rt_sigpending               sys_rt_sigpending               compat_sys_rt_sigpending
-105     rt_sigtimedwait         sys_rt_sigtimedwait             sys_rt_sigtimedwait             compat_sys_rt_sigtimedwait
-106     rt_sigqueueinfo         sys_rt_sigqueueinfo             sys_rt_sigqueueinfo             compat_sys_rt_sigqueueinfo
-107     rt_sigsuspend           sys_rt_sigsuspend               sys_rt_sigsuspend               compat_sys_rt_sigsuspend
-108     setresuid32             sys_setresuid                   sys_setresuid                   sys_setresuid
-109     getresuid32             sys_getresuid                   sys_getresuid                   sys_getresuid
-110     setresgid32             sys_setresgid                   sys_setresgid                   sys_setresgid
-111     getresgid32             sys_getresgid                   sys_getresgid                   sys_getresgid
-112     setregid32              sys_nis_syscall                 sys_setregid                    sys_setregid
-113     recvmsg                 sys_recvmsg                     sys_recvmsg                     compat_sys_recvmsg
-114     sendmsg                 sys_sendmsg                     sys_sendmsg                     compat_sys_sendmsg
-115     getgroups32             sys_nis_syscall                 sys_getgroups                   sys_getgroups
-116     gettimeofday            sys_gettimeofday                sys_gettimeofday                compat_sys_gettimeofday
-117     getrusage               sys_getrusage                   sys_getrusage                   compat_sys_getrusage
-118     getsockopt              sys_getsockopt                  sys_getsockopt                  compat_sys_getsockopt
-119     getcwd                  sys_getcwd                      sys_getcwd                      sys_getcwd
-120     readv                   sys_readv                       sys_readv                       compat_sys_readv
-121     writev                  sys_writev                      sys_writev                      compat_sys_writev
-122     settimeofday            sys_settimeofday                sys_settimeofday                compat_sys_settimeofday
-123     fchown                  sys_fchown                      sys_fchown16                    sys_fchown16
-124     fchmod                  sys_fchmod                      sys_fchmod                      sys_fchmod
-125     recvfrom                sys_recvfrom                    sys_recvfrom                    sys_recvfrom
-126     setreuid                sys_setreuid                    sys_setreuid16                  sys_setreuid16
-127     setregid                sys_setregid                    sys_setregid16                  sys_setregid16
-128     rename                  sys_rename                      sys_rename                      sys_rename
-129     truncate                sys_truncate                    sys_truncate                    compat_sys_truncate
-130     ftruncate               sys_ftruncate                   sys_ftruncate                   compat_sys_ftruncate
-131     flock                   sys_flock                       sys_flock                       sys_flock
-132     lstat64                 sys_lstat64                     sys_lstat64                     compat_sys_lstat64
-133     sendto                  sys_sendto                      sys_sendto                      sys_sendto
-134     shutdown                sys_shutdown                    sys_shutdown                    sys_shutdown
-135     socketpair              sys_socketpair                  sys_socketpair                  sys_socketpair
-136     mkdir                   sys_mkdir                       sys_mkdir                       sys_mkdir
-137     rmdir                   sys_rmdir                       sys_rmdir                       sys_rmdir
-138     utimes                  sys_utimes                      sys_utimes                      compat_sys_utimes
-139     stat64                  sys_stat64                      sys_stat64                      compat_sys_stat64
-140     sendfile64              sys_sendfile64                  sys_sendfile64                  sys_sendfile64
-141     getpeername             sys_getpeername                 sys_getpeername                 sys_nis_syscall
-142     futex                   sys_futex                       sys_futex                       sys32_futex
-143     gettid                  sys_gettid                      sys_gettid                      sys_gettid
-144     getrlimit               sys_getrlimit                   sys_getrlimit                   compat_sys_getrlimit
-145     setrlimit               sys_setrlimit                   sys_setrlimit                   compat_sys_setrlimit
-146     pivot_root              sys_pivot_root                  sys_pivot_root                  sys_pivot_root
-147     prctl                   sys_prctl                       sys_prctl                       sys_prctl
-148     pciconfig_read          sys_pciconfig_read              sys_pciconfig_read              sys_pciconfig_read
-149     pciconfig_write         sys_pciconfig_write             sys_pciconfig_write             sys_pciconfig_write
-150     getsockname             sys_getsockname                 sys_getsockname                 sys_nis_syscall
-151     inotify_init            sys_inotify_init                sys_inotify_init                sys_inotify_init
-152     inotify_add_watch       sys_inotify_add_watch           sys_inotify_add_watch           sys_inotify_add_watch
-153     poll                    sys_poll                        sys_poll                        sys_poll
-154     getdents64              sys_getdents64                  sys_getdents64                  sys_getdents64
-155     fcntl64                 sys_nis_syscall                 sys_fcntl64                     compat_sys_fcntl64
-156     inotify_rm_watch        sys_inotify_rm_watch            sys_inotify_rm_watch            sys_inotify_rm_watch
-157     statfs                  sys_statfs                      sys_statfs                      compat_sys_statfs
-158     fstatfs                 sys_fstatfs                     sys_fstatfs                     compat_sys_fstatfs
-159     umount                  sys_oldumount                   sys_oldumount                   sys_oldumount
-160     sched_set_affinity      sys_sched_setaffinity           sys_sched_setaffinity           compat_sys_sched_setaffinity
-161     sched_get_affinity      sys_sched_getaffinity           sys_sched_getaffinity           compat_sys_sched_getaffinity
-162     getdomainname           sys_getdomainname               sys_getdomainname               sys_getdomainname
-163     setdomainname           sys_setdomainname               sys_setdomainname               sys_setdomainname
-164     utrap_install           sys_utrap_install               sys_nis_syscall                 sys_nis_syscall
-165     quotactl                sys_quotactl                    sys_quotactl                    sys_quotactl
-166     set_tid_address         sys_set_tid_address             sys_set_tid_address             sys_set_tid_address
-167     mount                   sys_mount                       sys_mount                       compat_sys_mount
-168     ustat                   sys_ustat                       sys_ustat                       compat_sys_ustat
-169     setxattr                sys_setxattr                    sys_setxattr                    sys_setxattr
-170     lsetxattr               sys_lsetxattr                   sys_lsetxattr                   sys_lsetxattr
-171     fsetxattr               sys_fsetxattr                   sys_fsetxattr                   sys_fsetxattr
-172     getxattr                sys_getxattr                    sys_getxattr                    sys_getxattr
-173     lgetxattr               sys_lgetxattr                   sys_lgetxattr                   sys_lgetxattr
-174     getdents                sys_getdents                    sys_getdents                    compat_sys_getdents
-175     setsid                  sys_setsid                      sys_setsid                      sys_setsid
-176     fchdir                  sys_fchdir                      sys_fchdir                      sys_fchdir
-177     fgetxattr               sys_fgetxattr                   sys_fgetxattr                   sys_fgetxattr
-178     listxattr               sys_listxattr                   sys_listxattr                   sys_listxattr
-179     llistxattr              sys_llistxattr                  sys_llistxattr                  sys_llistxattr
-180     flistxattr              sys_flistxattr                  sys_flistxattr                  sys_flistxattr
-181     removexattr             sys_removexattr                 sys_removexattr                 sys_removexattr
-182     lremovexattr            sys_lremovexattr                sys_lremovexattr                sys_lremovexattr
-183     sigpending              sys_nis_syscall                 sys_sigpending                  compat_sys_sigpending
-184     query_module            sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall
-185     setpgid                 sys_setpgid                     sys_setpgid                     sys_setpgid
-186     fremovexattr            sys_fremovexattr                sys_fremovexattr                sys_fremovexattr
-187     tkill                   sys_tkill                       sys_tkill                       sys_tkill
-188     exit_group              sparc_exit_group                sys_exit_group                  sparc_exit_group
-189     uname                   sys_newuname                    sys_newuname                    sys_newuname
-190     init_module             sys_init_module                 sys_init_module                 sys_init_module
-191     personality             sys_sparc64_personality         sys_personality                 sys_sparc64_personality
-192     remap_file_pages        sys_remap_file_pages            sparc_remap_file_pages          sys_remap_file_pages
-193     epoll_create            sys_epoll_create                sys_epoll_create                sys_epoll_create
-194     epoll_ctl               sys_epoll_ctl                   sys_epoll_ctl                   sys_epoll_ctl
-195     epoll_wait              sys_epoll_wait                  sys_epoll_wait                  sys_epoll_wait
-196     ioprio_set              sys_ioprio_set                  sys_ioprio_set                  sys_ioprio_set
-197     getppid                 sys_getppid                     sys_getppid                     sys_getppid
-198     sigaction               sys_nis_syscall                 sys_sparc_sigaction             compat_sys_sparc_sigaction
-199     sgetmask                sys_sgetmask                    sys_sgetmask                    sys_sgetmask
-200     ssetmask                sys_ssetmask                    sys_ssetmask                    sys_ssetmask
-201     sigsuspend              sys_nis_syscall                 sys_sigsuspend                  sys_sigsuspend
-202     oldlstat                sys_newlstat                    sys_newlstat                    compat_sys_newlstat
-203     uselib                  sys_uselib                      sys_uselib                      sys_uselib
-204     readdir                 sys_nis_syscall                 sys_old_readdir                 compat_sys_old_readdir
-205     readahead               sys_readahead                   sys_readahead                   sys32_readahead
-206     socketcall              sys_socketcall                  sys_socketcall                  sys32_socketcall
-207     syslog                  sys_syslog                      sys_syslog                      sys_syslog
-208     lookup_dcookie          sys_lookup_dcookie              sys_lookup_dcookie              compat_sys_lookup_dcookie
-209     fadvise64               sys_fadvise64                   sys_fadvise64                   sys32_fadvise64
-210     fadvise64_64            sys_fadvise64_64                sys_fadvise64_64                sys32_fadvise64_64
-211     tgkill                  sys_tgkill                      sys_tgkill                      sys_tgkill
-212     waitpid                 sys_waitpid                     sys_waitpid                     sys_waitpid
-213     swapoff                 sys_swapoff                     sys_swapoff                     sys_swapoff
-214     sysinfo                 sys_sysinfo                     sys_sysinfo                     compat_sys_sysinfo
-215     ipc                     sys_sparc_ipc                   sys_ipc                         compat_sys_ipc
-216     sigreturn               sys_nis_syscall                 sys_sigreturn                   sys32_sigreturn
-217     clone                   sys_clone                       sys_clone                       sys_clone
-218     ioprio_get              sys_ioprio_get                  sys_ioprio_get                  sys_ioprio_get
-219     adjtimex                sys_adjtimex                    sys_adjtimex                    compat_sys_adjtimex
-220     sigprocmask             sys_nis_syscall                 sys_sigprocmask                 compat_sys_sigprocmask
-221     create_module           sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall
-222     delete_module           sys_delete_module               sys_delete_module               sys_delete_module
-223     get_kernel_syms         sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall
-224     getpgid                 sys_getpgid                     sys_getpgid                     sys_getpgid
-225     bdflush                 sys_bdflush                     sys_bdflush                     sys_bdflush
-226     sysfs                   sys_sysfs                       sys_sysfs                       sys_sysfs
-227     afs_syscall             sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall
-228     setfsuid                sys_setfsuid                    sys_setfsuid16                  sys_setfsuid16
-229     setfsgid                sys_setfsgid                    sys_setfsgid16                  sys_setfsgid16
-230     _newselect              sys_select                      sys_select                      sys32_select
-231     time                    sys_nis_syscall                 sys_time                        compat_sys_time
-232     splice                  sys_splice                      sys_splice                      sys_splice
-233     stime                   sys_stime                       sys_stime                       compat_sys_stime
-234     statfs64                sys_statfs64                    sys_statfs64                    compat_sys_statfs64
-235     fstatfs64               sys_fstatfs64                   sys_fstatfs64                   compat_sys_fstatfs64
-236     _llseek                 sys_llseek                      sys_llseek                      sys_llseek
-237     mlock                   sys_mlock                       sys_mlock                       sys_mlock
+0       restart_syscall         sys_restart_syscall             sys_restart_syscall             sys_restart_syscall		       -                                 /* Linux Specific */
+1       exit                    sparc_exit                      sys_exit                        sparc_exit			       -                                 /* Common */
+2       fork                    sys_fork                        sys_fork                        sys_fork			       -                                 /* Common */
+3       read                    sys_read                        sys_read                        sys_read			       -                                 /* Common */
+4       write                   sys_write                       sys_write                       sys_write			       -                                 /* Common */
+5       open                    sys_open                        sys_open                        compat_sys_open			       -                                 /* Common */
+6       close                   sys_close                       sys_close                       sys_close			       -                                 /* Common */
+7       wait4                   sys_wait4                       sys_wait4                       compat_sys_wait4		       -                                 /* Common */
+8       creat                   sys_creat                       sys_creat                       sys_creat			       -                                 /* Common */
+9       link                    sys_link                        sys_link                        sys_link			       -                                 /* Common */
+10      unlink                  sys_unlink                      sys_unlink                      sys_unlink			       -                                 /* Common */
+11      execv                   sys_nis_syscall                 sunos_execv                     sunos_execv			       -                                 /* SunOS Specific */
+12      chdir                   sys_chdir                       sys_chdir                       sys_chdir			       -                                 /* Common */	   
+13      chown                   sys_chown                       sys_chown16                     sys_chown16			       -                                 /* Common */
+14      mknod                   sys_mknod                       sys_mknod                       sys_mknod			       -                                 /* Common */
+15      chmod                   sys_chmod                       sys_chmod                       sys_chmod			       -                                 /* Common */
+16      lchown                  sys_lchown                      sys_lchown16                    sys_lchown16			       -                                 /* Common */
+17      brk                     sys_brk                         sys_brk                         sys_brk				       -                                 /* Common */
+18      perfctr                 sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall			       -                                 /* Performance counter operations */
+19      lseek                   sys_lseek                       sys_lseek                       compat_sys_lseek		       -                                 /* Common */
+20      getpid                  sys_getpid                      sys_getpid                      sys_getpid			       -                                 /* Common */
+21      capget                  sys_capget                      sys_capget                      sys_capget			       -                                 /* Linux Specific */
+22      capset                  sys_capset                      sys_capset                      sys_capset			       -                                 /* Linux Specific */
+23      setuid                  sys_setuid                      sys_setuid16                    sys_setuid16			       -                                 /* Implemented via setreuid in SunOS */
+24      getuid                  sys_getuid                      sys_getuid16                    sys_getuid16			       -                                 /* Common */
+25      vmsplice                sys_vmsplice                    sys_vmsplice                    compat_sys_vmsplice		       -                                 /* ENOSYS under SunOS */
+26      ptrace                  sys_ptrace                      sys_ptrace                      compat_sys_ptrace		       -                                 /* Common */
+27      alarm                   sys_alarm                       sys_alarm                       sys_alarm			       -                                 /* Implemented via setitimer in SunOS */
+28      sigaltstack             sys_sigaltstack                 sys_sigaltstack                 compat_sys_sigaltstack		       -                                 /* Common */
+29      pause                   sys_nis_syscall                 sys_pause                       sys_pause			       -                                 /* Is sigblock(0)->sigpause() in SunOS */
+30      utime                   sys_utime                       sys_utime                       compat_sys_utime		       -                                 /* Implemented via utimes() under SunOS */
+31      lchown32,-              sys_nis_syscall                 sys_lchown                      sys_lchown		               __32bit_syscall_numbers__,-	 /* Linux sparc32 specific */
+32      fchown32,-              sys_nis_syscall                 sys_fchown                      sys_fchown			       __32bit_syscall_numbers__,-	 /* Linux sparc32 specific */
+33      access                  sys_access                      sys_access                      sys_access			       -                                 /* Common */
+34      nice                    sys_nice                        sys_nice                        sys_nice			       -                                 /* Implemented via get/setpriority() in SunOS */
+35      chown32,-               sys_nis_syscall                 sys_chown                       sys_chown		               __32bit_syscall_numbers__,-	 /* Linux sparc32 specific */
+36      sync                    sys_sync                        sys_sync                        sys_sync			       -                                 /* Common */
+37      kill                    sys_kill                        sys_kill                        sys_kill			       -                                 /* Common */
+38      stat                    sys_newstat                     sys_newstat                     compat_sys_newstat		       -                                 /* Common */
+39      sendfile                sys_sendfile64                  sys_sendfile                    compat_sys_sendfile		       -                                 /* Linux Specific */
+40      lstat                   sys_newlstat                    sys_newlstat                    compat_sys_newlstat		       -                                 /* Common */
+41      dup                     sys_dup                         sys_dup                         sys_dup				       -                                 /* Common */
+42      pipe                    sys_sparc_pipe                  sys_sparc_pipe                  sys_sparc_pipe			       -                                 /* Common */
+43      times                   sys_times                       sys_times                       compat_sys_times		       -                                 /* Implemented via setregid() in SunOS */
+44      getuid32,-              sys_nis_syscall                 sys_getuid                      sys_getuid		               __32bit_syscall_numbers__,-	 /* Linux sparc32 specific */
+45      umount2                 sys_umount                      sys_umount                      sys_umount			       -                                 /* Linux Specific */
+46      setgid                  sys_setgid                      sys_setgid16                    sys_setgid16			       -                                 /* Implemented via setregid() in SunOS */
+47      getgid                  sys_getgid                      sys_getgid16                    sys_getgid16			       -                                 /* Common */
+48      signal                  sys_signal                      sys_signal                      sys_signal			       -                                 /* Implemented via sigvec() in SunOS */
+49      geteuid                 sys_geteuid                     sys_geteuid16                   sys_geteuid16			       -                                 /* SunOS calls getuid() */
+50      getegid                 sys_getegid                     sys_getegid16                   sys_getegid16			       -                                 /* SunOS calls getuid() */
+51      acct                    sys_acct                        sys_acct                        sys_acct			       -                                 /* Common */
+52      memory_ordering,-       sys_memory_ordering             sys_nis_syscall                 sys_nis_syscall	                       -,__32bit_syscall_numbers__	 /* Linux sparc32 specific */
+53      getgid32,-              sys_nis_syscall                 sys_getgid                      sys_getgid			       __32bit_syscall_numbers__,-	 /* Linux sparc32 specific */
+54      ioctl                   sys_ioctl                       sys_ioctl                       compat_sys_ioctl		       -                                 /* Common */
+55      reboot                  sys_reboot                      sys_reboot                      sys_reboot			       -                                 /* Common */
+56      mmap2,-                 sys_nis_syscall                 sys_mmap2                       sys32_mmap2		               __32bit_syscall_numbers__,-	 /* Linux sparc32 Specific */
+57      symlink                 sys_symlink                     sys_symlink                     sys_symlink			       -                                 /* Common */
+58      readlink                sys_readlink                    sys_readlink                    sys_readlink			       -                                 /* Common */
+59      execve                  sys64_execve                    sys_execve                      sys32_execve			       -                                 /* Common */
+60      umask                   sys_umask                       sys_umask                       sys_umask			       -                                 /* Common */
+61      chroot                  sys_chroot                      sys_chroot                      sys_chroot			       -                                 /* Common */
+62      fstat                   sys_newfstat                    sys_newfstat                    compat_sys_newfstat		       -                                 /* Common */
+63	fstat64			sys_fstat64			sys_fstat64			compat_sys_fstat64		       -                                 /* Linux Specific */
+64      getpagesize             sys_getpagesize                 sys_getpagesize                 sys_getpagesize		               -                                 /* Common */
+65      msync                   sys_msync                       sys_msync                       sys_msync			       -                                 /* Common in newer 1.3.x revs... */
+66      vfork                   sys_vfork                       sys_vfork                       sys_vfork			       -                                 /* Common */
+67      pread64                 sys_pread64                     sys_pread64                     sys32_pread64			       -                                 /* Linux Specific */
+68      pwrite64                sys_pwrite64                    sys_pwrite64                    sys32_pwrite64			       -                                 /* Linux Specific */
+69      geteuid32,-             sys_nis_syscall                 sys_geteuid                     sys_geteuid		               __32bit_syscall_numbers__,-	 /* Linux sparc32, sbrk under SunOS */
+70      getegid32,-             sys_nis_syscall                 sys_getegid                     sys_getegid			       __32bit_syscall_numbers__,-	 /* Linux sparc32, sbrk under SunOS */
+71      mmap                    sys_mmap                        sys_mmap                        sys_mmap			       -                                 /* Common */
+72      setreuid32,-            sys_nis_syscall                 sys_setreuid                    sys_setreuid		               __32bit_syscall_numbers__,-
+73      munmap                  sys_64_munmap                   sys_munmap                      sys_munmap			       -                                 /* Common */
+74      mprotect                sys_mprotect                    sys_mprotect                    sys_mprotect			       -                                 /* Common */
+75      madvise                 sys_madvise                     sys_madvise                     sys_madvise			       -                                 /* Common */
+76      vhangup                 sys_vhangup                     sys_vhangup                     sys_vhangup			       -                                 /* Common */
+77      truncate64,-            sys_nis_syscall                 sys_truncate64                  sys32_truncate64	               __32bit_syscall_numbers__,-	 /* Linux sparc32 Specific */
+78      mincore                 sys_mincore                     sys_mincore                     sys_mincore			       -                                 /* Common */
+79      getgroups               sys_getgroups                   sys_getgroups16                 sys_getgroups16			       -                                 /* Common */
+80      setgroups               sys_setgroups                   sys_setgroups16                 sys_setgroups16			       -                                 /* Common */
+81      getpgrp                 sys_getpgrp                     sys_getpgrp                     sys_getpgrp			       -                                 /* Common */
+82      setgroups32,-           sys_nis_syscall                 sys_setgroups                   sys_setgroups                          __32bit_syscall_numbers__,-	 /* Linux sparc32, setpgrp under SunOS */
+83      setitimer               sys_setitimer                   sys_setitimer                   compat_sys_setitimer		       -                                 /* Common */
+84      ftruncate64,-           sys_nis_syscall                 sys_ftruncate64                 sys32_ftruncate64	               __32bit_syscall_numbers__,-	 /* Linux sparc32 Specific */
+85      swapon                  sys_swapon                      sys_swapon                      sys_swapon			       -                                 /* Common */
+86      getitimer               sys_getitimer                   sys_getitimer                   compat_sys_getitimer		       -                                 /* Common */
+87      setuid32,-              sys_nis_syscall                 sys_setuid                      sys_setuid		               __32bit_syscall_numbers__,-	 /* Linux sparc32, gethostname under SunOS */
+88      sethostname             sys_sethostname                 sys_sethostname                 sys_sethostname			       -                                 /* Common */
+89      setgid32,-              sys_nis_syscall                 sys_setgid                      sys_setgid		               __32bit_syscall_numbers__,-	 /* Linux sparc32, getdtablesize under SunOS */
+90      dup2                    sys_dup2                        sys_dup2                        sys_dup2			       -                                 /* Common */
+91      setfsuid32,-            sys_nis_syscall                 sys_setfsuid                    sys_setfsuid		               __32bit_syscall_numbers__,-	 /* Linux sparc32, getdtablesize under SunOS */
+92      fcntl                   sys_fcntl                       sys_fcntl                       compat_sys_fcntl		       -                                 /* Common */
+93      select                  sys_select                      sys_select                      sys32_select			       -                                 /* Common */
+94      setfsgid32,-            sys_nis_syscall                 sys_setfsgid                    sys_setfsgid		               __32bit_syscall_numbers__,-	 /* Linux sparc32, setdopt under SunOS */
+95      fsync                   sys_fsync                       sys_fsync                       sys_fsync			       -                                 /* Common */
+96      setpriority             sys_setpriority                 sys_setpriority                 sys_setpriority			       -                                 /* Common */
+97      socket                  sys_socket                      sys_socket                      sys_socket			       -                                 /* Common */
+98      connect                 sys_connect                     sys_connect                     sys_connect			       -                                 /* Common */
+99      accept                  sys_accept                      sys_accept                      sys_accept			       -                                 /* Common */
+100     getpriority             sys_getpriority                 sys_getpriority                 sys_getpriority			       -                                 /* Common */
+101     rt_sigreturn            sys_rt_sigreturn                sys_rt_sigreturn                sys32_rt_sigreturn		       -                                 /* Linux Specific */
+102     rt_sigaction            sys_rt_sigaction                sys_rt_sigaction                compat_sys_rt_sigaction		       -                                 /* Linux Specific */
+103     rt_sigprocmask          sys_rt_sigprocmask              sys_rt_sigprocmask              compat_sys_rt_sigprocmask	       -                                 /* Linux Specific */
+104     rt_sigpending           sys_rt_sigpending               sys_rt_sigpending               compat_sys_rt_sigpending	       -                                 /* Linux Specific */
+105     rt_sigtimedwait         sys_rt_sigtimedwait             sys_rt_sigtimedwait             compat_sys_rt_sigtimedwait	       -                                 /* Linux Specific */
+106     rt_sigqueueinfo         sys_rt_sigqueueinfo             sys_rt_sigqueueinfo             compat_sys_rt_sigqueueinfo	       -                                 /* Linux Specific */
+107     rt_sigsuspend           sys_rt_sigsuspend               sys_rt_sigsuspend               compat_sys_rt_sigsuspend	       -                                 /* Linux Specific */
+108     setresuid32,setresuid   sys_setresuid                   sys_setresuid                   sys_setresuid		               __32bit_syscall_numbers__,-	 /* Linux Specific, sigvec under SunOS */
+109     getresuid32,getresuid   sys_getresuid                   sys_getresuid                   sys_getresuid			       __32bit_syscall_numbers__,-	 /* Linux Specific, sigblock under SunOS */
+110     setresgid32,setresgid   sys_setresgid                   sys_setresgid                   sys_setresgid			       __32bit_syscall_numbers__,-	 /* Linux Specific, sigsetmask under SunOS */
+111     getresgid32,getresgid   sys_getresgid                   sys_getresgid                   sys_getresgid			       __32bit_syscall_numbers__,-	 /* Linux Specific, sigpause under SunOS */
+112     setregid32,-            sys_nis_syscall                 sys_setregid                    sys_setregid			       __32bit_syscall_numbers__,-	 /* Linux sparc32, sigstack under SunOS */
+113     recvmsg                 sys_recvmsg                     sys_recvmsg                     compat_sys_recvmsg		       -                                 /* Common */
+114     sendmsg                 sys_sendmsg                     sys_sendmsg                     compat_sys_sendmsg		       -                                 /* Common */
+115     getgroups32,-           sys_nis_syscall                 sys_getgroups                   sys_getgroups		               __32bit_syscall_numbers__,-
+116     gettimeofday            sys_gettimeofday                sys_gettimeofday                compat_sys_gettimeofday		       -                                 /* Common */
+117     getrusage               sys_getrusage                   sys_getrusage                   compat_sys_getrusage		       -                                 /* Common */
+118     getsockopt              sys_getsockopt                  sys_getsockopt                  compat_sys_getsockopt		       -                                 /* Common */
+119     getcwd                  sys_getcwd                      sys_getcwd                      sys_getcwd			       -                                 /* Linux Specific */
+120     readv                   sys_readv                       sys_readv                       compat_sys_readv		       -                                 /* Common */
+121     writev                  sys_writev                      sys_writev                      compat_sys_writev		       -                                 /* Common */
+122     settimeofday            sys_settimeofday                sys_settimeofday                compat_sys_settimeofday		       -                                 /* Common */
+123     fchown                  sys_fchown                      sys_fchown16                    sys_fchown16			       -                                 /* Common */
+124     fchmod                  sys_fchmod                      sys_fchmod                      sys_fchmod			       -                                 /* Common */
+125     recvfrom                sys_recvfrom                    sys_recvfrom                    sys_recvfrom			       -                                 /* Common */
+126     setreuid                sys_setreuid                    sys_setreuid16                  sys_setreuid16			       -                                 /* Common */
+127     setregid                sys_setregid                    sys_setregid16                  sys_setregid16			       -                                 /* Common */
+128     rename                  sys_rename                      sys_rename                      sys_rename			       -                                 /* Common */
+129     truncate                sys_truncate                    sys_truncate                    compat_sys_truncate		       -                                 /* Common */
+130     ftruncate               sys_ftruncate                   sys_ftruncate                   compat_sys_ftruncate		       -                                 /* Common */
+131     flock                   sys_flock                       sys_flock                       sys_flock			       -                                 /* Common */
+132     lstat64                 sys_lstat64                     sys_lstat64                     compat_sys_lstat64		       -                                 /* Linux Specific */
+133     sendto                  sys_sendto                      sys_sendto                      sys_sendto			       -                                 /* Common */
+134     shutdown                sys_shutdown                    sys_shutdown                    sys_shutdown			       -                                 /* Common */
+135     socketpair              sys_socketpair                  sys_socketpair                  sys_socketpair			       -                                 /* Common */
+136     mkdir                   sys_mkdir                       sys_mkdir                       sys_mkdir			       -                                 /* Common */
+137     rmdir                   sys_rmdir                       sys_rmdir                       sys_rmdir			       -                                 /* Common */
+138     utimes                  sys_utimes                      sys_utimes                      compat_sys_utimes		       -                                 /* SunOS Specific */
+139     stat64                  sys_stat64                      sys_stat64                      compat_sys_stat64		       -                                 /* Linux Specific */
+140     sendfile64              sys_sendfile64                  sys_sendfile64                  sys_sendfile64			       -                                 /* adjtime under SunOS */
+141     getpeername             sys_getpeername                 sys_getpeername                 sys_nis_syscall			       -                                 /* Common */
+142     futex                   sys_futex                       sys_futex                       sys32_futex			       -                                 /* gethostid under SunOS */
+143     gettid                  sys_gettid                      sys_gettid                      sys_gettid			       -                                 /* ENOSYS under SunOS */
+144     getrlimit               sys_getrlimit                   sys_getrlimit                   compat_sys_getrlimit		       -                                 /* Common */
+145     setrlimit               sys_setrlimit                   sys_setrlimit                   compat_sys_setrlimit		       -                                 /* Common */	
+146     pivot_root              sys_pivot_root                  sys_pivot_root                  sys_pivot_root			       -                                 /* Linux Specific, killpg under SunOS */
+147     prctl                   sys_prctl                       sys_prctl                       sys_prctl			       -                                 /* ENOSYS under SunOS */
+148     pciconfig_read          sys_pciconfig_read              sys_pciconfig_read              sys_pciconfig_read		       -                                 /* ENOSYS under SunOS */
+149     pciconfig_write         sys_pciconfig_write             sys_pciconfig_write             sys_pciconfig_write		       -                                 /* ENOSYS under SunOS */
+150     getsockname             sys_getsockname                 sys_getsockname                 sys_nis_syscall			       -                                 /* Common */
+151     inotify_init            sys_inotify_init                sys_inotify_init                sys_inotify_init		       -                                 /* Linux Specific */
+152     inotify_add_watch       sys_inotify_add_watch           sys_inotify_add_watch           sys_inotify_add_watch		       -                                 /* Linux Specific */
+153     poll                    sys_poll                        sys_poll                        sys_poll			       -                                 /* Common */
+154     getdents64              sys_getdents64                  sys_getdents64                  sys_getdents64			       -                                 /* Linux Specific */
+155     fcntl64,-               sys_nis_syscall                 sys_fcntl64                     compat_sys_fcntl64		       __32bit_syscall_numbers__,-	 /* Linux sparc32 Specific */
+156     inotify_rm_watch        sys_inotify_rm_watch            sys_inotify_rm_watch            sys_inotify_rm_watch		       -                                 /* Linux Specific */
+157     statfs                  sys_statfs                      sys_statfs                      compat_sys_statfs		       -                                 /* Common */
+158     fstatfs                 sys_fstatfs                     sys_fstatfs                     compat_sys_fstatfs		       -                                 /* Common */
+159     umount                  sys_oldumount                   sys_oldumount                   sys_oldumount			       -                                 /* Common */
+160     sched_set_affinity      sys_sched_setaffinity           sys_sched_setaffinity           compat_sys_sched_setaffinity	       -                                 /* Linux specific, async_daemon under SunOS */
+161     sched_get_affinity      sys_sched_getaffinity           sys_sched_getaffinity           compat_sys_sched_getaffinity	       -                                 /* Linux specific, getfh under SunOS */
+162     getdomainname           sys_getdomainname               sys_getdomainname               sys_getdomainname		       -                                 /* SunOS Specific */
+163     setdomainname           sys_setdomainname               sys_setdomainname               sys_setdomainname		       -                                 /* Common */
+164     utrap_install,-         sys_utrap_install               sys_nis_syscall                 sys_nis_syscall		               -,__32bit_syscall_numbers__	 /* SYSV ABI/v9 required */
+165     quotactl                sys_quotactl                    sys_quotactl                    sys_quotactl			       -                                 /* Common */
+166     set_tid_address         sys_set_tid_address             sys_set_tid_address             sys_set_tid_address		       -                                 /* Linux specific, exportfs under SunOS */
+167     mount                   sys_mount                       sys_mount                       compat_sys_mount		       -                                 /* Common */
+168     ustat                   sys_ustat                       sys_ustat                       compat_sys_ustat		       -                                 /* Common */
+169     setxattr                sys_setxattr                    sys_setxattr                    sys_setxattr			       -                                 /* SunOS: semsys */
+170     lsetxattr               sys_lsetxattr                   sys_lsetxattr                   sys_lsetxattr			       -                                 /* SunOS: msgsys */
+171     fsetxattr               sys_fsetxattr                   sys_fsetxattr                   sys_fsetxattr			       -                                 /* SunOS: shmsys */
+172     getxattr                sys_getxattr                    sys_getxattr                    sys_getxattr			       -                                 /* SunOS: auditsys */
+173     lgetxattr               sys_lgetxattr                   sys_lgetxattr                   sys_lgetxattr			       -                                 /* SunOS: rfssys */
+174     getdents                sys_getdents                    sys_getdents                    compat_sys_getdents		       -                                 /* Common */
+175     setsid                  sys_setsid                      sys_setsid                      sys_setsid			       -                                 /* Common */
+176     fchdir                  sys_fchdir                      sys_fchdir                      sys_fchdir			       -                                 /* Common */
+177     fgetxattr               sys_fgetxattr                   sys_fgetxattr                   sys_fgetxattr			       -                                 /* SunOS: fchroot */
+178     listxattr               sys_listxattr                   sys_listxattr                   sys_listxattr			       -                                 /* SunOS: vpixsys */
+179     llistxattr              sys_llistxattr                  sys_llistxattr                  sys_llistxattr			       -                                 /* SunOS: aioread */
+180     flistxattr              sys_flistxattr                  sys_flistxattr                  sys_flistxattr			       -                                 /* SunOS: aiowrite */
+181     removexattr             sys_removexattr                 sys_removexattr                 sys_removexattr			       -                                 /* SunOS: aiowrite */
+182     lremovexattr            sys_lremovexattr                sys_lremovexattr                sys_lremovexattr		       -                                 /* SunOS: aiocancel */
+183     sigpending              sys_nis_syscall                 sys_sigpending                  compat_sys_sigpending		       -                                 /* Common */
+184     query_module            sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall			       -                                 /* Linux Specific */
+185     setpgid                 sys_setpgid                     sys_setpgid                     sys_setpgid			       -                                 /* Common */
+186     fremovexattr            sys_fremovexattr                sys_fremovexattr                sys_fremovexattr		       -                                 /* SunOS: pathconf */
+187     tkill                   sys_tkill                       sys_tkill                       sys_tkill			       -                                 /* SunOS: fpathconf */
+188     exit_group              sparc_exit_group                sys_exit_group                  sparc_exit_group		       -                                 /* Linux specific, sysconf undef SunOS */
+189     uname                   sys_newuname                    sys_newuname                    sys_newuname			       -                                 /* Linux Specific */
+190     init_module             sys_init_module                 sys_init_module                 sys_init_module			       -                                 /* Linux Specific */
+191     personality             sys_sparc64_personality         sys_personality                 sys_sparc64_personality		       -                                 /* Linux Specific */
+192     remap_file_pages        sys_remap_file_pages            sparc_remap_file_pages          sys_remap_file_pages		       -                                 /* Linux Specific */
+193     epoll_create            sys_epoll_create                sys_epoll_create                sys_epoll_create		       -                                 /* Linux Specific */
+194     epoll_ctl               sys_epoll_ctl                   sys_epoll_ctl                   sys_epoll_ctl			       -                                 /* Linux Specific */
+195     epoll_wait              sys_epoll_wait                  sys_epoll_wait                  sys_epoll_wait			       -                                 /* Linux Specific */
+196     ioprio_set              sys_ioprio_set                  sys_ioprio_set                  sys_ioprio_set			       -                                 /* Linux Specific */
+197     getppid                 sys_getppid                     sys_getppid                     sys_getppid			       -                                 /* Linux Specific */
+198     sigaction               sys_nis_syscall                 sys_sparc_sigaction             compat_sys_sparc_sigaction	       -                                 /* Linux Specific */ 
+199     sgetmask                sys_sgetmask                    sys_sgetmask                    sys_sgetmask			       -                                 /* Linux Specific */
+200     ssetmask                sys_ssetmask                    sys_ssetmask                    sys_ssetmask			       -                                 /* Linux Specific */
+201     sigsuspend              sys_nis_syscall                 sys_sigsuspend                  sys_sigsuspend			       -                                 /* Linux Specific */
+202     oldlstat                sys_newlstat                    sys_newlstat                    compat_sys_newlstat		       -                                 /* Linux Specific */
+203     uselib                  sys_uselib                      sys_uselib                      sys_uselib			       -                                 /* Linux Specific */
+204     readdir                 sys_nis_syscall                 sys_old_readdir                 compat_sys_old_readdir		       -                                 /* Linux Specific */
+205     readahead               sys_readahead                   sys_readahead                   sys32_readahead			       -                                 /* Linux Specific */
+206     socketcall              sys_socketcall                  sys_socketcall                  sys32_socketcall		       -                                 /* Linux Specific */
+207     syslog                  sys_syslog                      sys_syslog                      sys_syslog			       -                                 /* Linux Specific */
+208     lookup_dcookie          sys_lookup_dcookie              sys_lookup_dcookie              compat_sys_lookup_dcookie	       -                                 /* Linux Specific */
+209     fadvise64               sys_fadvise64                   sys_fadvise64                   sys32_fadvise64			       -                                 /* Linux Specific */
+210     fadvise64_64            sys_fadvise64_64                sys_fadvise64_64                sys32_fadvise64_64		       -                                 /* Linux Specific */
+211     tgkill                  sys_tgkill                      sys_tgkill                      sys_tgkill			       -                                 /* Linux Specific */
+212     waitpid                 sys_waitpid                     sys_waitpid                     sys_waitpid			       -                                 /* Linux Specific */
+213     swapoff                 sys_swapoff                     sys_swapoff                     sys_swapoff			       -                                 /* Linux Specific */
+214     sysinfo                 sys_sysinfo                     sys_sysinfo                     compat_sys_sysinfo		       -                                 /* Linux Specific */
+215     ipc                     sys_sparc_ipc                   sys_ipc                         compat_sys_ipc			       -                                 /* Linux Specific */
+216     sigreturn               sys_nis_syscall                 sys_sigreturn                   sys32_sigreturn			       -                                 /* Linux Specific */
+217     clone                   sys_clone                       sys_clone                       sys_clone			       -                                 /* Linux Specific */
+218     ioprio_get              sys_ioprio_get                  sys_ioprio_get                  sys_ioprio_get			       -                                 /* Linux Specific */
+219     adjtimex                sys_adjtimex                    sys_adjtimex                    compat_sys_adjtimex		       -                                 /* Linux Specific */ 
+220     sigprocmask             sys_nis_syscall                 sys_sigprocmask                 compat_sys_sigprocmask		       -                                 /* Linux Specific */
+221     create_module           sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall			       -                                 /* Linux Specific */
+222     delete_module           sys_delete_module               sys_delete_module               sys_delete_module		       -                                 /* Linux Specific */
+223     get_kernel_syms         sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall			       -                                 /* Linux Specific */
+224     getpgid                 sys_getpgid                     sys_getpgid                     sys_getpgid			       -                                 /* Linux Specific */
+225     bdflush                 sys_bdflush                     sys_bdflush                     sys_bdflush			       -                                 /* Linux Specific */
+226     sysfs                   sys_sysfs                       sys_sysfs                       sys_sysfs			       -                                 /* Linux Specific */
+227     afs_syscall             sys_nis_syscall                 sys_nis_syscall                 sys_nis_syscall			       -                                 /* Linux Specific */
+228     setfsuid                sys_setfsuid                    sys_setfsuid16                  sys_setfsuid16			       -                                 /* Linux Specific */
+229     setfsgid                sys_setfsgid                    sys_setfsgid16                  sys_setfsgid16			       -                                 /* Linux Specific */
+230     _newselect              sys_select                      sys_select                      sys32_select			       -                                 /* Linux Specific */
+231     time,-                  sys_nis_syscall                 sys_time                        compat_sys_time			       __32bit_syscall_numbers__,-	 /* Linux Specific */
+232     splice                  sys_splice                      sys_splice                      sys_splice			       -                                 /* Linux Specific */
+233     stime                   sys_stime                       sys_stime                       compat_sys_stime		       -                                 /* Linux Specific */
+234     statfs64                sys_statfs64                    sys_statfs64                    compat_sys_statfs64		       -                                 /* Linux Specific */
+235     fstatfs64               sys_fstatfs64                   sys_fstatfs64                   compat_sys_fstatfs64		       -                                 /* Linux Specific */
+236     _llseek                 sys_llseek                      sys_llseek                      sys_llseek			       -                                 /* Linux Specific */
+237     mlock                   sys_mlock                       sys_mlock                       sys_mlock			       
 238     munlock                 sys_munlock                     sys_munlock                     sys_munlock
 239     mlockall                sys_mlockall                    sys_mlockall                    sys_mlockall
 240     munlockall              sys_munlockall                  sys_munlockall                  sys_munlockall
@@ -273,6 +273,7 @@
 264     timer_getoverrun        sys_timer_getoverrun            sys_timer_getoverrun            sys_timer_getoverrun
 265     timer_delete            sys_timer_delete                sys_timer_delete                sys_timer_delete
 266     timer_create            sys_timer_create                sys_timer_create                compat_sys_timer_create
+267	vserver			sys_nis_syscall			sys_nis_syscall			sys_nis_syscall		               --				 Reserved for VSERVER
 268     io_setup                sys_io_setup                    sys_io_setup                 	compat_sys_io_setup
 269     io_destroy              sys_io_destroy                  sys_io_destroy                  sys_io_destroy
 270     io_submit               sys_io_submit                   sys_io_submit                   sys32_io_submit

@@ -13,6 +13,20 @@ if [ "${out: -2}" = ".h" ]; then
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+	echo "/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */"
+	echo "/*"
+	echo " * System calls under the Sparc."
+	echo " *"
+	echo " * Don't be scared by the ugly clobbers, it is the only way I can"
+	echo " * think of right now to force the arguments into fixed registers"
+	echo " * before the trap into the system call with gcc 'asm' statements."
+	echo " *"
+	echo " * Copyright (C) 1995, 2007 David S. Miller (davem@davemloft.net)"
+	echo " *"
+	echo " * SunOS compatibility based upon preliminary work which is:"
+	echo " *"
+	echo " * Copyright (C) 1995 Adrian M. Rodriguez (adrian@remus.rutgers.edu)"
+	echo " */"
 	echo "#ifndef ${fileguard}"
 	echo "#define ${fileguard}"
 	echo ""
@@ -23,21 +37,55 @@ if [ "${out: -2}" = ".h" ]; then
 	echo "#endif"
 	echo ""
 
-	while read nr name entry_64 entry_32 entry_x32 ; do
+	while read nr name entry_64 entry_32 entry_x32 config comment ; do
 	    if [ -z "$offset" ]; then
-		if [ "$entry_32" != "sys_nis_syscall" -a "$entry_64" == "sys_nis_syscall" ]; then
-		    echo "#ifdef __32bit_syscall_numbers__"
-		    echo -e "#define __NR_${prefix}${name}\t$nr"
+		if [ -z "$config" -o "$config" = "-" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t$nr\t$comment"
+		elif [ "$config" = "--" ]; then
+                    echo -e "/* #define __NR_${prefix}${name}\t$nr\t$comment */"
+		else
+		    e_config="$(cut -d',' -f1 <<< $config)"
+                    n_config="$(cut -d',' -f2 <<< $config)"
+		    if [ "$e_config" != "-" ]; then
+			echo "#ifdef $e_config"
+		    elif [ "$n_config" != "-" ]; then
+			echo "#ifndef $n_config"
+		    fi
+		    i_name="$(cut -d',' -f1 <<< $name)"
+		    e_name="$(cut -d',' -f2 <<< $name)"
+		    if [ "$i_name" != "-" ]; then
+			echo -e "#define __NR_${prefix}${i_name}\t$nr\t$comment"
+		    fi
+		    if [ "$e_name" != "-" ]; then
+			echo "#else"
+			echo -e "#define __NR_${prefix}${e_name}\t$nr\t$comment"
+		    fi
 		    echo "#endif"
-		elif [ "$entry_32" == "sys_nis_syscall" -a "$entry_64" != "sys_nis_syscall" ]; then
-		    echo "#ifndef __32bit_syscall_numbers__"
-		    echo -e "#define __NR_${prefix}${name}\t$nr"
-		    echo "#endif"
-		else 
-		    echo -e "#define __NR_${prefix}${name}\t$nr"
 		fi
 	    else
-		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		if [ -z "$config" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)\t$comment"
+		elif [ "$config" = "--" ]; then
+                    echo -e "/* #define __NR_${prefix}${name}\t($offset + $nr)\t$comment*/"
+		else
+                    e_config="$(cut -d',' -f1 <<< $config)"
+                    n_config="$(cut -d',' -f2 <<< $config)"
+                    if [ "$e_config" != "-" ]; then
+                        echo "#ifdef $e_config"
+                    elif [ "$n_config" != "-" ]; then
+                        echo "#ifndef $n_config"
+                    fi
+                    i_name="$(cut -d',' -f1 <<< $name)"
+                    e_name="$(cut -d',' -f2 <<< $name)"
+                    if [ "$i_name" != "-" ]; then
+                        echo -e "#define __NR_${prefix}${i_name}\t($offset + $nr)\t$comment"
+                    fi
+                    if [ "$e_name" != "-" ]; then
+                        echo "#else"
+			echo -e "#define __NR_${prefix}${e_name}\t($offset + $nr)\t$comment"
+                    fi
+                    echo "#endif"
+                fi
             fi
 	    nxt=$nr
 	    let nxt=nxt+1
@@ -59,7 +107,7 @@ elif [ "${out: -2}" = ".S" ]; then
             echo -e "\t.align 4"
             echo -e "\t.globl sys_call_table"
             echo "sys_call_table:"
-            while read nr name entry_64 entry_32 entry_x32 ; do
+            while read nr name entry_64 entry_32 entry_x32 config comment ; do
                 while [ $nxt -lt $nr ]; do
 		    if [ $(($nxt % 5)) -eq 0 ]; then
 			echo -e "\t.long sys_nis_syscall\t/* $nxt */"
@@ -82,7 +130,7 @@ elif [ "${out: -2}" = ".S" ]; then
             echo "#ifdef CONFIG_COMPAT"
             echo -e "\t.globl sys_call_table32"
             echo "sys_call_table32:"
-            while read nr name entry_64 entry_32 entry_x32 ; do
+            while read nr name entry_64 entry_32 entry_x32 config comment ; do
                 while [ $nxt -lt $nr ]; do
 		    if [ $(($nxt % 5)) -eq 0 ]; then
 			echo -e "\t.word sys_nis_syscall\t/* $nxt */"
