@@ -71,7 +71,7 @@ elif [ "${out: -2}" = ".S" ]; then
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	echo "/* SPDX-License-Identifier: GPL-2.0 */"
 	echo ""
-	if [ "$abi" = "32_o32" ]; then
+	if [ "$abi" = "32" ]; then
 	    nxt=4000
 	    echo -e "\t.align\t2"
 	    echo -e "\t.type\tsys_call_table, @object"
@@ -81,7 +81,7 @@ elif [ "${out: -2}" = ".S" ]; then
             echo -e "\t.align\t3"
             echo -e "\t.type\tsys32_call_table,@object"
             echo "EXPORT(sys32_call_table)"
-	elif [ "$abi" = "64_64" ]; then
+	elif [ "$abi" = "64" ]; then
 	    nxt=5000
 	    echo -e "\t.align\t3"
             echo -e "\t.type\tsys_call_table, @object"
@@ -121,7 +121,7 @@ elif [ "${out: -2}" = ".S" ]; then
 
 	if [ "$abi" = "64_o32" ]; then
 	    echo -e "\t.size\tsys32_call_table,.-sys32_call_table"
-	elif [ "$abi" = "64_64" ]; then
+	elif [ "$abi" = "64" ]; then
 	    echo -e "\t.size\tsys_call_table,.-sys_call_table"
 	elif [ "$abi" = "64_n32" ]; then
 	    echo -e "\t.size\tsysn32_call_table,.-sysn32_call_table"
