@@ -49,7 +49,27 @@ if [ "${out: -2}" = ".h" ]; then
 		    echo "#endif"
 		fi
 	    else
-		echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		if [ -z "$config" ]; then
+		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
+		else
+                    e_config="$(cut -d',' -f1 <<< $config)"
+                    n_config="$(cut -d',' -f2 <<< $config)"
+                    if [ "$e_config" != "-" ]; then
+                        echo "#ifdef $e_config"
+                    elif [ "$n_config" != "-" ]; then
+                        echo "#ifndef $n_config"
+                    fi
+                    i_name="$(cut -d',' -f1 <<< $name)"
+                    e_name="$(cut -d',' -f2 <<< $name)"
+                    if [ "$i_name" != "-" ]; then
+			echo -e "#define __NR_${prefix}${i_name}\t($offset + $nr)"
+                    fi
+                    if [ "$e_name" != "-" ]; then
+                        echo "#else"
+			echo -e "#define __NR_${prefix}${e_name}\t($offset + $nr)"
+                    fi
+                    echo "#endif"
+                fi
 	    fi
 	done
 
