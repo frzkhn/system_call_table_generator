@@ -63,7 +63,7 @@ if [ "${out: -2}" = ".h" ]; then
 		    echo "#endif"
 		fi
 	    else
-		if [ -z "$config" ]; then
+		if [ -z "$config" -o "$config" = "-" ]; then
 		    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)\t$comment"
 		elif [ "$config" = "--" ]; then
                     echo -e "/* #define __NR_${prefix}${name}\t($offset + $nr)\t$comment*/"
