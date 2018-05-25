@@ -48,7 +48,7 @@
 39      mkdir                   sys_mkdir				sys_mkdir				sys_mkdir
 40      rmdir                   sys_rmdir				sys_rmdir				sys_rmdir
 41      dup                     sys_dup					sys_dup					sys_dup
-42      pipe                    sys_pipe				sys_dup					sys_dup
+42      pipe                    sys_pipe				sys_pipe				sys_pipe
 43      times                   sys_times				sys_times				compat_sys_times
 44      getsockname             sys_getsockname				sys_getsockname				sys_getsockname
 45      brk                     sys_brk					sys_brk					sys_brk
