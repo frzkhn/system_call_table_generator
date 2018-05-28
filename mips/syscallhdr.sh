@@ -12,7 +12,7 @@ offset="$7"
 fileguard=_UAPI_ASM_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in_32" | sort -n | (
+grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_32" | sort -n | (
     echo "/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */"
     echo "/*"
     echo " * This file is subject to the terms and conditions of the GNU General Public"
@@ -67,7 +67,7 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in_32" | sort -n | (
     echo ""
 ) > "$out"
 
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in_64" | sort -n | (
+grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_64" | sort -n | (
     echo "#if _MIPS_SIM == _MIPS_SIM_ABI64"
     echo ""
     echo "/*"
@@ -104,7 +104,7 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in_64" | sort -n | (
     echo ""
 ) >> "$out"
 
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in_n32" | sort -n | (
+grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_n32" | sort -n | (
     echo "#if _MIPS_SIM == _MIPS_SIM_NABI32"
     echo ""
     echo "/*"

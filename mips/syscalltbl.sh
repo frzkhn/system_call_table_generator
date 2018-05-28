@@ -8,7 +8,7 @@ prefix="$4"
 offset="$5"
 
 nxt=0
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
     echo "/* SPDX-License-Identifier: GPL-2.0 */"
     echo ""
     if [ "$abi" = "32-o32" ]; then
