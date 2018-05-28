@@ -7,10 +7,66 @@ abi="$3"
 prefix="$4"
 offset="$5"
 
-nxt=0
-grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
-    echo "/* SPDX-License-Identifier: GPL-2.0 */"
-    echo ""
+eprint() {
+    nr="$1"
+    entry="$2"
+    
+    if [ $(($nr % 5)) -eq 0 ]; then
+        echo -e "\tPTR\t$entry\t/* $nxt */"
+    else
+        echo -e "\tPTR\t$entry"
+    fi
+}
+
+parse_config_eprint() {
+    nr="$1"
+    entry="$2"
+    config="$3"
+
+    e_config="$(cut -d',' -f1 <<< $config)"
+    n_config="$(cut -d',' -f2 <<< $config)"
+    if [ "$e_config" != "-" ]; then
+	echo "#ifdef $e_config"
+    elif [ "$n_config" != "-" ]; then
+	echo "#ifndef $n_config"
+    fi
+    i_entry="$(cut -d',' -f1 <<< $entry)"
+    e_entry="$(cut -d',' -f2 <<< $entry)"
+    if [ "$i_entry" != "-" ]; then
+	eprint $nr $i_entry
+    fi
+    if [ "$e_entry" != "-" ]; then
+	echo "#else"
+	eprint $nr $e_entry
+    fi
+    echo "#endif"
+}
+
+chk_ni_syscall() {
+    nxt="$1"
+    nr="$2"
+
+    while [ $nxt -lt $nr ]; do
+	eprint $nxt "sys_ni_syscall"
+        let nxt=nxt+1
+    done
+}
+
+footer() {
+    abi="$1"
+
+    if [ "$abi" = "64-o32" ]; then
+	echo -e "\t.size\tsys32_call_table,.-sys32_call_table"
+    elif [ "$abi" = "64-64" ]; then
+	echo -e "\t.size\tsys_call_table,.-sys_call_table"
+    elif [ "$abi" = "64-n32" ]; then
+	echo -e "\t.size\tsysn32_call_table,.-sysn32_call_table"
+    fi
+}
+
+header() {
+    abi="$1"
+
     if [ "$abi" = "32-o32" ]; then
 	nxt=4000
 	echo -e "\t.align\t2"
@@ -31,88 +87,40 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
         echo -e "\t.type\tsysn32_call_table, @object"
         echo "EXPORT(sysn32_call_table)"
     fi
-    
+}
+
+license() {
+    echo "/* SPDX-License-Identifier: GPL-2.0 */"
+    echo ""
+}
+
+grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
+    license
+    header $abi
     if [ "$abi" = "32-o32" ]; then
 	while read nr name entry compat config comment ; do
-	    while [ $nxt -lt $nr ]; do
-		if [ $(($nxt % 5)) -eq 0 ]; then
-		    echo -e "\tPTR\tsys_ni_syscall\t/* $nxt */"
-		else
-		    echo -e "\tPTR\tsys_ni_syscall"
-		fi
-		let nxt=nxt+1
-	    done
+	    chk_ni_syscall $nxt $nr
 	    
 	    if [ -z "$config" -o "$config" = "-" ]; then
-		if [ $(($nr % 5)) -eq 0 ]; then
-		    echo -e "\tPTR\t${entry}\t/* $nxt */"
-		else
-		    echo -e "\tPTR\t${entry}"
-		fi
+		eprint $nr $entry
 	    else
-		e_config="$(cut -d',' -f1 <<< $config)"
-		n_config="$(cut -d',' -f2 <<< $config)"
-		if [ "$e_config" != "-" ]; then
-		    echo "#ifdef $e_config"
-		elif [ "$n_config" != "-" ]; then
-		    echo "#ifndef $n_config"
-		fi
-		i_entry="$(cut -d',' -f1 <<< $entry)"
-		e_entry="$(cut -d',' -f2 <<< $entry)"
-		if [ "$i_entry" != "-" ]; then
-		    if [ $(($nr % 5)) -eq 0 ]; then
-			echo -e "\tPTR\t${i_entry}\t/* $nxt */"
-		    else
-			echo -e "\tPTR\t${i_entry}"
-		    fi
-		fi
-		if [ "$e_entry" != "-" ]; then
-		    echo "#else"
-		    if [ $(($nr % 5)) -eq 0 ]; then
-			echo -e "\tPTR\t${e_entry}\t/* $nxt */"
-		    else
-			echo -e "\tPTR\t${e_entry}"
-		    fi
-		fi
-		echo "#endif"
+		parse_config_eprint $nr $entry $config
 	    fi
 	    nxt=$nr
 	    let nxt=nxt+1
 	done
     else
 	while read nr name entry compat comment ; do
-	    while [ $nxt -lt $nr ]; do
-		if [ $(($nxt % 5)) -eq 0 ]; then
-		    echo -e "\tPTR\tsys_ni_syscall\t/* $nxt */"
-		else
-		    echo -e "\tPTR\tsys_ni_syscall"
-		fi
-		let nxt=nxt+1
-	    done
+	    chk_ni_syscall $nxt $nr
 
 	    if [ "$abi" = "64-o32" ]; then
-		if [ $(($nr % 5)) -eq 0 ]; then
-		    echo -e "\tPTR\t${compat}\t/* $nxt */"
-		else
-		    echo -e "\tPTR\t${compat}"
-		fi
+		eprint $nr $compat
 	    else
-		if [ $(($nr % 5)) -eq 0 ]; then
-		    echo -e "\tPTR\t${entry}\t/* $nxt */"
-		else
-		    echo -e "\tPTR\t${entry}"
-		fi
+		eprint $nr $entry
 	    fi
 	    nxt=$nr
 	    let nxt=nxt+1
 	done
     fi
-
-    if [ "$abi" = "64-o32" ]; then
-	echo -e "\t.size\tsys32_call_table,.-sys32_call_table"
-    elif [ "$abi" = "64-64" ]; then
-	echo -e "\t.size\tsys_call_table,.-sys_call_table"
-    elif [ "$abi" = "64-n32" ]; then
-	echo -e "\t.size\tsysn32_call_table,.-sysn32_call_table"
-    fi
+    footer $abi
 ) > "$out"
