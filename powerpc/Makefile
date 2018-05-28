@@ -21,12 +21,16 @@ syscall_abi_systbl_32 := 32
 $(scall)/systbl_32.S: $(systbl) $(syscall)
 	$(call if_changed,syscall)
 
-syscall_abi_systbl_64 := 64x32
+syscall_abi_systbl_64 := 64
 $(scall)/systbl_64.S: $(systbl) $(syscall)
 	$(call if_changed,syscall)
 
+syscall_abi_systbl_x32 := x32
+$(scall)/systbl_x32.S: $(systbl) $(syscall)
+	$(call if_changed,syscall)
+
 uapihsyscall-y			+= unistd.h
-syscall-y			+= systbl_32.S systbl_64.S
+syscall-y			+= systbl_32.S systbl_64.S systbl_x32.S
 
 targets	+= $(uapihsyscall-y) $(syscall-y)
 

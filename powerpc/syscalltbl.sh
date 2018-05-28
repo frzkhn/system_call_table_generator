@@ -25,7 +25,7 @@ if [ "${out: -2}" = ".h" ]; then
         echo "#define ${fileguard}"
 	echo ""
 
-	while read nr name entry_64x32 entry_32 config ; do
+	while read nr name entry_64 entry_x32 entry_32 config ; do
 	    if [ -z "$offset" ]; then
 		if [ -z "$config" ]; then
 		    echo -e "#define __NR_${prefix}${name}\t$nr"
@@ -82,23 +82,25 @@ elif [ "${out: -2}" = ".S" ]; then
 	echo "/* SPDX-License-Identifier: GPL-2.0 */"
 	echo ""
 	echo -e "\t.section .rodata,"\"a"\""
-	if [ "$abi" = "64x32" ]; then
+	if [ "$abi" = "64" -o "$abi" = "x32" ]; then
 	    echo -e "\t.p2align\t3"
 	fi
 	echo -e "\t.globl sys_call_table"
 	echo "sys_call_table:"
 	
-	while read nr name entry_64x32 entry_32 config ; do
+	while read nr name entry_64 entry_x32 entry_32 config ; do
 	    while [ $nxt -lt $nr ]; do
-		if [ "$abi" = "64x32" ]; then
-		    echo -e "\t.8byte sys_ni_syscall,sys_ni_syscall"
+		if [ "$abi" = "64" -o "$abi" = "x32" ]; then
+		    echo -e "\t.8byte sys_ni_syscall"
 		elif [ "$abi" = "32" ]; then
 		    echo -e "\t.long sys_ni_syscall"
 		fi
 		let nxt=nxt+1
 	    done
-	    if [ "$abi" = "64x32" ]; then
-		echo -e "\t.8byte ${entry_64x32}"
+	    if [ "$abi" = "64" ]; then
+		echo -e "\t.8byte ${entry_64}"
+	    elif [ "$abi" = "x32" ]; then
+                echo -e "\t.8byte ${entry_x32}"
 	    elif [ "$abi" = "32" ]; then
 		echo -e "\t.long ${entry_32}"
 	    fi
