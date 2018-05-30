@@ -17,7 +17,7 @@ tbl_footer() {
     echo ".endif"
 }
 
-check_ni_syscall() {
+tbl_out() {
     nxt="$1"
     nr="$2"
 
@@ -48,7 +48,7 @@ hdr_footer() {
     echo "#endif /* ${fileguard} */"
 }
 
-parse_header() {
+hdr_out() {
     nr="$1"
     name="$2"
 
@@ -76,20 +76,24 @@ if [ "${out: -2}" = ".h" ]; then
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	hdr_fileguard
 	hdr_header
+
 	while read nr abi name entry config comment ; do
-	    parse_header $nr $name
+	    hdr_out $nr $name
 	done
+
 	hdr_footer
     ) > "$out"
 elif [ "${out: -2}" = ".S" ]; then
     nxt=0
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	tbl_header
+
 	while read nr abi name entry config comment ; do
-	    check_ni_syscall $nxt $nr
+	    tbl_out $nxt $nr
 	    echo -e "\t.quad $entry"
             let nxt=nxt+1
 	done
+
 	tbl_footer
     ) > "$out"
 fi
