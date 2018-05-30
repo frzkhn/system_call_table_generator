@@ -80,7 +80,7 @@ if [ "${out: -2}" = ".h" ]; then
 	hdr_fileguard
 	hdr_header
 
-	while read nr abi name entry config comment ; do
+	while read nr abi name entry comment ; do
 	    hdr_out $nr $name
 	done
 
@@ -91,7 +91,7 @@ elif [ "${out: -2}" = ".S" ]; then
     grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 	tbl_header
 
-	while read nr abi name entry config comment ; do
+	while read nr abi name entry comment ; do
 	    tbl_out $nxt $nr $entry
             let nxt=nxt+1
 	done
