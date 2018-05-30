@@ -20,11 +20,14 @@ tbl_footer() {
 tbl_out() {
     nxt="$1"
     nr="$2"
+    entry="$3"
 
     while [ $nxt -lt $nr ]; do
 	echo -e "\t.quad alpha_ni_syscall"
         let nxt=nxt+1
     done
+
+    echo -e "\t.quad $entry"
 }
 
 tbl_header() {
@@ -89,8 +92,7 @@ elif [ "${out: -2}" = ".S" ]; then
 	tbl_header
 
 	while read nr abi name entry config comment ; do
-	    tbl_out $nxt $nr
-	    echo -e "\t.quad $entry"
+	    tbl_out $nxt $nr $entry
             let nxt=nxt+1
 	done
 
