@@ -198,19 +198,19 @@
 189     vfork                           ppc_vfork                       ppc_vfork                               ppc_vfork                       
 190     ugetrlimit                      sys_getrlimit                   compat_sys_getrlimit                    sys_getrlimit                   
 191     readahead                       sys_readahead                   compat_sys_readahead                    sys_readahead                   
-192     mmap2,-                         sys_ni_syscall                  compat_sys_mmap2                        sys_mmap2                       -,__powerpc64__
-193     truncate64,-                    sys_ni_syscall                  compat_sys_truncate64                   sys_truncate64                  -,__powerpc64__
-194     ftruncate64,-                   sys_ni_syscall                  compat_sys_ftruncate64                  sys_ftruncate64                 -,__powerpc64__
-195     stat64,-                        sys_ni_syscall                  sys_stat64                              sys_stat64                      -,__powerpc64__
-196     lstat64,-                       sys_ni_syscall                  sys_lstat64                             sys_lstat64                     -,__powerpc64__
-197     fstat64,-                       sys_ni_syscall                  sys_fstat64                             sys_fstat64                     -,__powerpc64__
+192     mmap2                           sys_ni_syscall                  compat_sys_mmap2                        sys_mmap2
+193     truncate64                      sys_ni_syscall                  compat_sys_truncate64                   sys_truncate64
+194     ftruncate64                     sys_ni_syscall                  compat_sys_ftruncate64                  sys_ftruncate64
+195     stat64                          sys_ni_syscall                  sys_stat64                              sys_stat64
+196     lstat64                         sys_ni_syscall                  sys_lstat64                             sys_lstat64
+197     fstat64                         sys_ni_syscall                  sys_fstat64                             sys_fstat64
 198     pciconfig_read                  sys_pciconfig_read              sys_pciconfig_read                      sys_pciconfig_read              
 199     pciconfig_write                 sys_pciconfig_write             sys_pciconfig_write                     sys_pciconfig_write             
 200     pciconfig_iobase                sys_pciconfig_iobase            sys_pciconfig_iobase                    sys_pciconfig_iobase            
 201     multiplexer                     sys_ni_syscall                  sys_ni_syscall                          sys_ni_syscall                  
 202     getdents64                      sys_getdents64                  sys_getdents64                          sys_getdents64                  
 203     pivot_root                      sys_pivot_root                  sys_pivot_root                          sys_pivot_root                  
-204     fcntl64,-                       sys_ni_syscall                  compat_sys_fcntl64                      sys_fcntl64                     -,__powerpc64__
+204     fcntl64                         sys_ni_syscall                  compat_sys_fcntl64                      sys_fcntl64
 205     madvise                         sys_madvise                     sys_madvise                             sys_madvise                     
 206     mincore                         sys_mincore                     sys_mincore                             sys_mincore                     
 207     gettid                          sys_gettid                      sys_gettid                              sys_gettid                      
@@ -231,7 +231,7 @@
 222     sched_setaffinity               sys_sched_setaffinity           compat_sys_sched_setaffinity            sys_sched_setaffinity           
 223     sched_getaffinity               sys_sched_getaffinity           compat_sys_sched_getaffinity            sys_sched_getaffinity           
 225     tuxcall                         sys_ni_syscall                  sys_ni_syscall                          sys_ni_syscall                  
-226     sendfile64,-                    sys_ni_syscall                  compat_sys_sendfile64                   sys_sendfile64                  -,__powerpc64__
+226     sendfile64                      sys_ni_syscall                  compat_sys_sendfile64                   sys_sendfile64
 227     io_setup                        sys_io_setup                    compat_sys_io_setup                     sys_io_setup                    
 228     io_destroy                      sys_io_destroy                  sys_io_destroy                          sys_io_destroy                  
 229     io_getevents                    sys_io_getevents                compat_sys_io_getevents                 sys_io_getevents                
@@ -259,7 +259,7 @@
 251     utimes                          sys_utimes                      compat_sys_utimes                       sys_utimes                      
 252     statfs64                        sys_statfs64                    compat_sys_statfs64                     sys_statfs64                    
 253     fstatfs64                       sys_fstatfs64                   compat_sys_fstatfs64                    sys_fstatfs64                   
-254     fadvise64_64,-                  sys_ni_syscall                  ppc_fadvise64_64                        ppc_fadvise64_64                -,__powerpc64__
+254     fadvise64_64                    sys_ni_syscall                  ppc_fadvise64_64                        ppc_fadvise64_64
 255     rtas                            ppc_rtas                        ppc_rtas                                ppc_rtas                        
 256     sys_debug_setcontext            sys_ni_syscall                  sys_ni_syscall                          sys_debug_setcontext            
 258     migrate_pages                   sys_ni_syscall                  sys_ni_syscall                          sys_ni_syscall                  
@@ -295,7 +295,7 @@
 288     mknodat                         sys_mknodat                     sys_mknodat                             sys_mknodat                     
 289     fchownat                        sys_fchownat                    sys_fchownat                            sys_fchownat                    
 290     futimesat                       sys_futimesat                   compat_sys_futimesat                    sys_futimesat                   
-291     newfstatat,fstatat64            sys_newfstatat                  sys_fstatat64                           sys_fstatat64                   __powerpc64__,-
+291     newfstatat                      sys_newfstatat                  sys_fstatat64                           sys_fstatat64
 292     unlinkat                        sys_unlinkat                    sys_unlinkat                            sys_unlinkat                    
 293     renameat                        sys_renameat                    sys_renameat                            sys_renameat                    
 294     linkat                          sys_linkat                      sys_linkat                              sys_linkat                      
