@@ -58,7 +58,7 @@ hdr_out() {
     if [ -z "$offset" ]; then
 	echo -e "#define __NR_${prefix}${name}\t$nr"
     else
-	echo -e "#define __NR_${prefix}${name}\t($offset + $(($nr-$const)))"
+	echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
     fi
 }
 
