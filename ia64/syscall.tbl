@@ -153,7 +153,7 @@
 1168    common  nanosleep               sys_nanosleep
 1169    common  nfsservctl              sys_ni_syscall
 1170    common  prctl                   sys_prctl
-1171    common  -			sys_getpagesize
+1171    common  getpagesize		sys_getpagesize	  		/* not implemented */
 1172    common  mmap_pgoff              sys_mmap_pgoff
 1173    common  pciconfig_read          sys_pciconfig_read
 1174    common  pciconfig_write         sys_pciconfig_write
