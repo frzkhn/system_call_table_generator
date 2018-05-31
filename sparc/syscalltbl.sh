@@ -97,7 +97,7 @@ hdr_fileguard() {
 
 if [ "${out: -2}" = ".h" ]; then
     nxt=0
-    grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+    grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
 	hdr_fileguard
 	hdr_header
 
@@ -111,7 +111,7 @@ if [ "${out: -2}" = ".h" ]; then
     ) > "$out"
 elif [ "${out: -2}" = ".S" ]; then
     nxt=0
-    grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+    grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
 	tbl_header $abi
 	
             while read nr name entry_64 entry_32 entry_x32 comment ; do
