@@ -2,7 +2,7 @@
 # Linux system call numbers and entry vectors
 #
 # The format is:
-# <number> <name> <entry_point_64> <compat_entry_point> <entry_point_32> <config>
+# <number> <name> <entry_point_64> <compat_entry_point> <entry_point_32>
 #
 # The abi is "not common" for this file.
 #
