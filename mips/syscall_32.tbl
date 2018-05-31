@@ -2,7 +2,7 @@
 # Linux system call numbers and entry vectors
 #
 # The format is:
-# <number> <name> <entry point> <compat_entry_point> <config> <comment>
+# <number> <name> <entry point> <compat_entry_point> <comment>
 #
 # The abi is always common for this file.
 #
@@ -245,8 +245,8 @@
 4236    tkill                           sys_tkill                                               sys_tkill
 4237    sendfile64                      sys_sendfile64                                          sys_sendfile64
 4238    futex                           sys_futex                                               compat_sys_futex
-4239    sched_setaffinity               mipsmt_sys_sched_setaffinity,sys_sched_setaffinity      compat_sys_sched_setaffinity		CONFIG_MIPS_MT_FPAFF,-
-4240    sched_getaffinity               mipsmt_sys_sched_getaffinity,sys_sched_getaffinity      compat_sys_sched_getaffinity		CONFIG_MIPS_MT_FPAFF,-
+4239    sched_setaffinity               mipsmt_sys_sched_setaffinity      			compat_sys_sched_setaffinity
+4240    sched_getaffinity               mipsmt_sys_sched_getaffinity      			compat_sys_sched_getaffinity
 4241    io_setup                        sys_io_setup                                            compat_sys_io_setup
 4242    io_destroy                      sys_io_destroy                                          sys_io_destroy
 4243    io_getevents                    sys_io_getevents                                        compat_sys_io_getevents
@@ -285,7 +285,7 @@
 4276    mq_getsetattr                   sys_mq_getsetattr                                       compat_sys_mq_getsetattr
 4277    vserver                         sys_ni_syscall                                          sys_ni_syscall
 4278    waitid                          sys_waitid                                              compat_sys_waitid
-4279    sys_setaltroot                  sys_ni_syscall                  			sys_ni_syscall                          -                       /* not implemented */
+4279    sys_setaltroot                  sys_ni_syscall                  			sys_ni_syscall                          /* not implemented */
 4280    add_key                         sys_add_key                                             sys_add_key
 4281    request_key                     sys_request_key                                         sys_request_key
 4282    keyctl                          sys_keyctl                                              compat_sys_keyctl

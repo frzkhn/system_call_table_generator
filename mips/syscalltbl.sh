@@ -7,52 +7,7 @@ abi="$3"
 prefix="$4"
 offset="$5"
 
-eprint() {
-    nr="$1"
-    entry="$2"
-    
-    if [ $(($nr % 5)) -eq 0 ]; then
-        echo -e "\tPTR\t$entry\t/* $nxt */"
-    else
-        echo -e "\tPTR\t$entry"
-    fi
-}
-
-parse_config_eprint() {
-    nr="$1"
-    entry="$2"
-    config="$3"
-
-    e_config="$(cut -d',' -f1 <<< $config)"
-    n_config="$(cut -d',' -f2 <<< $config)"
-    if [ "$e_config" != "-" ]; then
-	echo "#ifdef $e_config"
-    elif [ "$n_config" != "-" ]; then
-	echo "#ifndef $n_config"
-    fi
-    i_entry="$(cut -d',' -f1 <<< $entry)"
-    e_entry="$(cut -d',' -f2 <<< $entry)"
-    if [ "$i_entry" != "-" ]; then
-	eprint $nr $i_entry
-    fi
-    if [ "$e_entry" != "-" ]; then
-	echo "#else"
-	eprint $nr $e_entry
-    fi
-    echo "#endif"
-}
-
-chk_ni_syscall() {
-    nxt="$1"
-    nr="$2"
-
-    while [ $nxt -lt $nr ]; do
-	eprint $nxt "sys_ni_syscall"
-        let nxt=nxt+1
-    done
-}
-
-footer() {
+tbl_footer() {
     abi="$1"
 
     if [ "$abi" = "64-o32" ]; then
@@ -64,9 +19,24 @@ footer() {
     fi
 }
 
-header() {
+tbl_out() {
+    nxt="$1"
+    nr="$2"
+    entry="$3"
+    
+    while [ $nxt -lt $nr ]; do
+        echo -e "\tPTR\tsys_ni_syscall"
+        let nxt=nxt+1
+    done
+    
+    echo -e "\tPTR\t$entry"
+}
+
+tbl_header() {
     abi="$1"
 
+    echo "/* SPDX-License-Identifier: GPL-2.0 */"
+    echo ""
     if [ "$abi" = "32-o32" ]; then
 	nxt=4000
 	echo -e "\t.align\t2"
@@ -89,38 +59,18 @@ header() {
     fi
 }
 
-license() {
-    echo "/* SPDX-License-Identifier: GPL-2.0 */"
-    echo ""
-}
-
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in" | sort -n | (
-    license
-    header $abi
-    if [ "$abi" = "32-o32" ]; then
-	while read nr name entry compat config comment ; do
-	    chk_ni_syscall $nxt $nr
-	    
-	    if [ -z "$config" -o "$config" = "-" ]; then
-		eprint $nr $entry
-	    else
-		parse_config_eprint $nr $entry $config
-	    fi
-	    nxt=$nr
-	    let nxt=nxt+1
-	done
-    else
-	while read nr name entry compat comment ; do
-	    chk_ni_syscall $nxt $nr
+    tbl_header $abi
 
-	    if [ "$abi" = "64-o32" ]; then
-		eprint $nr $compat
-	    else
-		eprint $nr $entry
-	    fi
-	    nxt=$nr
+    while read nr name entry compat comment ; do
+	if [ "$abi" = "64-o32" ]; then
+            tbl_out $nxt $nr $compat
 	    let nxt=nxt+1
-	done
-    fi
-    footer $abi
+	else
+            tbl_out $nxt $nr $entry
+            let nxt=nxt+1
+	fi
+    done
+    
+    tbl_footer $abi
 ) > "$out"

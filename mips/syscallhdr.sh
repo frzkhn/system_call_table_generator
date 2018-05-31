@@ -9,29 +9,7 @@ abi="$5"
 prefix="$6"
 offset="$7"
 
-nprint() {
-    nr="$1"
-    const="$2"
-    name="$3"
-    offset="$4"
-    comment="$5"
-
-    if [ -z "$offset" ]; then
-	if [ -z "$comment" ]; then
-	    echo -e "#define __NR_${prefix}${name}\t$nr"
-	else
-	    echo -e "/* #define __NR_${prefix}${name}\t$nr */"
-	fi
-    else
-	if [ -z "$comment" ]; then
-	    echo -e "#define __NR_${prefix}${name}\t($offset + $(($nr-$const)))"
-	else
-	    echo -e "/* #define __NR_${prefix}${name}\t($offset + $(($nr-$const))) */"
-	fi
-    fi
-}
-
-footer_32() {
+hdr_footer_32() {
     echo ""
     echo "/*"
     echo " * Offset of the last Linux o32 flavoured syscall"
@@ -45,7 +23,19 @@ footer_32() {
     echo ""
 }
 
-header_32() {
+hdr_out() {
+    nr="$1"
+    name="$2"
+    base="$3"
+
+    if [ -z "$offset" ]; then
+	echo -e "#define __NR_${prefix}${name}\t$nr"
+    else
+	echo -e "#define __NR_${prefix}${name}\t($offset + $(($nr-$base)))"
+    fi
+}
+
+hdr_header_32() {
     echo "#if _MIPS_SIM == _MIPS_SIM_ABI32"
     echo ""
     echo "/*"
@@ -54,15 +44,7 @@ header_32() {
     echo -e "#define __NR_Linux\t4000"
 }
 
-header() {
-    echo "#ifndef ${fileguard}"
-    echo "#define ${fileguard}"
-    echo ""
-    echo "#include <asm/sgidefs.h>"
-    echo ""
-}
-
-license() {
+hdr_header() {
     echo "/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */"
     echo "/*"
     echo " * This file is subject to the terms and conditions of the GNU General Public"
@@ -75,25 +57,38 @@ license() {
     echo " * Changed system calls macros _syscall5 - _syscall7 to push args 5 to 7 onto"
     echo " * the stack. Robin Farine for ACN S.A, Copyright (C) 1996 by ACN S.A"
     echo " */"
+    echo "#ifndef ${fileguard}"
+    echo "#define ${fileguard}"
+    echo ""
+    echo "#include <asm/sgidefs.h>"
+    echo ""
 }
 
-fileguard=_UAPI_ASM_`basename "$out" | sed \
+hdr_fileguard() {
+    fileguard=_UAPI_ASM_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
     -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
+}
+
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_32" | sort -n | (
-    license
-    header
-    header_32
+    hdr_fileguard
+    hdr_header
+    hdr_header_32
     
-    const=4000
-    while read nr name entry compat config comment ; do
-	nprint $nr $const $name $offset $comment 
+    base=4000
+    while read nr name entry compat comment ; do
+	 hdr_out $nr $name $base
     done
 
-    footer_32
+    hdr_footer_32
 ) > "$out"
 
-footer_64() {
+hdr_footer() {
+    echo ""
+    echo "#endif /* ${fileguard} */"
+}
+
+hdr_footer_64() {
     echo ""
     echo "/*"
     echo " * Offset of the last Linux 64-bit flavoured syscall"
@@ -107,7 +102,7 @@ footer_64() {
     echo ""
 }
 
-header_64() {
+hdr_header_64() {
     echo "#if _MIPS_SIM == _MIPS_SIM_ABI64"
     echo ""
     echo "/*"
@@ -117,21 +112,17 @@ header_64() {
 }
 
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_64" | sort -n | (
-    header_64
+    hdr_header_64
 
-    const=5000
+    base=5000
     while read nr name entry comment ; do
-	nprint $nr $const $name $offset $comment
+	hdr_out $nr $name $base
     done
 
-    footer_64
+    hdr_footer_64
 ) >> "$out"
 
-footer() {
-    echo "#endif /* ${fileguard} */"
-}
-
-footer_n32() {
+hdr_footer_n32() {
     echo ""
     echo "/*"
     echo " * Offset of the last N32 flavoured syscall"
@@ -142,10 +133,9 @@ footer_n32() {
     echo ""
     echo -e "#define __NR_N32_Linux\t6000"
     echo -e "#define __NR_N32_Linux_syscalls\t330"
-    echo ""
 }
 
-header_n32() {
+hdr_header_n32() {
     echo "#if _MIPS_SIM == _MIPS_SIM_NABI32"
     echo ""
     echo "/*"
@@ -155,13 +145,14 @@ header_n32() {
 }
 
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]" "$in_n32" | sort -n | (
-    header_n32
+    hdr_fileguard
+    hdr_header_n32
 
-    const=6000
+    base=6000
     while read nr name entry comment ; do
-	nprint $nr $const $name $offset $comment
+	hdr_out $nr $name $base
     done
 
-    footer_n32
-    footer
+    hdr_footer_n32
+    hdr_footer
 ) >> "$out"
