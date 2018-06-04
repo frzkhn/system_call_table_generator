@@ -1,0 +1,34 @@
+From 03b113ed6d459cff795dbe4f34f6a7db48ae5275 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Mon, 4 Jun 2018 15:29:25 +0530
+Subject: [PATCH] arch: ia64: System call table generator
+
+- Generate include/generated/uapi/asm/unistd.h and
+  include/generated/asm/syscalls.h
+- Add kernel/syscall.c file which will in turn include
+  include/generated/asm/syscalls.h file
+---
+ arch/ia64/kernel/syscall.S | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+ create mode 100644 arch/ia64/kernel/syscall.S
+
+diff --git a/arch/ia64/kernel/syscall.S b/arch/ia64/kernel/syscall.S
+new file mode 100644
+index 0000000..5ecbf33
+--- /dev/null
++++ b/arch/ia64/kernel/syscall.S
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    data8 entry
++	
++	.rodata
++	.align 8
++	.globl sys_call_table
++sys_call_table:
++#include <asm/syscalls.h>
++
++	.org sys_call_table + 8*NR_syscalls
+-- 
+1.9.1
+
