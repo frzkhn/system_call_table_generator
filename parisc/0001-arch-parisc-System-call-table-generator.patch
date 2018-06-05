@@ -1,0 +1,54 @@
+From 15c325fe680bcc80e85eca3706e385c30a9a0f4d Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Tue, 5 Jun 2018 14:39:35 +0530
+Subject: [PATCH] arch: parisc: System call table generator
+
+- Generate include/generated/uapi/asm/unistd.h and
+  include/generated/asm/syscalls_64/32/x32.h
+- Add kernel/syscall_64/32/x32.S file which will in turn
+  include include/generated/asm/syscalls_64/32/x32.h file
+---
+ arch/parisc/kernel/syscall_32.S  | 5 +++++
+ arch/parisc/kernel/syscall_64.S  | 5 +++++
+ arch/parisc/kernel/syscall_x32.S | 5 +++++
+ 3 files changed, 15 insertions(+)
+ create mode 100644 arch/parisc/kernel/syscall_32.S
+ create mode 100644 arch/parisc/kernel/syscall_64.S
+ create mode 100644 arch/parisc/kernel/syscall_x32.S
+
+diff --git a/arch/parisc/kernel/syscall_32.S b/arch/parisc/kernel/syscall_32.S
+new file mode 100644
+index 0000000..5511ac0
+--- /dev/null
++++ b/arch/parisc/kernel/syscall_32.S
+@@ -0,0 +1,5 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .word entry
++
++#include <asm/syscalls_32.h>
+diff --git a/arch/parisc/kernel/syscall_64.S b/arch/parisc/kernel/syscall_64.S
+new file mode 100644
+index 0000000..6c704cd
+--- /dev/null
++++ b/arch/parisc/kernel/syscall_64.S
+@@ -0,0 +1,5 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .dword entry
++
++#include <asm/syscalls_64.h>
+diff --git a/arch/parisc/kernel/syscall_x32.S b/arch/parisc/kernel/syscall_x32.S
+new file mode 100644
+index 0000000..5ea5e86
+--- /dev/null
++++ b/arch/parisc/kernel/syscall_x32.S
+@@ -0,0 +1,5 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .dword entry
++
++#include <asm/syscalls_x32.h>
+-- 
+1.9.1
+
