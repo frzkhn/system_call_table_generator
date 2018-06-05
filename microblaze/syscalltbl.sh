@@ -11,7 +11,7 @@ emit() {
     entry="$3"
 
     while [ $nxt -lt $nr ]; do
-	echo "__SYSCALL($nxt, alpha_ni_syscall, )"
+	echo "__SYSCALL($nxt, sys_ni_syscall, )"
 	let "nxt=nxt+1"
     done
 
