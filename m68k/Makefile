@@ -1,31 +1,37 @@
 # SPDX-License-Identifier: GPL-2.0
-uapih := arch/$(SRCARCH)/include/uapi/asm
-scall := arch/$(SRCARCH)/kernel
+out := arch/$(SRCARCH)/include/generated/asm
+uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 
-_dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
-	  $(shell [ -d '$(scall)' ] || mkdir -p '$(scall)')
+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') \
+	  $(shell [ -d '$(out)' ] || mkdir -p '$(out)')
 
-systbl := $(srctree)/$(src)/syscall.tbl
-syscall := $(srctree)/$(src)/syscalltbl.sh
+syscall := $(srctree)/$(src)/syscall.tbl
 
-quiet_cmd_syscall = SYSCALL  $@
-      cmd_syscall = $(CONFIG_SHELL) '$(syscall)' '$<' '$@' \
-		   '$(syscall_abi_$(basetarget))' \
-		   '$(syscall_pfx_$(basetarget))' \
-		   '$(syscall_offset_$(basetarget))'
+syshdr := $(srctree)/$(src)/syscallhdr.sh
+systbl := $(srctree)/$(src)/syscalltbl.sh
 
-$(uapih)/unistd.h: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+quiet_cmd_syshdr = SYSHDR  $@
+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  \
+		   '$(syshdr_abi_$(basetarget))'          \
+		   '$(syshdr_pfx_$(basetarget))'          \
+		   '$(syshdr_offset_$(basetarget))'
 
-$(scall)/syscalltable.S: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+quiet_cmd_systbl = SYSTBL  $@
+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
+		   '$(systbl_abi_$(basetarget))'
 
-uapihsyscall-y			+= unistd.h
-syscall-y			+= syscalltable.S
+$(uapi)/unistd.h: $(syscall) $(syshdr)
+	$(call if_changed,syshdr)
 
-targets	+= $(uapihsyscall-y) $(syscall-y)
+$(out)/syscalls.h: $(syscall) $(systbl)
+	$(call if_changed,systbl)
+
+uapisyshdr-y			+= unistd.h
+syshdr-y			+= syscalls.h
+
+targets	+= $(uapisyshdr-y) $(syshdr-y)
 
 PHONY += all
-all: $(addprefix $(uapih)/,$(uapihsyscall-y))
-all: $(addprefix $(scall)/,$(syscall-y))
+all: $(addprefix $(uapi)/,$(uapisyshdr-y))
+all: $(addprefix $(out)/,$(syshdr-y))
 	@:

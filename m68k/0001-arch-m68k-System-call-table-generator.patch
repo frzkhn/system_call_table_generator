@@ -1,0 +1,35 @@
+From b9171005887f2b2c189c8f8fa056906a675b9604 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Tue, 5 Jun 2018 09:04:15 +0530
+Subject: [PATCH] arch: m68k: System call table generator
+
+- Generate include/generated/uapi/asm/unistd.h and
+  include/generated/asm/syscalls.h
+- Add kernel/syscall.S file which will in turn include
+  include/generated/asm/syscalls.h file
+---
+ arch/m68k/kernel/syscall.S | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 arch/m68k/kernel/syscall.S
+
+diff --git a/arch/m68k/kernel/syscall.S b/arch/m68k/kernel/syscall.S
+new file mode 100644
+index 0000000..29713ba
+--- /dev/null
++++ b/arch/m68k/kernel/syscall.S
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#include <linux/linkage.h>
++
++#ifndef CONFIG_MMU
++#define sys_mmap2	sys_mmap_pgoff
++#endif
++
++.section .rodata
++ALIGN
++ENTRY(sys_call_table)
++#include <asm/syscalls.h>
+-- 
+1.9.1
+
