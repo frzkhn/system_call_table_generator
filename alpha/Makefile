@@ -11,13 +11,13 @@ syshdr := $(srctree)/$(src)/syscallhdr.sh
 systbl := $(srctree)/$(src)/syscalltbl.sh
 
 quiet_cmd_syshdr = SYSHDR  $@
-      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@' \
-		   '$(syshdr_abi_$(basetarget))'         \
-		   '$(syshdr_pfx_$(basetarget))'         \
+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  \
+		   '$(syshdr_abi_$(basetarget))'          \
+		   '$(syshdr_pfx_$(basetarget))'          \
 		   '$(syshdr_offset_$(basetarget))'
 
 quiet_cmd_systbl = SYSTBL  $@
-      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@' \
+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
 		   '$(systbl_abi_$(basetarget))'
 
 $(uapi)/unistd.h: $(syscall) $(syshdr)

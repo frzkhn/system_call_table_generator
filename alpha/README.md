@@ -7,9 +7,13 @@
     - entry
     - comments
 
-- The scripts syscallhdr.sh will generate uapi header- 
-  arch/alpha/include/uapi/asm/unistd.h. 
+- The scripts syscallhdr.sh will generate 
+  uapi header in the location, 
+  arch/alpha/include/generated/uapi/asm/unistd.h
 
-- The script syscalltbl.sh will generate syscalls.h 
-  which will be included by syscall.c file
+- The script syscalltbl.sh will generate 
+  system call table support file in the location, 
+  arch/alpha/include/generated/asm/syscalls.h
+  which will be included by system call table, 
+  arch/alpha/kernel/syscall.S
 
