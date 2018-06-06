@@ -4,8 +4,6 @@
 in="$1"
 out="$2"
 abi="$3"
-prefix="$4"
-offset="$5"
 
 emit() {
     nxt="$1"
@@ -21,6 +19,7 @@ emit() {
 }
 
 grep '^[0-9]' "$in" | sort -n | (
+    nxt=0
     while read nr name entry_64 entry_32 entry_x32 comment ; do
 	if [ "$abi" = "64" ]; then
             emit $nxt $nr $entry_64
