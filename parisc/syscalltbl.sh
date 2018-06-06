@@ -4,8 +4,6 @@
 in="$1"
 out="$2"
 abi="$3"
-prefix="$4"
-offset="$5"
 
 emit() {
     nxt="$1"
