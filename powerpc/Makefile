@@ -1,40 +1,46 @@
 # SPDX-License-Identifier: GPL-2.0
-uapih := arch/$(SRCARCH)/include/uapi/asm
-scall := arch/$(SRCARCH)/kernel
+out := arch/$(SRCARCH)/include/generated/asm
+uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 
-_dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
-	  $(shell [ -d '$(scall)' ] || mkdir -p '$(scall)')
+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') \
+	  $(shell [ -d '$(out)' ] || mkdir -p '$(out)')
 
-systbl := $(srctree)/$(src)/syscall.tbl
-syscall := $(srctree)/$(src)/syscalltbl.sh
+syscall := $(srctree)/$(src)/syscall.tbl
 
-quiet_cmd_syscall = SYSCALL  $@
-      cmd_syscall = $(CONFIG_SHELL) '$(syscall)' '$<' '$@' \
-		   '$(syscall_abi_$(basetarget))' \
-		   '$(syscall_pfx_$(basetarget))' \
-		   '$(syscall_offset_$(basetarget))'
+syshdr := $(srctree)/$(src)/syscallhdr.sh
+systbl := $(srctree)/$(src)/syscalltbl.sh
 
-$(uapih)/unistd.h: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+quiet_cmd_syshdr = SYSHDR  $@
+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  \
+		   '$(syshdr_abi_$(basetarget))'          \
+		   '$(syshdr_pfx_$(basetarget))'          \
+		   '$(syshdr_offset_$(basetarget))'
 
-syscall_abi_systbl_32 := 32
-$(scall)/systbl_32.S: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+quiet_cmd_systbl = SYSTBL  $@
+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
+		   '$(systbl_abi_$(basetarget))'
 
-syscall_abi_systbl_64 := 64
-$(scall)/systbl_64.S: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+$(uapi)/unistd.h: $(syscall) $(syshdr)
+	$(call if_changed,syshdr)
 
-syscall_abi_systbl_x32 := x32
-$(scall)/systbl_x32.S: $(systbl) $(syscall)
-	$(call if_changed,syscall)
+systbl_abi_syscalls_32 := 32
+$(out)/syscalls_32.h: $(syscall) $(systbl)
+	$(call if_changed,systbl)
 
-uapihsyscall-y			+= unistd.h
-syscall-y			+= systbl_32.S systbl_64.S systbl_x32.S
+systbl_abi_syscalls_64 := 64
+$(out)/syscalls_64.h: $(syscall) $(systbl)
+	$(call if_changed,systbl)
 
-targets	+= $(uapihsyscall-y) $(syscall-y)
+systbl_abi_syscalls_x32 := x32
+$(out)/syscalls_x32.h: $(syscall) $(systbl)
+	$(call if_changed,systbl)
+
+uapisyshdr-y			+= unistd.h
+syshdr-y			+= syscalls_32.h syscalls_64.h syscalls_x32.h
+
+targets	+= $(uapisyshdr-y) $(syshdr-y)
 
 PHONY += all
-all: $(addprefix $(uapih)/,$(uapihsyscall-y))
-all: $(addprefix $(scall)/,$(syscall-y))
+all: $(addprefix $(uapi)/,$(uapisyshdr-y))
+all: $(addprefix $(out)/,$(syshdr-y))
 	@:

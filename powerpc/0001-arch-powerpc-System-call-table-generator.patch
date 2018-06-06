@@ -1,0 +1,65 @@
+From d17d8fbc1e6ad83e2b57808d3f55f830bb4b4480 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Wed, 6 Jun 2018 09:34:25 +0530
+Subject: [PATCH] arch: powerpc: System call table generator
+
+- Generate include/generated/uapi/asm/unistd.h and
+  include/generated/asm/syscalls_64/32/x32.h
+- Add kernel/syscall_64/32/x32.S file which will in turn
+  include include/generated/asm/syscalls_64/32/x32.h file
+---
+ arch/powerpc/kernel/syscall_32.S  | 8 ++++++++
+ arch/powerpc/kernel/syscall_64.S  | 9 +++++++++
+ arch/powerpc/kernel/syscall_x32.S | 9 +++++++++
+ 3 files changed, 26 insertions(+)
+ create mode 100644 arch/powerpc/kernel/syscall_32.S
+ create mode 100644 arch/powerpc/kernel/syscall_64.S
+ create mode 100644 arch/powerpc/kernel/syscall_x32.S
+
+diff --git a/arch/powerpc/kernel/syscall_32.S b/arch/powerpc/kernel/syscall_32.S
+new file mode 100644
+index 0000000..9583325
+--- /dev/null
++++ b/arch/powerpc/kernel/syscall_32.S
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .long entry
++
++	.section .rodata,"a"
++	.globl sys_call_table
++sys_call_table:
++#include <asm/syscalls_32.h>
+diff --git a/arch/powerpc/kernel/syscall_64.S b/arch/powerpc/kernel/syscall_64.S
+new file mode 100644
+index 0000000..edaa66b
+--- /dev/null
++++ b/arch/powerpc/kernel/syscall_64.S
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .8byte entry
++
++	.section .rodata,"a"
++	.p2align
++	.globl sys_call_table
++sys_call_table:
++#include <asm/syscalls_64.h>
+diff --git a/arch/powerpc/kernel/syscall_x32.S b/arch/powerpc/kernel/syscall_x32.S
+new file mode 100644
+index 0000000..7b5f4d7
+--- /dev/null
++++ b/arch/powerpc/kernel/syscall_x32.S
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs)    .8byte entry
++
++	.section .rodata,"a"
++	.p2align
++	.globl sys_call_table
++sys_call_table:
++#include <asm/syscalls_x32.h>
+-- 
+1.9.1
+
