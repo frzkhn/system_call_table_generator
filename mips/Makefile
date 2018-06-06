@@ -1,57 +1,55 @@
 # SPDX-License-Identifier: GPL-2.0
-uapih := arch/$(SRCARCH)/include/uapi/asm
-scall := arch/$(SRCARCH)/kernel
+out := arch/$(SRCARCH)/include/generated/asm
+uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 
-_dummy := $(shell [ -d '$(uapih)' ] || mkdir -p '$(uapih)') \
-	  $(shell [ -d '$(scall)' ] || mkdir -p '$(scall)')
+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') \
+	  $(shell [ -d '$(out)' ] || mkdir -p '$(out)')
 
-systbl32 := $(srctree)/$(src)/syscall_32.tbl
-systbl64 := $(srctree)/$(src)/syscall_64.tbl
-systbln32 := $(srctree)/$(src)/syscall_n32.tbl
+syscall32 := $(srctree)/$(src)/syscall_32.tbl
+syscall64 := $(srctree)/$(src)/syscall_64.tbl
+syscalln32 := $(srctree)/$(src)/syscall_n32.tbl
 
-syscallhdr := $(srctree)/$(src)/syscallhdr.sh
-syscalltbl := $(srctree)/$(src)/syscalltbl.sh
+syshdr := $(srctree)/$(src)/syscallhdr.sh
+systbl := $(srctree)/$(src)/syscalltbl.sh
 
-quiet_cmd_syscallhdr = SYSCALLHDR  $@
-      cmd_syscallhdr = $(CONFIG_SHELL) '$(syscallhdr)'     \
-		      '$(systbl32)' '$(systbl64)'          \
-		      '$(systbln32)' '$(uapih)/unistd.h'   \
-		      '$(syscallhdr_abi_$(basetarget))'    \
-		      '$(syscallhdr_pfx_$(basetarget))'    \
-		      '$(syscallhdr_offset_$(basetarget))'
+quiet_cmd_syshdr = SYSHDR  $@
+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)'            \
+		   '$(syscall32)' '$(syscall64)'	  \
+		   '$(syscalln32)' '$(uapi)/unistd.h'     \
+		   '$(syshdr_abi_$(basetarget))'          \
+		   '$(syshdr_pfx_$(basetarget))'          \
+		   '$(syshdr_offset_$(basetarget))'
 
-quiet_cmd_syscalltbl = SYSCALLTBL  $@
-      cmd_syscalltbl = $(CONFIG_SHELL) '$(syscalltbl)' '$<' '$@' \
-		      '$(syscalltbl_abi_$(basetarget))'          \
-		      '$(syscalltbl_pfx_$(basetarget))'          \
-		      '$(syscalltbl_offset_$(basetarget))'
+quiet_cmd_systbl = SYSTBL  $@
+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
+		   '$(systbl_abi_$(basetarget))'
 
-syscallhdr_offset_unistd := __NR_Linux
-$(uapih)/unistd.h: $(systbl32) $(systbl64) $(systbln32) $(syscallhdr)
-	$(call if_changed,syscallhdr)
+syshdr_offset_unistd := __NR_Linux
+$(uapi)/unistd.h: $(syscall32) $(syscall64) $(syscalln32) $(syshdr)
+	$(call if_changed,syshdr)
 
-syscalltbl_abi_systbl32-o32 := 32-o32
-$(scall)/systbl32-o32.S: $(systbl32) $(syscalltbl)
-	$(call if_changed,syscalltbl)
+systbl_abi_syscalls_32_o32 := 32-o32
+$(out)/syscalls_32_o32.h: $(syscall32) $(systbl)
+	$(call if_changed,systbl)
 
-syscalltbl_abi_systbl64-o32 := 64-o32
-$(scall)/systbl64-o32.S: $(systbl32) $(syscalltbl)
-	$(call if_changed,syscalltbl)
+systbl_abi_syscalls_64_o32 := 64-o32
+$(out)/syscalls_64_o32.h: $(syscall32) $(systbl)
+	$(call if_changed,systbl)
 
-syscalltbl_abi_systbl64-64 := 64-64
-$(scall)/systbl64-64.S: $(systbl64) $(syscalltbl)
-	$(call if_changed,syscalltbl)
+systbl_abi_syscalls_64_64 := 64-64
+$(out)/syscalls_64_64.h: $(syscall64) $(systbl)
+	$(call if_changed,systbl)
 
-syscalltbl_abi_systbl64-n32 := 64-n32
-$(scall)/systbl64-n32.S: $(systbln32) $(syscalltbl)
-	$(call if_changed,syscalltbl)
+systbl_abi_syscalls_64_n32 := 64-n32
+$(out)/syscalls_64_n32.h: $(syscalln32) $(systbl)
+	$(call if_changed,systbl)
 
-uapihsyscall-y			+= unistd.h
-syscall-y			+= systbl32-o32.S systbl64-o32.S systbl64-64.S systbl64-n32.S
+uapisyshdr-y			+= unistd.h
+syshdr-y			+= syscalls_32_o32.h syscalls_64_o32.h syscalls_64_64.h syscalls_64_n32.h
 
-targets	+= $(uapihsyscall-y) $(syscall-y)
+targets	+= $(uapisyshdr-y) $(syshdr-y)
 
 PHONY += all
-all: $(addprefix $(uapih)/,$(uapihsyscall-y))
-all: $(addprefix $(scall)/,$(syscall-y))
+all: $(addprefix $(uapi)/,$(uapisyshdr-y))
+all: $(addprefix $(out)/,$(syshdr-y))
 	@:
