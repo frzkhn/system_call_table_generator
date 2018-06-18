@@ -26,7 +26,11 @@ grep '^[0-9]' "$in" | sort -n | (
 	elif [ "$my_abi" = "32" ]; then
             emit $nxt $nr $entry
 	elif [ "$my_abi" = "x32" ]; then
-            emit $nxt $nr $compat
+	    if [ -z "$compat" ]; then
+		emit $nxt $nr $entry
+	    else
+		emit $nxt $nr $compat
+	    fi
 	fi
 	nxt=$nr
         let nxt=nxt+1
