@@ -15,7 +15,7 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo "#define ${fileguard}"
     echo ""
 
-    while read nr name entry_64 entry_32 entry_x32 ; do
+    while read nr abi name entry compat ; do
 	if [ -z "$offset" ]; then
 	    echo -e "#define __NR_${prefix}${name}\t$nr"
 	else
