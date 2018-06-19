@@ -21,9 +21,11 @@ quiet_cmd_systbl = SYSTBL  $@
       cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
 		   '$(systbl_abi_$(basetarget))'
 
+syshdr_offset_unistd_32 := __NR_Linux
 $(uapi)/unistd_32.h: $(syscall32) $(syshdr)
 	$(call if_changed,syshdr)
 
+syshdr_offset_unistd_64 := __NR_Linux
 $(uapi)/unistd_64.h: $(syscall64) $(syshdr)
 	$(call if_changed,syshdr)
 
