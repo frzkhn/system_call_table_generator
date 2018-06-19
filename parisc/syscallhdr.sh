@@ -9,14 +9,14 @@ offset="$5"
 
 fileguard=_UAPI_ASM_PARISC_`basename "$out" | sed \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
-    -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`_    
+    -e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo "#ifndef ${fileguard}"
     echo "#define ${fileguard}"
     echo ""
     echo -e "#define __NR_Linux\t0"
 
-    while read nr name entry compat comment ; do
+    while read nr abi name entry compat ; do
 	if [ -z "$offset" ]; then
 	    echo -e "#define __NR_${prefix}${name}\t$nr"
 	else
@@ -26,8 +26,6 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 
     echo ""
     echo -e "#define __NR_Linux_syscalls\t(__NR_statx + 1)"
-    echo ""
-    echo -e "#define LINUX_GATEWAY_ADDR\t0x100"
     echo ""
     echo "#endif /* ${fileguard} */"
 ) > "$out"

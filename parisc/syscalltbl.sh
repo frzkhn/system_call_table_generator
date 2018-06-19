@@ -3,7 +3,7 @@
 
 in="$1"
 out="$2"
-abi="$3"
+my_abi="$3"
 
 emit() {
     nxt="$1"
@@ -12,7 +12,7 @@ emit() {
     
     while [ $nxt -lt $nr ]; do
 	echo "__SYSCALL($nxt, sys_ni_syscall, )"
-        let "nxt=nxt+1"
+        let nxt=nxt+1
     done
     
     echo "__SYSCALL($nr, $entry, )"
@@ -20,13 +20,17 @@ emit() {
 
 grep '^[0-9]' "$in" | sort -n | (
     nxt=0
-    while read nr name entry compat comment ; do
-	if [ "$abi" = "64" -o "$abi" = "32" ]; then
+    while read nr abi name entry compat ; do
+	if [ "$my_abi" = "64" -o "$my_abi" = "32" ]; then
             emit $nxt $nr $entry
-	elif [ "$abi" = "x32" ]; then
-            emit $nxt $nr $compat
+	elif [ "$my_abi" = "x32" ]; then
+	    if [ -z "$compat" ]; then
+                emit $nxt $nr $entry
+            else
+                emit $nxt $nr $compat
+            fi
 	fi
 	nxt=$nr
-        let "nxt=nxt+1"
+        let nxt=nxt+1
     done
 ) > "$out"
