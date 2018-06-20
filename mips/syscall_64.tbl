@@ -1,335 +1,335 @@
 #
-# Linux system call numbers and entry vectors
+# 64-bit system call numbers and entry vectors
 #
 # The format is:
-# <number> <name> <entry point> <comment>
+# <number> <abi> <name> <entry point>
 #
-# The abi is always common for this file.
+# The abi is "common" for this file.
 #
-5000    read                            sys_read
-5001    write                           sys_write
-5002    open                            sys_open
-5003    close                           sys_close
-5004    stat                            sys_newstat
-5005    fstat                           sys_newfstat
-5006    lstat                           sys_newlstat
-5007    poll                            sys_poll
-5008    lseek                           sys_lseek
-5009    mmap                            sys_mips_mmap
-5010    mprotect                        sys_mprotect
-5011    munmap                          sys_munmap
-5012    brk                             sys_brk
-5013    rt_sigaction                    sys_rt_sigaction
-5014    rt_sigprocmask                  sys_rt_sigprocmask
-5015    ioctl                           sys_ioctl
-5016    pread64                         sys_pread64
-5017    pwrite64                        sys_pwrite64
-5018    readv                           sys_readv
-5019    writev                          sys_writev
-5020    access                          sys_access
-5021    pipe                            sysm_pipe
-5022    _newselect                      sys_select
-5023    sched_yield                     sys_sched_yield
-5024    mremap                          sys_mremap
-5025    msync                           sys_msync
-5026    mincore                         sys_mincore
-5027    madvise                         sys_madvise
-5028    shmget                          sys_shmget
-5029    shmat                           sys_shmat
-5030    shmctl                          sys_shmctl
-5031    dup                             sys_dup
-5032    dup2                            sys_dup2
-5033    pause                           sys_pause
-5034    nanosleep                       sys_nanosleep
-5035    getitimer                       sys_getitimer
-5036    setitimer                       sys_setitimer
-5037    alarm                           sys_alarm
-5038    getpid                          sys_getpid
-5039    sendfile                        sys_sendfile64
-5040    socket                          sys_socket
-5041    connect                         sys_connect
-5042    accept                          sys_accept
-5043    sendto                          sys_sendto
-5044    recvfrom                        sys_recvfrom
-5045    sendmsg                         sys_sendmsg
-5046    recvmsg                         sys_recvmsg
-5047    shutdown                        sys_shutdown
-5048    bind                            sys_bind
-5049    listen                          sys_listen
-5050    getsockname                     sys_getsockname
-5051    getpeername                     sys_getpeername
-5052    socketpair                      sys_socketpair
-5053    setsockopt                      sys_setsockopt
-5054    getsockopt                      sys_getsockopt
-5055    clone                           __sys_clone
-5056    fork                            __sys_fork
-5057    execve                          sys_execve
-5058    exit                            sys_exit
-5059    wait4                           sys_wait4
-5060    kill                            sys_kill
-5061    uname                           sys_newuname
-5062    semget                          sys_semget
-5063    semop                           sys_semop
-5064    semctl                          sys_semctl
-5065    shmdt                           sys_shmdt
-5066    msgget                          sys_msgget
-5067    msgsnd                          sys_msgsnd
-5068    msgrcv                          sys_msgrcv
-5069    msgctl                          sys_msgctl
-5070    fcntl                           sys_fcntl
-5071    flock                           sys_flock
-5072    fsync                           sys_fsync
-5073    fdatasync                       sys_fdatasync
-5074    truncate                        sys_truncate
-5075    ftruncate                       sys_ftruncate
-5076    getdents                        sys_getdents
-5077    getcwd                          sys_getcwd
-5078    chdir                           sys_chdir
-5079    fchdir                          sys_fchdir
-5080    rename                          sys_rename
-5081    mkdir                           sys_mkdir
-5082    rmdir                           sys_rmdir
-5083    creat                           sys_creat
-5084    link                            sys_link
-5085    unlink                          sys_unlink
-5086    symlink                         sys_symlink
-5087    readlink                        sys_readlink
-5088    chmod                           sys_chmod
-5089    fchmod                          sys_fchmod
-5090    chown                           sys_chown
-5091    fchown                          sys_fchown
-5092    lchown                          sys_lchown
-5093    umask                           sys_umask
-5094    gettimeofday                    sys_gettimeofday
-5095    getrlimit                       sys_getrlimit
-5096    getrusage                       sys_getrusage
-5097    sysinfo                         sys_sysinfo
-5098    times                           sys_times
-5099    ptrace                          sys_ptrace
-5100    getuid                          sys_getuid
-5101    syslog                          sys_syslog
-5102    getgid                          sys_getgid
-5103    setuid                          sys_setuid
-5104    setgid                          sys_setgid
-5105    geteuid                         sys_geteuid
-5106    getegid                         sys_getegid
-5107    setpgid                         sys_setpgid
-5108    getppid                         sys_getppid
-5109    getpgrp                         sys_getpgrp
-5110    setsid                          sys_setsid
-5111    setreuid                        sys_setreuid
-5112    setregid                        sys_setregid
-5113    getgroups                       sys_getgroups
-5114    setgroups                       sys_setgroups
-5115    setresuid                       sys_setresuid
-5116    getresuid                       sys_getresuid
-5117    setresgid                       sys_setresgid
-5118    getresgid                       sys_getresgid
-5119    getpgid                         sys_getpgid
-5120    setfsuid                        sys_setfsuid
-5121    setfsgid                        sys_setfsgid
-5122    getsid                          sys_getsid
-5123    capget                          sys_capget
-5124    capset                          sys_capset
-5125    rt_sigpending                   sys_rt_sigpending
-5126    rt_sigtimedwait                 sys_rt_sigtimedwait
-5127    rt_sigqueueinfo                 sys_rt_sigqueueinfo
-5128    rt_sigsuspend                   sys_rt_sigsuspend
-5129    sigaltstack                     sys_sigaltstack
-5130    utime                           sys_utime
-5131    mknod                           sys_mknod
-5132    personality                     sys_personality
-5133    ustat                           sys_ustat
-5134    statfs                          sys_statfs
-5135    fstatfs                         sys_fstatfs
-5136    sysfs                           sys_sysfs
-5137    getpriority                     sys_getpriority
-5138    setpriority                     sys_setpriority
-5139    sched_setparam                  sys_sched_setparam
-5140    sched_getparam                  sys_sched_getparam
-5141    sched_setscheduler              sys_sched_setscheduler
-5142    sched_getscheduler              sys_sched_getscheduler
-5143    sched_get_priority_max          sys_sched_get_priority_max
-5144    sched_get_priority_min          sys_sched_get_priority_min
-5145    sched_rr_get_interval           sys_sched_rr_get_interval
-5146    mlock                           sys_mlock
-5147    munlock                         sys_munlock
-5148    mlockall                        sys_mlockall
-5149    munlockall                      sys_munlockall
-5150    vhangup                         sys_vhangup
-5151    pivot_root                      sys_pivot_root
-5152    _sysctl                         sys_sysctl
-5153    prctl                           sys_prctl
-5154    adjtimex                        sys_adjtimex
-5155    setrlimit                       sys_setrlimit
-5156    chroot                          sys_chroot
-5157    sync                            sys_sync
-5158    acct                            sys_acct
-5159    settimeofday                    sys_settimeofday
-5160    mount                           sys_mount
-5161    umount2                         sys_umount
-5162    swapon                          sys_swapon
-5163    swapoff                         sys_swapoff
-5164    reboot                          sys_reboot
-5165    sethostname                     sys_sethostname
-5166    setdomainname                   sys_setdomainname
-5167    create_module                   sys_ni_syscall
-5168    init_module                     sys_init_module
-5169    delete_module                   sys_delete_module
-5170    get_kernel_syms                 sys_ni_syscall
-5171    query_module                    sys_ni_syscall
-5172    quotactl                        sys_quotactl
-5173    nfsservctl                      sys_ni_syscall
-5174    getpmsg                         sys_ni_syscall
-5175    putpmsg                         sys_ni_syscall
-5176    afs_syscall                     sys_ni_syscall
-5177	reserved177			sys_ni_syscall
-5178    gettid                          sys_gettid
-5179    readahead                       sys_readahead
-5180    setxattr                        sys_setxattr
-5181    lsetxattr                       sys_lsetxattr
-5182    fsetxattr                       sys_fsetxattr
-5183    getxattr                        sys_getxattr
-5184    lgetxattr                       sys_lgetxattr
-5185    fgetxattr                       sys_fgetxattr
-5186    listxattr                       sys_listxattr
-5187    llistxattr                      sys_llistxattr
-5188    flistxattr                      sys_flistxattr
-5189    removexattr                     sys_removexattr
-5190    lremovexattr                    sys_lremovexattr
-5191    fremovexattr                    sys_fremovexattr
-5192    tkill                           sys_tkill
-5193	reserved193			sys_ni_syscall
-5194    futex                           sys_futex
-5195    sched_setaffinity               sys_sched_setaffinity
-5196    sched_getaffinity               sys_sched_getaffinity
-5197    cacheflush                      sys_cacheflush
-5198    cachectl                        sys_cachectl
-5199    sysmips                         __sys_sysmips
-5200    io_setup                        sys_io_setup
-5201    io_destroy                      sys_io_destroy
-5202    io_getevents                    sys_io_getevents
-5203    io_submit                       sys_io_submit
-5204    io_cancel                       sys_io_cancel
-5205    exit_group                      sys_exit_group
-5206    lookup_dcookie                  sys_lookup_dcookie
-5207    epoll_create                    sys_epoll_create
-5208    epoll_ctl                       sys_epoll_ctl
-5209    epoll_wait                      sys_epoll_wait
-5210    remap_file_pages                sys_remap_file_pages
-5211    rt_sigreturn                    sys_rt_sigreturn
-5212    set_tid_address                 sys_set_tid_address
-5213    restart_syscall                 sys_restart_syscall
-5214    semtimedop                      sys_semtimedop
-5215    fadvise64                       sys_fadvise64_64
-5216    timer_create                    sys_timer_create
-5217    timer_settime                   sys_timer_settime
-5218    timer_gettime                   sys_timer_gettime
-5219    timer_getoverrun                sys_timer_getoverrun
-5220    timer_delete                    sys_timer_delete
-5221    clock_settime                   sys_clock_settime
-5222    clock_gettime                   sys_clock_gettime
-5223    clock_getres                    sys_clock_getres
-5224    clock_nanosleep                 sys_clock_nanosleep
-5225    tgkill                          sys_tgkill
-5226    utimes                          sys_utimes
-5227    mbind                           sys_mbind
-5228    get_mempolicy                   sys_get_mempolicy
-5229    set_mempolicy                   sys_set_mempolicy
-5230    mq_open                         sys_mq_open
-5231    mq_unlink                       sys_mq_unlink
-5232    mq_timedsend                    sys_mq_timedsend
-5233    mq_timedreceive                 sys_mq_timedreceive
-5234    mq_notify                       sys_mq_notify
-5235    mq_getsetattr                   sys_mq_getsetattr
-5236    vserver                         sys_ni_syscall
-5237    waitid                          sys_waitid
-5238	sys_setaltroot			sys_ni_syscall				/* not implemented */
-5239    add_key                         sys_add_key
-5240    request_key                     sys_request_key
-5241    keyctl                          sys_keyctl
-5242    set_thread_area                 sys_set_thread_area
-5243    inotify_init                    sys_inotify_init
-5244    inotify_add_watch               sys_inotify_add_watch
-5245    inotify_rm_watch                sys_inotify_rm_watch
-5246    migrate_pages                   sys_migrate_pages
-5247    openat                          sys_openat
-5248    mkdirat                         sys_mkdirat
-5249    mknodat                         sys_mknodat
-5250    fchownat                        sys_fchownat
-5251    futimesat                       sys_futimesat
-5252    newfstatat                      sys_newfstatat
-5253    unlinkat                        sys_unlinkat
-5254    renameat                        sys_renameat
-5255    linkat                          sys_linkat
-5256    symlinkat                       sys_symlinkat
-5257    readlinkat                      sys_readlinkat
-5258    fchmodat                        sys_fchmodat
-5259    faccessat                       sys_faccessat
-5260    pselect6                        sys_pselect6
-5261    ppoll                           sys_ppoll
-5262    unshare                         sys_unshare
-5263    splice                          sys_splice
-5264    sync_file_range                 sys_sync_file_range
-5265    tee                             sys_tee
-5266    vmsplice                        sys_vmsplice
-5267    move_pages                      sys_move_pages
-5268    set_robust_list                 sys_set_robust_list
-5269    get_robust_list                 sys_get_robust_list
-5270    kexec_load                      sys_kexec_load
-5271    getcpu                          sys_getcpu
-5272    epoll_pwait                     sys_epoll_pwait
-5273    ioprio_set                      sys_ioprio_set
-5274    ioprio_get                      sys_ioprio_get
-5275    utimensat                       sys_utimensat
-5276    signalfd                        sys_signalfd
-5277    timerfd                         sys_ni_syscall
-5278    eventfd                         sys_eventfd
-5279    fallocate                       sys_fallocate
-5280    timerfd_create                  sys_timerfd_create
-5281    timerfd_gettime                 sys_timerfd_gettime
-5282    timerfd_settime                 sys_timerfd_settime
-5283    signalfd4                       sys_signalfd4
-5284    eventfd2                        sys_eventfd2
-5285    epoll_create1                   sys_epoll_create1
-5286    dup3                            sys_dup3
-5287    pipe2                           sys_pipe2
-5288    inotify_init1                   sys_inotify_init1
-5289    preadv                          sys_preadv
-5290    pwritev                         sys_pwritev
-5291    rt_tgsigqueueinfo               sys_rt_tgsigqueueinfo
-5292    perf_event_open                 sys_perf_event_open
-5293    accept4                         sys_accept4
-5294    recvmmsg                        sys_recvmmsg
-5295    fanotify_init                   sys_fanotify_init
-5296    fanotify_mark                   sys_fanotify_mark
-5297    prlimit64                       sys_prlimit64
-5298    name_to_handle_at               sys_name_to_handle_at
-5299    open_by_handle_at               sys_open_by_handle_at
-5300    clock_adjtime                   sys_clock_adjtime
-5301    syncfs                          sys_syncfs
-5302    sendmmsg                        sys_sendmmsg
-5303    setns                           sys_setns
-5304    process_vm_readv                sys_process_vm_readv
-5305    process_vm_writev               sys_process_vm_writev
-5306    kcmp                            sys_kcmp
-5307    finit_module                    sys_finit_module
-5308    getdents64                      sys_getdents64
-5309    sched_setattr                   sys_sched_setattr
-5310    sched_getattr                   sys_sched_getattr
-5311    renameat2                       sys_renameat2
-5312    seccomp                         sys_seccomp
-5313    getrandom                       sys_getrandom
-5314    memfd_create                    sys_memfd_create
-5315    bpf                             sys_bpf
-5316    execveat                        sys_execveat
-5317    userfaultfd                     sys_userfaultfd
-5318    membarrier                      sys_membarrier
-5319    mlock2                          sys_mlock2
-5320    copy_file_range                 sys_copy_file_range
-5321    preadv2                         sys_preadv2
-5322    pwritev2                        sys_pwritev2
-5323    pkey_mprotect                   sys_pkey_mprotect
-5324    pkey_alloc                      sys_pkey_alloc
-5325    pkey_free                       sys_pkey_free
-5326    statx                           sys_statx
+5000    common  read                            sys_read
+5001    common  write                           sys_write
+5002    common  open                            sys_open
+5003    common  close                           sys_close
+5004    common  stat                            sys_newstat
+5005    common  fstat                           sys_newfstat
+5006    common  lstat                           sys_newlstat
+5007    common  poll                            sys_poll
+5008    common  lseek                           sys_lseek
+5009    common  mmap                            sys_mips_mmap
+5010    common  mprotect                        sys_mprotect
+5011    common  munmap                          sys_munmap
+5012    common  brk                             sys_brk
+5013    common  rt_sigaction                    sys_rt_sigaction
+5014    common  rt_sigprocmask                  sys_rt_sigprocmask
+5015    common  ioctl                           sys_ioctl
+5016    common  pread64                         sys_pread64
+5017    common  pwrite64                        sys_pwrite64
+5018    common  readv                           sys_readv
+5019    common  writev                          sys_writev
+5020    common  access                          sys_access
+5021    common  pipe                            sysm_pipe
+5022    common  _newselect                      sys_select
+5023    common  sched_yield                     sys_sched_yield
+5024    common  mremap                          sys_mremap
+5025    common  msync                           sys_msync
+5026    common  mincore                         sys_mincore
+5027    common  madvise                         sys_madvise
+5028    common  shmget                          sys_shmget
+5029    common  shmat                           sys_shmat
+5030    common  shmctl                          sys_shmctl
+5031    common  dup                             sys_dup
+5032    common  dup2                            sys_dup2
+5033    common  pause                           sys_pause
+5034    common  nanosleep                       sys_nanosleep
+5035    common  getitimer                       sys_getitimer
+5036    common  setitimer                       sys_setitimer
+5037    common  alarm                           sys_alarm
+5038    common  getpid                          sys_getpid
+5039    common  sendfile                        sys_sendfile64
+5040    common  socket                          sys_socket
+5041    common  connect                         sys_connect
+5042    common  accept                          sys_accept
+5043    common  sendto                          sys_sendto
+5044    common  recvfrom                        sys_recvfrom
+5045    common  sendmsg                         sys_sendmsg
+5046    common  recvmsg                         sys_recvmsg
+5047    common  shutdown                        sys_shutdown
+5048    common  bind                            sys_bind
+5049    common  listen                          sys_listen
+5050    common  getsockname                     sys_getsockname
+5051    common  getpeername                     sys_getpeername
+5052    common  socketpair                      sys_socketpair
+5053    common  setsockopt                      sys_setsockopt
+5054    common  getsockopt                      sys_getsockopt
+5055    common  clone                           __sys_clone
+5056    common  fork                            __sys_fork
+5057    common  execve                          sys_execve
+5058    common  exit                            sys_exit
+5059    common  wait4                           sys_wait4
+5060    common  kill                            sys_kill
+5061    common  uname                           sys_newuname
+5062    common  semget                          sys_semget
+5063    common  semop                           sys_semop
+5064    common  semctl                          sys_semctl
+5065    common  shmdt                           sys_shmdt
+5066    common  msgget                          sys_msgget
+5067    common  msgsnd                          sys_msgsnd
+5068    common  msgrcv                          sys_msgrcv
+5069    common  msgctl                          sys_msgctl
+5070    common  fcntl                           sys_fcntl
+5071    common  flock                           sys_flock
+5072    common  fsync                           sys_fsync
+5073    common  fdatasync                       sys_fdatasync
+5074    common  truncate                        sys_truncate
+5075    common  ftruncate                       sys_ftruncate
+5076    common  getdents                        sys_getdents
+5077    common  getcwd                          sys_getcwd
+5078    common  chdir                           sys_chdir
+5079    common  fchdir                          sys_fchdir
+5080    common  rename                          sys_rename
+5081    common  mkdir                           sys_mkdir
+5082    common  rmdir                           sys_rmdir
+5083    common  creat                           sys_creat
+5084    common  link                            sys_link
+5085    common  unlink                          sys_unlink
+5086    common  symlink                         sys_symlink
+5087    common  readlink                        sys_readlink
+5088    common  chmod                           sys_chmod
+5089    common  fchmod                          sys_fchmod
+5090    common  chown                           sys_chown
+5091    common  fchown                          sys_fchown
+5092    common  lchown                          sys_lchown
+5093    common  umask                           sys_umask
+5094    common  gettimeofday                    sys_gettimeofday
+5095    common  getrlimit                       sys_getrlimit
+5096    common  getrusage                       sys_getrusage
+5097    common  sysinfo                         sys_sysinfo
+5098    common  times                           sys_times
+5099    common  ptrace                          sys_ptrace
+5100    common  getuid                          sys_getuid
+5101    common  syslog                          sys_syslog
+5102    common  getgid                          sys_getgid
+5103    common  setuid                          sys_setuid
+5104    common  setgid                          sys_setgid
+5105    common  geteuid                         sys_geteuid
+5106    common  getegid                         sys_getegid
+5107    common  setpgid                         sys_setpgid
+5108    common  getppid                         sys_getppid
+5109    common  getpgrp                         sys_getpgrp
+5110    common  setsid                          sys_setsid
+5111    common  setreuid                        sys_setreuid
+5112    common  setregid                        sys_setregid
+5113    common  getgroups                       sys_getgroups
+5114    common  setgroups                       sys_setgroups
+5115    common  setresuid                       sys_setresuid
+5116    common  getresuid                       sys_getresuid
+5117    common  setresgid                       sys_setresgid
+5118    common  getresgid                       sys_getresgid
+5119    common  getpgid                         sys_getpgid
+5120    common  setfsuid                        sys_setfsuid
+5121    common  setfsgid                        sys_setfsgid
+5122    common  getsid                          sys_getsid
+5123    common  capget                          sys_capget
+5124    common  capset                          sys_capset
+5125    common  rt_sigpending                   sys_rt_sigpending
+5126    common  rt_sigtimedwait                 sys_rt_sigtimedwait
+5127    common  rt_sigqueueinfo                 sys_rt_sigqueueinfo
+5128    common  rt_sigsuspend                   sys_rt_sigsuspend
+5129    common  sigaltstack                     sys_sigaltstack
+5130    common  utime                           sys_utime
+5131    common  mknod                           sys_mknod
+5132    common  personality                     sys_personality
+5133    common  ustat                           sys_ustat
+5134    common  statfs                          sys_statfs
+5135    common  fstatfs                         sys_fstatfs
+5136    common  sysfs                           sys_sysfs
+5137    common  getpriority                     sys_getpriority
+5138    common  setpriority                     sys_setpriority
+5139    common  sched_setparam                  sys_sched_setparam
+5140    common  sched_getparam                  sys_sched_getparam
+5141    common  sched_setscheduler              sys_sched_setscheduler
+5142    common  sched_getscheduler              sys_sched_getscheduler
+5143    common  sched_get_priority_max          sys_sched_get_priority_max
+5144    common  sched_get_priority_min          sys_sched_get_priority_min
+5145    common  sched_rr_get_interval           sys_sched_rr_get_interval
+5146    common  mlock                           sys_mlock
+5147    common  munlock                         sys_munlock
+5148    common  mlockall                        sys_mlockall
+5149    common  munlockall                      sys_munlockall
+5150    common  vhangup                         sys_vhangup
+5151    common  pivot_root                      sys_pivot_root
+5152    common  _sysctl                         sys_sysctl
+5153    common  prctl                           sys_prctl
+5154    common  adjtimex                        sys_adjtimex
+5155    common  setrlimit                       sys_setrlimit
+5156    common  chroot                          sys_chroot
+5157    common  sync                            sys_sync
+5158    common  acct                            sys_acct
+5159    common  settimeofday                    sys_settimeofday
+5160    common  mount                           sys_mount
+5161    common  umount2                         sys_umount
+5162    common  swapon                          sys_swapon
+5163    common  swapoff                         sys_swapoff
+5164    common  reboot                          sys_reboot
+5165    common  sethostname                     sys_sethostname
+5166    common  setdomainname                   sys_setdomainname
+5167    common  create_module                   sys_ni_syscall
+5168    common  init_module                     sys_init_module
+5169    common  delete_module                   sys_delete_module
+5170    common  get_kernel_syms                 sys_ni_syscall
+5171    common  query_module                    sys_ni_syscall
+5172    common  quotactl                        sys_quotactl
+5173    common  nfsservctl                      sys_ni_syscall
+5174    common  getpmsg                         sys_ni_syscall
+5175    common  putpmsg                         sys_ni_syscall
+5176    common  afs_syscall                     sys_ni_syscall
+5177    common  reserved177                     sys_ni_syscall
+5178    common  gettid                          sys_gettid
+5179    common  readahead                       sys_readahead
+5180    common  setxattr                        sys_setxattr
+5181    common  lsetxattr                       sys_lsetxattr
+5182    common  fsetxattr                       sys_fsetxattr
+5183    common  getxattr                        sys_getxattr
+5184    common  lgetxattr                       sys_lgetxattr
+5185    common  fgetxattr                       sys_fgetxattr
+5186    common  listxattr                       sys_listxattr
+5187    common  llistxattr                      sys_llistxattr
+5188    common  flistxattr                      sys_flistxattr
+5189    common  removexattr                     sys_removexattr
+5190    common  lremovexattr                    sys_lremovexattr
+5191    common  fremovexattr                    sys_fremovexattr
+5192    common  tkill                           sys_tkill
+5193    common  reserved193                     sys_ni_syscall
+5194    common  futex                           sys_futex
+5195    common  sched_setaffinity               sys_sched_setaffinity
+5196    common  sched_getaffinity               sys_sched_getaffinity
+5197    common  cacheflush                      sys_cacheflush
+5198    common  cachectl                        sys_cachectl
+5199    common  sysmips                         __sys_sysmips
+5200    common  io_setup                        sys_io_setup
+5201    common  io_destroy                      sys_io_destroy
+5202    common  io_getevents                    sys_io_getevents
+5203    common  io_submit                       sys_io_submit
+5204    common  io_cancel                       sys_io_cancel
+5205    common  exit_group                      sys_exit_group
+5206    common  lookup_dcookie                  sys_lookup_dcookie
+5207    common  epoll_create                    sys_epoll_create
+5208    common  epoll_ctl                       sys_epoll_ctl
+5209    common  epoll_wait                      sys_epoll_wait
+5210    common  remap_file_pages                sys_remap_file_pages
+5211    common  rt_sigreturn                    sys_rt_sigreturn
+5212    common  set_tid_address                 sys_set_tid_address
+5213    common  restart_syscall                 sys_restart_syscall
+5214    common  semtimedop                      sys_semtimedop
+5215    common  fadvise64                       sys_fadvise64_64
+5216    common  timer_create                    sys_timer_create
+5217    common  timer_settime                   sys_timer_settime
+5218    common  timer_gettime                   sys_timer_gettime
+5219    common  timer_getoverrun                sys_timer_getoverrun
+5220    common  timer_delete                    sys_timer_delete
+5221    common  clock_settime                   sys_clock_settime
+5222    common  clock_gettime                   sys_clock_gettime
+5223    common  clock_getres                    sys_clock_getres
+5224    common  clock_nanosleep                 sys_clock_nanosleep
+5225    common  tgkill                          sys_tgkill
+5226    common  utimes                          sys_utimes
+5227    common  mbind                           sys_mbind
+5228    common  get_mempolicy                   sys_get_mempolicy
+5229    common  set_mempolicy                   sys_set_mempolicy
+5230    common  mq_open                         sys_mq_open
+5231    common  mq_unlink                       sys_mq_unlink
+5232    common  mq_timedsend                    sys_mq_timedsend
+5233    common  mq_timedreceive                 sys_mq_timedreceive
+5234    common  mq_notify                       sys_mq_notify
+5235    common  mq_getsetattr                   sys_mq_getsetattr
+5236    common  vserver                         sys_ni_syscall
+5237    common  waitid                          sys_waitid
+5238    common  sys_setaltroot                  sys_ni_syscall
+5239    common  add_key                         sys_add_key
+5240    common  request_key                     sys_request_key
+5241    common  keyctl                          sys_keyctl
+5242    common  set_thread_area                 sys_set_thread_area
+5243    common  inotify_init                    sys_inotify_init
+5244    common  inotify_add_watch               sys_inotify_add_watch
+5245    common  inotify_rm_watch                sys_inotify_rm_watch
+5246    common  migrate_pages                   sys_migrate_pages
+5247    common  openat                          sys_openat
+5248    common  mkdirat                         sys_mkdirat
+5249    common  mknodat                         sys_mknodat
+5250    common  fchownat                        sys_fchownat
+5251    common  futimesat                       sys_futimesat
+5252    common  newfstatat                      sys_newfstatat
+5253    common  unlinkat                        sys_unlinkat
+5254    common  renameat                        sys_renameat
+5255    common  linkat                          sys_linkat
+5256    common  symlinkat                       sys_symlinkat
+5257    common  readlinkat                      sys_readlinkat
+5258    common  fchmodat                        sys_fchmodat
+5259    common  faccessat                       sys_faccessat
+5260    common  pselect6                        sys_pselect6
+5261    common  ppoll                           sys_ppoll
+5262    common  unshare                         sys_unshare
+5263    common  splice                          sys_splice
+5264    common  sync_file_range                 sys_sync_file_range
+5265    common  tee                             sys_tee
+5266    common  vmsplice                        sys_vmsplice
+5267    common  move_pages                      sys_move_pages
+5268    common  set_robust_list                 sys_set_robust_list
+5269    common  get_robust_list                 sys_get_robust_list
+5270    common  kexec_load                      sys_kexec_load
+5271    common  getcpu                          sys_getcpu
+5272    common  epoll_pwait                     sys_epoll_pwait
+5273    common  ioprio_set                      sys_ioprio_set
+5274    common  ioprio_get                      sys_ioprio_get
+5275    common  utimensat                       sys_utimensat
+5276    common  signalfd                        sys_signalfd
+5277    common  timerfd                         sys_ni_syscall
+5278    common  eventfd                         sys_eventfd
+5279    common  fallocate                       sys_fallocate
+5280    common  timerfd_create                  sys_timerfd_create
+5281    common  timerfd_gettime                 sys_timerfd_gettime
+5282    common  timerfd_settime                 sys_timerfd_settime
+5283    common  signalfd4                       sys_signalfd4
+5284    common  eventfd2                        sys_eventfd2
+5285    common  epoll_create1                   sys_epoll_create1
+5286    common  dup3                            sys_dup3
+5287    common  pipe2                           sys_pipe2
+5288    common  inotify_init1                   sys_inotify_init1
+5289    common  preadv                          sys_preadv
+5290    common  pwritev                         sys_pwritev
+5291    common  rt_tgsigqueueinfo               sys_rt_tgsigqueueinfo
+5292    common  perf_event_open                 sys_perf_event_open
+5293    common  accept4                         sys_accept4
+5294    common  recvmmsg                        sys_recvmmsg
+5295    common  fanotify_init                   sys_fanotify_init
+5296    common  fanotify_mark                   sys_fanotify_mark
+5297    common  prlimit64                       sys_prlimit64
+5298    common  name_to_handle_at               sys_name_to_handle_at
+5299    common  open_by_handle_at               sys_open_by_handle_at
+5300    common  clock_adjtime                   sys_clock_adjtime
+5301    common  syncfs                          sys_syncfs
+5302    common  sendmmsg                        sys_sendmmsg
+5303    common  setns                           sys_setns
+5304    common  process_vm_readv                sys_process_vm_readv
+5305    common  process_vm_writev               sys_process_vm_writev
+5306    common  kcmp                            sys_kcmp
+5307    common  finit_module                    sys_finit_module
+5308    common  getdents64                      sys_getdents64
+5309    common  sched_setattr                   sys_sched_setattr
+5310    common  sched_getattr                   sys_sched_getattr
+5311    common  renameat2                       sys_renameat2
+5312    common  seccomp                         sys_seccomp
+5313    common  getrandom                       sys_getrandom
+5314    common  memfd_create                    sys_memfd_create
+5315    common  bpf                             sys_bpf
+5316    common  execveat                        sys_execveat
+5317    common  userfaultfd                     sys_userfaultfd
+5318    common  membarrier                      sys_membarrier
+5319    common  mlock2                          sys_mlock2
+5320    common  copy_file_range                 sys_copy_file_range
+5321    common  preadv2                         sys_preadv2
+5322    common  pwritev2                        sys_pwritev2
+5323    common  pkey_mprotect                   sys_pkey_mprotect
+5324    common  pkey_alloc                      sys_pkey_alloc
+5325    common  pkey_free                       sys_pkey_free
+5326    common  statx                           sys_statx
