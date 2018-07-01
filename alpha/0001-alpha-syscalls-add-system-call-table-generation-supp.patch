@@ -1,8 +1,24 @@
-From d8a8819dad716318cb4aa10685e2ff0f7f9a309d Mon Sep 17 00:00:00 2001
+From d02ec2002a7f1e741802cdcc062a25fd53789d74 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Wed, 27 Jun 2018 11:52:04 +0530
-Subject: [PATCH] alpha: system call table generation script
+Subject: [PATCH] alpha/syscalls: add system call table generation support
 
+If we need add a system call in the alpha architecture, we need
+to manually modify unistd.h and systbl.S files in the existing
+design.
+
+It will be burden to add few dozens of system call by manually
+edit these files. Instead of modifying these files, we are
+trying to introduce a script which'll modify the required files
+by simply changes the syscall.tbl file.
+
+arch/alpha/kernel/syscalls/syscallhdr.sh script will generate a
+uapi header - arch/alpha/include/generated/uapi/asm/unistd_32.h
+and arch/alpha/kernel/syscalls/syscalltbl.sh will generate -
+arch/alpha/include/generated/asm/syscall_32.h and it will be
+included by the system call table file arch/alpha/kernel/syscall.S
+
+Signed-off-by: Firoz Khan <firozk@codeaurora.org>
 ---
  arch/alpha/Makefile                      |   3 +
  arch/alpha/include/asm/Kbuild            |   1 +
