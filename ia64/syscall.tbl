@@ -102,9 +102,9 @@
 1117    common  syslog                  sys_syslog
 1118    common  setitimer               sys_setitimer
 1119    common  getitimer               sys_getitimer
-1120	common	old_stat		sys_ni_syscall			/* not implemented */
-1121	common	old_lstat		sys_ni_syscall			/* not implemented */
-1122	common	old_fstat		sys_ni_syscall			/* not implemented */
+1120	common	old_stat		sys_ni_syscall
+1121	common	old_lstat		sys_ni_syscall
+1122	common	old_fstat		sys_ni_syscall
 1123    common  vhangup                 sys_vhangup
 1124    common  lchown                  sys_lchown
 1125    common  remap_file_pages        sys_remap_file_pages
@@ -114,11 +114,11 @@
 1129    common  setdomainname           sys_setdomainname
 1130    common  uname                   sys_newuname
 1131    common  adjtimex                sys_adjtimex
-1132	common	create_module		sys_ni_syscall			/* not implemented */
+1132	common	create_module		sys_ni_syscall
 1133    common  init_module             sys_init_module
 1134    common  delete_module           sys_delete_module
-1135	common	get_kernel_syms		sys_ni_syscall			/* not implemented */
-1136	common	query_module		sys_ni_syscall			/* not implemented */
+1135	common	get_kernel_syms		sys_ni_syscall
+1136	common	query_module		sys_ni_syscall
 1137    common  quotactl                sys_quotactl
 1138    common  bdflush                 sys_bdflush
 1139    common  sysfs                   sys_sysfs
@@ -153,7 +153,7 @@
 1168    common  nanosleep               sys_nanosleep
 1169    common  nfsservctl              sys_ni_syscall
 1170    common  prctl                   sys_prctl
-1171    common  getpagesize		sys_getpagesize	  		/* not implemented */
+1171    common  getpagesize		sys_getpagesize
 1172    common  mmap_pgoff              sys_mmap_pgoff
 1173    common  pciconfig_read          sys_pciconfig_read
 1174    common  pciconfig_write         sys_pciconfig_write

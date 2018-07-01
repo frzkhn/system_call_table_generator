@@ -19,7 +19,7 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo -e "#define __BREAK_SYSCALL\t__IA64_BREAK_SYSCALL"
     echo ""
 
-    while read nr abi name entry comment ; do
+    while read nr abi name entry ; do
 	if [ -z "$offset" ]; then
 	    echo -e "#define __NR_${prefix}${name}\t$nr"
 	else

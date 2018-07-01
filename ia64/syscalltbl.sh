@@ -3,7 +3,7 @@
 
 in="$1"
 out="$2"
-abi="$3"
+my_abi="$3"
 
 emit() {
     nxt="$1"
@@ -12,7 +12,7 @@ emit() {
 
     while [ $nxt -lt $nr ]; do
 	echo "__SYSCALL($nxt, sys_ni_syscall, )"
-	let "nxt=nxt+1"
+	let nxt=nxt+1
     done
 
     echo "__SYSCALL($nr, $entry, )"
@@ -21,9 +21,9 @@ emit() {
 
 grep '^[0-9]' "$in" | sort -n | (
     nxt=1024
-    while read nr abi name entry comment ; do
+    while read nr abi name entry ; do
 	emit $nxt $nr $entry
 	nxt=$nr
-        let "nxt=nxt+1"
+        let nxt=nxt+1
     done
 ) > "$out"
