@@ -16,7 +16,7 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo ""
 
     nxt=0
-    while read nr abi name entry comment ; do
+    while read nr abi name entry ; do
 	if [ -z "$offset" ]; then
 	    echo -e "#define __NR_${prefix}${name}\t$nr"
 	else
