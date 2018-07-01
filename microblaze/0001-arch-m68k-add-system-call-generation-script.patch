@@ -1,4 +1,4 @@
-From 6cfc4d4279572dbe8f4daba137665e56046d05e1 Mon Sep 17 00:00:00 2001
+From 594eb42a9f23737df1ba90399a33cc4753587b47 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Sun, 1 Jul 2018 18:13:13 +0530
 Subject: [PATCH] arch: m68k: add system call generation script
@@ -12,13 +12,13 @@ TODO:
  arch/microblaze/include/uapi/asm/Kbuild       |   1 +
  arch/microblaze/include/uapi/asm/unistd.h     | 407 +-------------------------
  arch/microblaze/kernel/Makefile               |   2 +-
- arch/microblaze/kernel/syscall.S              |   3 +
+ arch/microblaze/kernel/syscall.S              |   6 +
  arch/microblaze/kernel/syscall_table.S        | 404 -------------------------
  arch/microblaze/kernel/syscalls/Makefile      |  37 +++
  arch/microblaze/kernel/syscalls/syscall.tbl   | 404 +++++++++++++++++++++++++
  arch/microblaze/kernel/syscalls/syscallhdr.sh |  28 ++
  arch/microblaze/kernel/syscalls/syscalltbl.sh |  28 ++
- 11 files changed, 507 insertions(+), 811 deletions(-)
+ 11 files changed, 510 insertions(+), 811 deletions(-)
  create mode 100644 arch/microblaze/kernel/syscall.S
  delete mode 100644 arch/microblaze/kernel/syscall_table.S
  create mode 100644 arch/microblaze/kernel/syscalls/Makefile
@@ -492,11 +492,14 @@ index dd71637..27c1516 100644
  
 diff --git a/arch/microblaze/kernel/syscall.S b/arch/microblaze/kernel/syscall.S
 new file mode 100644
-index 0000000..79fd48b
+index 0000000..3cef7c9
 --- /dev/null
 +++ b/arch/microblaze/kernel/syscall.S
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,6 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
++
++#define __SYSCALL(nr, entry, nargs) .long entry
++	
 +ENTRY(sys_call_table)
 +#include <asm/syscall_64.h>
 diff --git a/arch/microblaze/kernel/syscall_table.S b/arch/microblaze/kernel/syscall_table.S
