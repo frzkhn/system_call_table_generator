@@ -27,20 +27,20 @@ $(uapi)/unistd_32.h: $(syscall32) $(syshdr)
 $(uapi)/unistd_64.h: $(syscall64) $(syshdr)
 	$(call if_changed,syshdr)
 
-systbl_abi_syscalls_32 := 32
-$(out)/syscalls_32.h: $(syscall32) $(systbl)
+systbl_abi_syscall_32 := 32
+$(out)/syscall_32.h: $(syscall32) $(systbl)
 	$(call if_changed,systbl)
 
-systbl_abi_syscalls_64 := 64
-$(out)/syscalls_64.h: $(syscall64) $(systbl)
+systbl_abi_syscall_64 := 64
+$(out)/syscall_64.h: $(syscall64) $(systbl)
 	$(call if_changed,systbl)
 
-systbl_abi_syscalls_x32 := x32
-$(out)/syscalls_x32.h: $(syscall32) $(systbl)
+systbl_abi_syscall_x32 := x32
+$(out)/syscall_x32.h: $(syscall32) $(systbl)
 	$(call if_changed,systbl)
 
 uapisyshdr-y			+= unistd_32.h unistd_64.h
-syshdr-y			+= syscalls_32.h syscalls_64.h syscalls_x32.h
+syshdr-y			+= syscall_32.h syscall_64.h syscall_x32.h
 
 targets	+= $(uapisyshdr-y) $(syshdr-y)
 
