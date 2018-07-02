@@ -70,7 +70,7 @@
 61      common  fcntl64                 sys_fcntl64
 62      common  fallocate               sys_fallocate
 63      common  fadvise64_64            xtensa_fadvise64_64
-64      common  utime                   sys_utime				/* glibc 2.3.3 ?? */
+64      common  utime                   sys_utime
 65      common  utimes                  sys_utimes
 66      common  ioctl                   sys_ioctl
 67      common  fcntl                   sys_fcntl
@@ -158,8 +158,8 @@
 149     common  getpgid                 sys_getpgid
 150     common  getppid                 sys_getppid
 151     common  getpgrp                 sys_getpgrp
-152     common  reserved152             sys_ni_syscall					/* set_thread_area */
-153     common  reserved153             sys_ni_syscall					/* get_thread_area */
+152     common  reserved152             sys_ni_syscall
+153     common  reserved153             sys_ni_syscall
 154     common  times                   sys_times
 155     common  acct                    sys_acct
 156     common  sched_setaffinity       sys_sched_setaffinity
