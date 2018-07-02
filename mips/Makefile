@@ -22,39 +22,36 @@ quiet_cmd_systbl = SYSTBL  $@
       cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
 		   '$(systbl_abi_$(basetarget))'
 
-syshdr_abi_unistd_32 := 32
 syshdr_offset_unistd_32 := __NR_Linux
 $(uapi)/unistd_32.h: $(syscall32) $(syshdr)
 	$(call if_changed,syshdr)
 
-syshdr_abi_unistd_64 := 64
 syshdr_offset_unistd_64 := __NR_Linux
 $(uapi)/unistd_64.h: $(syscall64) $(syshdr)
 	$(call if_changed,syshdr)
 
-syshdr_abi_unistd_n32 := n32
 syshdr_offset_unistd_n32 := __NR_Linux
 $(uapi)/unistd_n32.h: $(syscalln32) $(syshdr)
 	$(call if_changed,syshdr)
 
-systbl_abi_syscalls_32_o32 := 32-o32
-$(out)/syscalls_32_o32.h: $(syscall32) $(systbl)
+systbl_abi_syscall_32_o32 := 32-o32
+$(out)/syscall_32_o32.h: $(syscall32) $(systbl)
 	$(call if_changed,systbl)
 
-systbl_abi_syscalls_64_o32 := 64-o32
-$(out)/syscalls_64_o32.h: $(syscall32) $(systbl)
+systbl_abi_syscall_64_o32 := 64-o32
+$(out)/syscall_64_o32.h: $(syscall32) $(systbl)
 	$(call if_changed,systbl)
 
-systbl_abi_syscalls_64_64 := 64-64
-$(out)/syscalls_64_64.h: $(syscall64) $(systbl)
+systbl_abi_syscall_64_64 := 64-64
+$(out)/syscall_64_64.h: $(syscall64) $(systbl)
 	$(call if_changed,systbl)
 
-systbl_abi_syscalls_64_n32 := 64-n32
-$(out)/syscalls_64_n32.h: $(syscalln32) $(systbl)
+systbl_abi_syscall_64_n32 := 64-n32
+$(out)/syscall_64_n32.h: $(syscalln32) $(systbl)
 	$(call if_changed,systbl)
 
 uapisyshdr-y			+= unistd_32.h unistd_64.h unistd_n32.h
-syshdr-y			+= syscalls_32_o32.h syscalls_64_o32.h syscalls_64_64.h syscalls_64_n32.h
+syshdr-y			+= syscall_32_o32.h syscall_64_o32.h syscall_64_64.h syscall_64_n32.h
 
 targets	+= $(uapisyshdr-y) $(syshdr-y)
 
