@@ -1,10 +1,9 @@
-From 39730f151dc046c5e5aedde61cddc70323a6325c Mon Sep 17 00:00:00 2001
+From becd4e9f99ac32d6df06f5f16d8036e5a45b778f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Sun, 1 Jul 2018 17:56:02 +0530
-Subject: [PATCH] arch: m68k: add system call generation script
+Date: Wed, 4 Jul 2018 15:50:14 +0530
+Subject: [PATCH] arch: m68k: add system call table generator support.
 
-TODO:
-- Remove "_64" unistd_64.h syscall_64.h
+- Test done on 4.18--rc3
 ---
  arch/m68k/Makefile                      |   3 +
  arch/m68k/include/asm/Kbuild            |   1 +
@@ -39,27 +38,27 @@ index f0dd9fc..8ee2f36 100644
  install:
  	sh $(srctree)/arch/m68k/install.sh $(KERNELRELEASE) vmlinux.gz System.map "$(INSTALL_PATH)"
 diff --git a/arch/m68k/include/asm/Kbuild b/arch/m68k/include/asm/Kbuild
-index 4d8d68c..9e3ab38 100644
+index 4d8d68c..a9d4694 100644
 --- a/arch/m68k/include/asm/Kbuild
 +++ b/arch/m68k/include/asm/Kbuild
 @@ -23,3 +23,4 @@ generic-y += topology.h
  generic-y += trace_clock.h
  generic-y += word-at-a-time.h
  generic-y += xor.h
-+generic-y += syscall_64.h
++generic-y += syscall_32.h
 \ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/Kbuild b/arch/m68k/include/uapi/asm/Kbuild
-index c2e26a4..bd1acce 100644
+index c2e26a4..6d600e9 100644
 --- a/arch/m68k/include/uapi/asm/Kbuild
 +++ b/arch/m68k/include/uapi/asm/Kbuild
 @@ -21,3 +21,4 @@ generic-y += statfs.h
  generic-y += termbits.h
  generic-y += termios.h
  generic-y += types.h
-+generic-y += unistd_64.h
++generic-y += unistd_32.h
 \ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/unistd.h b/arch/m68k/include/uapi/asm/unistd.h
-index de3054f..f9bdace 100644
+index de3054f..cdbd090 100644
 --- a/arch/m68k/include/uapi/asm/unistd.h
 +++ b/arch/m68k/include/uapi/asm/unistd.h
 @@ -2,389 +2,6 @@
@@ -450,7 +449,7 @@ index de3054f..f9bdace 100644
 -#define __NR_preadv2		377
 -#define __NR_pwritev2		378
 -#define __NR_statx		379
-+#include <asm/unistd_64.h>
++#include <asm/unistd_32.h>
  
  #endif /* _UAPI_ASM_M68K_UNISTD_H_ */
 diff --git a/arch/m68k/kernel/Makefile b/arch/m68k/kernel/Makefile
@@ -468,7 +467,7 @@ index dbac7f8..0284c38 100644
  obj-$(CONFIG_MMU_SUN3) += ints.o vectors.o
 diff --git a/arch/m68k/kernel/syscall.S b/arch/m68k/kernel/syscall.S
 new file mode 100644
-index 0000000..842cf22
+index 0000000..7259800
 --- /dev/null
 +++ b/arch/m68k/kernel/syscall.S
 @@ -0,0 +1,14 @@
@@ -480,15 +479,15 @@ index 0000000..842cf22
 +#define sys_mmap2 sys_mmap_pgoff
 +#endif
 +
-+#define __SYSCALL(nr, entry, nargs) long entry
++#define __SYSCALL(nr, entry, nargs) .long entry
 +
 +.section .rodata
 +ALIGN
 +ENTRY(sys_call_table)
-+#include <asm/syscall_64.h>
++#include <asm/syscall_32.h>
 diff --git a/arch/m68k/kernel/syscalls/Makefile b/arch/m68k/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..7916ea8
+index 0000000..9e611cc
 --- /dev/null
 +++ b/arch/m68k/kernel/syscalls/Makefile
 @@ -0,0 +1,37 @@
@@ -514,14 +513,14 @@ index 0000000..7916ea8
 +      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
 +		   '$(systbl_abi_$(basetarget))'
 +
-+$(uapi)/unistd_64.h: $(syscall) $(syshdr)
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+$(out)/syscall_64.h: $(syscall) $(systbl)
++$(out)/syscall_32.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
-+uapisyshdr-y			+= unistd_64.h
-+syshdr-y			+= syscall_64.h
++uapisyshdr-y			+= unistd_32.h
++syshdr-y			+= syscall_32.h
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
 +
