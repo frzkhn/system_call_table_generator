@@ -14,10 +14,6 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
     echo "#ifndef ${fileguard}"
     echo "#define ${fileguard}"
     echo ""
-    echo "#include <asm/break.h>"
-    echo ""
-    echo -e "#define __BREAK_SYSCALL\t__IA64_BREAK_SYSCALL"
-    echo ""
 
     while read nr abi name entry ; do
 	if [ -z "$offset" ]; then

@@ -18,11 +18,11 @@ emit() {
     echo "__SYSCALL($nr, $entry, )"
 }
 
-
 grep '^[0-9]' "$in" | sort -n | (
-    nxt=1024
+    nxt=24
     while read nr abi name entry ; do
-	emit $nxt $nr $entry
+	let t_nxt=$nxt+1000
+	emit $t_nxt $nr $entry
 	nxt=$nr
         let nxt=nxt+1
     done
