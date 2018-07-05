@@ -1,24 +1,23 @@
-From 594eb42a9f23737df1ba90399a33cc4753587b47 Mon Sep 17 00:00:00 2001
+From c743f9af2784b7eda3f0117ec79742483d466693 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Sun, 1 Jul 2018 18:13:13 +0530
-Subject: [PATCH] arch: m68k: add system call generation script
+Date: Thu, 5 Jul 2018 09:12:54 +0530
+Subject: [PATCH] arch: microblaze: add system call table generator support.
 
-TODO:
-- Added extra syscall.o in arch/kernel/Makefile
-- Remove "_64" unistd_64.h syscall_64.h
+- Test done on 4.18--rc3
 ---
  arch/microblaze/Makefile                      |   3 +
  arch/microblaze/include/asm/Kbuild            |   1 +
  arch/microblaze/include/uapi/asm/Kbuild       |   1 +
  arch/microblaze/include/uapi/asm/unistd.h     | 407 +-------------------------
- arch/microblaze/kernel/Makefile               |   2 +-
+ arch/microblaze/kernel/entry-nommu.S          |   2 +-
+ arch/microblaze/kernel/entry.S                |   2 +-
  arch/microblaze/kernel/syscall.S              |   6 +
  arch/microblaze/kernel/syscall_table.S        | 404 -------------------------
  arch/microblaze/kernel/syscalls/Makefile      |  37 +++
  arch/microblaze/kernel/syscalls/syscall.tbl   | 404 +++++++++++++++++++++++++
  arch/microblaze/kernel/syscalls/syscallhdr.sh |  28 ++
  arch/microblaze/kernel/syscalls/syscalltbl.sh |  28 ++
- 11 files changed, 510 insertions(+), 811 deletions(-)
+ 12 files changed, 511 insertions(+), 812 deletions(-)
  create mode 100644 arch/microblaze/kernel/syscall.S
  delete mode 100644 arch/microblaze/kernel/syscall_table.S
  create mode 100644 arch/microblaze/kernel/syscalls/Makefile
@@ -41,27 +40,27 @@ index d269dd4b..6121a2b 100644
  	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
  
 diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
-index fe6a6c6..11fa996 100644
+index fe6a6c6..1248e15 100644
 --- a/arch/microblaze/include/asm/Kbuild
 +++ b/arch/microblaze/include/asm/Kbuild
 @@ -30,3 +30,4 @@ generic-y += trace_clock.h
  generic-y += vga.h
  generic-y += word-at-a-time.h
  generic-y += xor.h
-+generic-y += syscall_64.h
++generic-y += syscall_32.h
 \ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/Kbuild b/arch/microblaze/include/uapi/asm/Kbuild
-index 2c6a6bf..e5f08f5 100644
+index 2c6a6bf..3a40659 100644
 --- a/arch/microblaze/include/uapi/asm/Kbuild
 +++ b/arch/microblaze/include/uapi/asm/Kbuild
 @@ -28,3 +28,4 @@ generic-y += termbits.h
  generic-y += termios.h
  generic-y += types.h
  generic-y += ucontext.h
-+generic-y += unistd_64.h
++generic-y += unistd_32.h
 \ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/unistd.h b/arch/microblaze/include/uapi/asm/unistd.h
-index 7a9f16a..65c0e13 100644
+index 7a9f16a..3f2d7cb 100644
 --- a/arch/microblaze/include/uapi/asm/unistd.h
 +++ b/arch/microblaze/include/uapi/asm/unistd.h
 @@ -11,411 +11,6 @@
@@ -474,25 +473,38 @@ index 7a9f16a..65c0e13 100644
 -#define __NR_statx		398
 -#define __NR_io_pgetevents	399
 -#define __NR_rseq		400
-+#include <asm/unistd_64.h>
++#include <asm/unistd_32.h>
  
  #endif /* _UAPI_ASM_MICROBLAZE_UNISTD_H */
-diff --git a/arch/microblaze/kernel/Makefile b/arch/microblaze/kernel/Makefile
-index dd71637..27c1516 100644
---- a/arch/microblaze/kernel/Makefile
-+++ b/arch/microblaze/kernel/Makefile
-@@ -17,7 +17,7 @@ extra-y := head.o vmlinux.lds
- obj-y += dma.o exceptions.o \
- 	hw_exception_handler.o irq.o \
- 	process.o prom.o ptrace.o \
--	reset.o setup.o signal.o sys_microblaze.o timer.o traps.o unwind.o
-+	reset.o setup.o signal.o sys_microblaze.o timer.o traps.o unwind.o syscall.o
+diff --git a/arch/microblaze/kernel/entry-nommu.S b/arch/microblaze/kernel/entry-nommu.S
+index 7e394fc..36a1ad2 100644
+--- a/arch/microblaze/kernel/entry-nommu.S
++++ b/arch/microblaze/kernel/entry-nommu.S
+@@ -589,7 +589,7 @@ sys_rt_sigreturn_wrapper:
+ 	brai	_debug_exception
  
- obj-y += cpu/
+ .section .rodata,"a"
+-#include "syscall_table.S"
++#include "syscall.S"
+ 
+ syscall_table_size=(.-sys_call_table)
+ 
+diff --git a/arch/microblaze/kernel/entry.S b/arch/microblaze/kernel/entry.S
+index 4e1b567..a40b8ed 100644
+--- a/arch/microblaze/kernel/entry.S
++++ b/arch/microblaze/kernel/entry.S
+@@ -982,7 +982,7 @@ ENTRY(_reset)
+ 	brai	TOPHYS(_hw_exception_handler);	/* HW exception handler */
+ 
+ .section .rodata,"a"
+-#include "syscall_table.S"
++#include "syscall.S"
+ 
+ syscall_table_size=(.-sys_call_table)
  
 diff --git a/arch/microblaze/kernel/syscall.S b/arch/microblaze/kernel/syscall.S
 new file mode 100644
-index 0000000..3cef7c9
+index 0000000..16099c2
 --- /dev/null
 +++ b/arch/microblaze/kernel/syscall.S
 @@ -0,0 +1,6 @@
@@ -501,7 +513,7 @@ index 0000000..3cef7c9
 +#define __SYSCALL(nr, entry, nargs) .long entry
 +	
 +ENTRY(sys_call_table)
-+#include <asm/syscall_64.h>
++#include <asm/syscall_32.h>
 diff --git a/arch/microblaze/kernel/syscall_table.S b/arch/microblaze/kernel/syscall_table.S
 deleted file mode 100644
 index 6ab6505..0000000
@@ -914,7 +926,7 @@ index 6ab6505..0000000
 -	.long sys_rseq
 diff --git a/arch/microblaze/kernel/syscalls/Makefile b/arch/microblaze/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..7916ea8
+index 0000000..9e611cc
 --- /dev/null
 +++ b/arch/microblaze/kernel/syscalls/Makefile
 @@ -0,0 +1,37 @@
@@ -940,14 +952,14 @@ index 0000000..7916ea8
 +      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
 +		   '$(systbl_abi_$(basetarget))'
 +
-+$(uapi)/unistd_64.h: $(syscall) $(syshdr)
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+$(out)/syscall_64.h: $(syscall) $(systbl)
++$(out)/syscall_32.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
-+uapisyshdr-y			+= unistd_64.h
-+syshdr-y			+= syscall_64.h
++uapisyshdr-y			+= unistd_32.h
++syshdr-y			+= syscall_32.h
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
 +
