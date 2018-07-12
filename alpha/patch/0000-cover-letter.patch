@@ -1,0 +1,45 @@
+From 3eb80ad7396a6eaa3a01fa88f208ec2fd487ee8e Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Thu, 12 Jul 2018 12:49:20 +0530
+Subject: [PATCH v1 0/4] System call table generation support
+
+The goal of this patch series is to easily add/modify/delete a
+system call by changing entry in syscall.tbl file. No need
+to manually edit many files.
+NOTE: Update NR_SYSCALLS, if needed. ie,
+arch/alpha/include/asm/unistd.h:7:#define NR_SYSCALLS  523
+
+The another goal of this patch series is to to unify the system
+call implementation across all the architectures.
+
+Firoz Khan (4):
+  alpha: Move __IGNORE* entries to non uapi header
+  alpha: Add CONFIG_OSF4_COMPAT for compat syscall support
+  alpha/syscalls: Add system call table generation support
+  alpha: uapi header and system call table files generation
+
+ arch/alpha/Makefile                      |   3 +
+ arch/alpha/include/asm/Kbuild            |   3 +-
+ arch/alpha/include/asm/unistd.h          |   5 +
+ arch/alpha/include/uapi/asm/Kbuild       |   2 +
+ arch/alpha/include/uapi/asm/unistd.h     | 489 ---------------------------
+ arch/alpha/kernel/Makefile               |   2 +-
+ arch/alpha/kernel/osf_sys.c              |   9 +-
+ arch/alpha/kernel/syscall.S              |  20 ++
+ arch/alpha/kernel/syscalls/Makefile      |  37 +++
+ arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  28 ++
+ arch/alpha/kernel/syscalls/syscalltbl.sh |  28 ++
+ arch/alpha/kernel/systbls.S              | 552 -------------------------------
+ 13 files changed, 582 insertions(+), 1046 deletions(-)
+ delete mode 100644 arch/alpha/include/uapi/asm/unistd.h
+ create mode 100644 arch/alpha/kernel/syscall.S
+ create mode 100644 arch/alpha/kernel/syscalls/Makefile
+ create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
+ create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+ delete mode 100644 arch/alpha/kernel/systbls.S
+
+-- 
+1.9.1
+
