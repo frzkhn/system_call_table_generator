@@ -1,7 +1,7 @@
 From cf3ebd376c025fbfe0bad423d476ae8f60b147d2 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Fri, 13 Jul 2018 10:37:17 +0530
-Subject: [PATCH v1 3/5] alpha: Unify the not-implemented system call entry
+Subject: [PATCH v1 3/6] alpha: Unify the not-implemented system call entry
  name
 
 systbl.S contain two types of system call entry name which are

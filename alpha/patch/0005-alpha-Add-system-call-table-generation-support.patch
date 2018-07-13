@@ -1,8 +1,7 @@
-From 0f023d38d735a03fb7bef950a1353eab856af882 Mon Sep 17 00:00:00 2001
+From 0445776f352e25fdcf9f32ea3a2ea1a8f4b80cf7 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
-Subject: [PATCH v1 4/5] alpha/syscalls: Add system call table generation
- support
+Subject: [PATCH v1 5/6] alpha: Add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -33,13 +32,17 @@ file is included by syscall.S- the real system call table.
 Both .sh files will parse the content syscall.tbl to generate
 the header and table files.
 
+ARM, s390 and x86 architecuture does have the similar support.
+I leverage their implementation to come up with a generic
+solution.
+
 Signed-off-by: Firoz Khan <firozk@codeaurora.org>
 ---
  arch/alpha/kernel/syscalls/Makefile      |  37 +++
  arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++++++++
- arch/alpha/kernel/syscalls/syscallhdr.sh |  28 ++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  33 +++
  arch/alpha/kernel/syscalls/syscalltbl.sh |  28 ++
- 4 files changed, 543 insertions(+)
+ 4 files changed, 548 insertions(+)
  create mode 100644 arch/alpha/kernel/syscalls/Makefile
  create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
  create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
@@ -546,10 +549,10 @@ index 0000000..946a8fb
 +522     common  statx                           sys_statx
 diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..e0f3edc
+index 0000000..e71b902
 --- /dev/null
 +++ b/arch/alpha/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,33 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -567,14 +570,19 @@ index 0000000..e0f3edc
 +    echo "#define ${fileguard}"
 +    echo ""
 +
++    nxt=0
 +    while read nr abi name entry ; do
 +	if [ -z "$offset" ]; then
 +	    echo -e "#define __NR_${prefix}${name}\t$nr"
 +	else
 +	    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
 +	fi
++	nxt=$nr
++	let nxt=nxt+1
 +    done
 +
++    echo ""
++    echo -e "#define __NR_syscalls\t$nxt"
 +    echo ""
 +    echo "#endif /* ${fileguard} */"
 +) > "$out"

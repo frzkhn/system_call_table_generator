@@ -1,7 +1,7 @@
-From 5a5a282e074843d919d7bc9cf6114dda4190a14b Mon Sep 17 00:00:00 2001
+From 5d431e2aae7ee6e9383ce037cfd6a211b905d46d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Fri, 13 Jul 2018 10:47:34 +0530
-Subject: [PATCH v1 5/5] alpha: uapi header and system call table file
+Date: Fri, 13 Jul 2018 18:03:40 +0530
+Subject: [PATCH v1 6/6] alpha: uapi header and system call table file
  generation
 
 This change will generate unistd_64.h and syscall_64.h files by
@@ -16,11 +16,11 @@ Signed-off-by: Firoz Khan <firozk@codeaurora.org>
  arch/alpha/Makefile                  |   3 +
  arch/alpha/include/asm/Kbuild        |   3 +-
  arch/alpha/include/uapi/asm/Kbuild   |   2 +
- arch/alpha/include/uapi/asm/unistd.h | 484 ------------------------------
+ arch/alpha/include/uapi/asm/unistd.h | 486 -------------------------------
  arch/alpha/kernel/Makefile           |   2 +-
  arch/alpha/kernel/syscall.S          |  20 ++
  arch/alpha/kernel/systbls.S          | 549 -----------------------------------
- 7 files changed, 28 insertions(+), 1035 deletions(-)
+ 7 files changed, 28 insertions(+), 1037 deletions(-)
  delete mode 100644 arch/alpha/include/uapi/asm/unistd.h
  create mode 100644 arch/alpha/kernel/syscall.S
  delete mode 100644 arch/alpha/kernel/systbls.S
@@ -70,10 +70,10 @@ index 1a5b753..3c1036f 100644
 \ No newline at end of file
 diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
 deleted file mode 100644
-index 3bb6ac1..0000000
+index 5d4b51e..0000000
 --- a/arch/alpha/include/uapi/asm/unistd.h
 +++ /dev/null
-@@ -1,484 +0,0 @@
+@@ -1,486 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 -#ifndef _UAPI_ALPHA_UNISTD_H
 -#define _UAPI_ALPHA_UNISTD_H
@@ -557,6 +557,8 @@ index 3bb6ac1..0000000
 -#define __NR_pwritev2			521
 -#define __NR_statx			522
 -
+-#define __NR_syscalls                   523
+-
 -#endif /* _UAPI_ALPHA_UNISTD_H */
 diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
 index 5a74581..75cfef9 100644
@@ -573,7 +575,7 @@ index 5a74581..75cfef9 100644
  obj-$(CONFIG_SMP)	+= smp.o
 diff --git a/arch/alpha/kernel/syscall.S b/arch/alpha/kernel/syscall.S
 new file mode 100644
-index 0000000..dc71a3d
+index 0000000..eec54e4
 --- /dev/null
 +++ b/arch/alpha/kernel/syscall.S
 @@ -0,0 +1,20 @@
@@ -594,12 +596,12 @@ index 0000000..dc71a3d
 +.size sys_call_table, . - sys_call_table
 +.type sys_call_table, @object
 +
-+.ifne (. - sys_call_table) - (NR_SYSCALLS * 8)
++.ifne (. - sys_call_table) - (__NR_syscalls * 8)
 +.err
 +.endif
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
 deleted file mode 100644
-index 0060b70..0000000
+index 3ca7ef3..0000000
 --- a/arch/alpha/kernel/systbls.S
 +++ /dev/null
 @@ -1,549 +0,0 @@
@@ -1149,7 +1151,7 @@ index 0060b70..0000000
 -	.type sys_call_table, @object
 -
 -/* Remember to update everything, kids.  */
--.ifne (. - sys_call_table) - (NR_SYSCALLS * 8)
+-.ifne (. - sys_call_table) - (__NR_syscalls * 8)
 -.err
 -.endif
 -- 

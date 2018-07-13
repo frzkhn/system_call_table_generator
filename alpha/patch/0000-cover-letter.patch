@@ -1,38 +1,48 @@
-From 5a5a282e074843d919d7bc9cf6114dda4190a14b Mon Sep 17 00:00:00 2001
+From 5d431e2aae7ee6e9383ce037cfd6a211b905d46d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Fri, 13 Jul 2018 10:54:18 +0530
-Subject: [PATCH v1 0/5] System call table generation support
+Date: Fri, 13 Jul 2018 18:12:15 +0530
+Subject: [PATCH v1 0/6] System call table generation support
 
 The goal of this patch series is to easily add/modify/delete a
 system call by changing entry in syscall.tbl file. No need
 to manually edit many files.
-NOTE: Update NR_SYSCALLS, if needed. ie,
-arch/alpha/include/asm/unistd.h:7:#define NR_SYSCALLS  523
 
 The another goal of this patch series is to to unify the system
 call implementation across all the architectures.
 
-Firoz Khan (5):
+I have done the same support for work for ia64, m68k, microblaze, 
+mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
+the patch for one architecuture for review. Below mentioned git
+repository contains more details.
+Git repo:- https://github.com/frzkhn/system_call_table_generator/
+
+ARM, s390 and x86 architecuture does have the similar support.
+I leverage their implementation to come up with a generic
+solution.
+
+Firoz Khan (6):
   alpha: Move __IGNORE* entries to non uapi header
   alpha: Add CONFIG_OSF4_COMPAT for compat syscall support
   alpha: Unify the not-implemented system call entry name
-  alpha/syscalls: Add system call table generation support
+  alpha: Replace NR_SYSCALLS macro from asm/unistd.h
+  alpha: Add system call table generation support
   alpha: uapi header and system call table file generation
 
  arch/alpha/Makefile                      |   3 +
  arch/alpha/include/asm/Kbuild            |   3 +-
- arch/alpha/include/asm/unistd.h          |   5 +
+ arch/alpha/include/asm/unistd.h          |   7 +-
  arch/alpha/include/uapi/asm/Kbuild       |   2 +
  arch/alpha/include/uapi/asm/unistd.h     | 489 ---------------------------
  arch/alpha/kernel/Makefile               |   2 +-
+ arch/alpha/kernel/entry.S                |   4 +-
  arch/alpha/kernel/osf_sys.c              |   9 +-
  arch/alpha/kernel/syscall.S              |  20 ++
  arch/alpha/kernel/syscalls/Makefile      |  37 +++
  arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++
- arch/alpha/kernel/syscalls/syscallhdr.sh |  28 ++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  33 ++
  arch/alpha/kernel/syscalls/syscalltbl.sh |  28 ++
  arch/alpha/kernel/systbls.S              | 552 -------------------------------
- 13 files changed, 582 insertions(+), 1046 deletions(-)
+ 14 files changed, 589 insertions(+), 1050 deletions(-)
  delete mode 100644 arch/alpha/include/uapi/asm/unistd.h
  create mode 100644 arch/alpha/kernel/syscall.S
  create mode 100644 arch/alpha/kernel/syscalls/Makefile

@@ -1,7 +1,7 @@
 From 023db66c823b08be77a9461b827eaed1539b25d9 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Thu, 28 Jun 2018 10:25:14 +0530
-Subject: [PATCH v1 1/5] alpha: Move __IGNORE* entries to non uapi header
+Subject: [PATCH v1 1/6] alpha: Move __IGNORE* entries to non uapi header
 
 It is correct to keep __IGNORE* entry in non uapi header
 asm/unistd.h while uapi/asm/unistd.h must hold information
