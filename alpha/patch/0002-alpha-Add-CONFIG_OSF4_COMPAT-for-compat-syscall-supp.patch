@@ -1,7 +1,7 @@
 From e5d1bc567e1f550a61d37e088a76b744bc675402 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Thu, 28 Jun 2018 10:51:17 +0530
-Subject: [PATCH v1 2/4] alpha: Add CONFIG_OSF4_COMPAT for compat syscall
+Subject: [PATCH v1 2/5] alpha: Add CONFIG_OSF4_COMPAT for compat syscall
  support
 
 Removed the CONFIG_OSF4_COMPAT check from systbls.S and

@@ -1,7 +1,7 @@
-From 3eb80ad7396a6eaa3a01fa88f208ec2fd487ee8e Mon Sep 17 00:00:00 2001
+From 5a5a282e074843d919d7bc9cf6114dda4190a14b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Thu, 12 Jul 2018 12:49:20 +0530
-Subject: [PATCH v1 0/4] System call table generation support
+Date: Fri, 13 Jul 2018 10:54:18 +0530
+Subject: [PATCH v1 0/5] System call table generation support
 
 The goal of this patch series is to easily add/modify/delete a
 system call by changing entry in syscall.tbl file. No need
@@ -12,11 +12,12 @@ arch/alpha/include/asm/unistd.h:7:#define NR_SYSCALLS  523
 The another goal of this patch series is to to unify the system
 call implementation across all the architectures.
 
-Firoz Khan (4):
+Firoz Khan (5):
   alpha: Move __IGNORE* entries to non uapi header
   alpha: Add CONFIG_OSF4_COMPAT for compat syscall support
+  alpha: Unify the not-implemented system call entry name
   alpha/syscalls: Add system call table generation support
-  alpha: uapi header and system call table files generation
+  alpha: uapi header and system call table file generation
 
  arch/alpha/Makefile                      |   3 +
  arch/alpha/include/asm/Kbuild            |   3 +-

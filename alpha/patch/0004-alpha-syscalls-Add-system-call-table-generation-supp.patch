@@ -1,7 +1,7 @@
-From 7f41300e1bd009f4fca1a3e53df31f297cdf51de Mon Sep 17 00:00:00 2001
+From 0f023d38d735a03fb7bef950a1353eab856af882 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
-Subject: [PATCH v1 3/4] alpha/syscalls: Add system call table generation
+Subject: [PATCH v1 4/5] alpha/syscalls: Add system call table generation
  support
 
 The system call tables are in different format in all
@@ -47,7 +47,7 @@ Signed-off-by: Firoz Khan <firozk@codeaurora.org>
 
 diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..76e668d
+index 0000000..96d82b8
 --- /dev/null
 +++ b/arch/alpha/kernel/syscalls/Makefile
 @@ -0,0 +1,37 @@
@@ -76,11 +76,11 @@ index 0000000..76e668d
 +$(uapi)/unistd.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+$(out)/syscalls.h: $(syscall) $(systbl)
++$(out)/syscall_table.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
 +uapisyshdr-y			+= unistd.h
-+syshdr-y			+= syscalls.h
++syshdr-y			+= syscall_table.h
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
 +

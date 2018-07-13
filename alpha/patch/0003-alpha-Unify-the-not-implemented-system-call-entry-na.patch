@@ -1,0 +1,31 @@
+From cf3ebd376c025fbfe0bad423d476ae8f60b147d2 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Fri, 13 Jul 2018 10:37:17 +0530
+Subject: [PATCH v1 3/5] alpha: Unify the not-implemented system call entry
+ name
+
+systbl.S contain two types of system call entry name which are
+alpha_ni_syscall and sys_ni_syscall. So this patch will unify
+the not-implemented system call entry name as alpha_ni_syscall
+
+Signed-off-by: Firoz Khan <firozk@codeaurora.org>
+---
+ arch/alpha/kernel/systbls.S | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index fcf2f60..0060b70 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -7,6 +7,8 @@
+ 
+ #include <asm/unistd.h>
+ 
++#define sys_ni_syscall alpha_ni_syscall
++
+ 	.data
+ 	.align 3
+ 	.globl sys_call_table
+-- 
+1.9.1
+
