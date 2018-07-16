@@ -1,4 +1,4 @@
-From 911059216431c992ceccad572375430c5b3aa929 Mon Sep 17 00:00:00 2001
+From 71868fefb2da8ae2778d3d71b1d8f7827e549b17 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 13 Jul 2018 16:43:07 +0530
 Subject: [PATCH 4/6] alpha: Replace NR_SYSCALLS macro from asm/unistd.h
@@ -64,10 +64,10 @@ index c64806a..8f0d706 100644
  	lda	$27, alpha_ni_syscall
  	cmpult	$0, $1, $1
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 0060b70..3ca7ef3 100644
+index 69c4c48..3c04c82 100644
 --- a/arch/alpha/kernel/systbls.S
 +++ b/arch/alpha/kernel/systbls.S
-@@ -544,6 +544,6 @@ sys_call_table:
+@@ -542,6 +542,6 @@ sys_call_table:
  	.type sys_call_table, @object
  
  /* Remember to update everything, kids.  */

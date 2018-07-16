@@ -1,9 +1,9 @@
-From d2a830d61b69e9cbf7d2dc66a6c12ff8a98ba453 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 13 Jul 2018 18:03:40 +0530
+From 5f807f458c7a27fb1d44e3d18b9d4c940f52d69c Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Mon, 16 Jul 2018 14:39:57 +0530
 Subject: [PATCH 6/6] alpha: uapi header and system call table file generation
 
-This change will generate unistd.h and syscall.h files by the
+This change will generate unistd.h and syscall_table.h files by the
 syscall table generation script invoked by arch/alpha/Makefile.
 
 The generated uapi header file will be included in uapi/asm/unistd.h
@@ -16,8 +16,8 @@ alpha/kernel/syscall.S file.
  arch/alpha/include/uapi/asm/unistd.h | 486 -------------------------------
  arch/alpha/kernel/Makefile           |   2 +-
  arch/alpha/kernel/syscall.S          |  20 ++
- arch/alpha/kernel/systbls.S          | 549 -----------------------------------
- 7 files changed, 28 insertions(+), 1037 deletions(-)
+ arch/alpha/kernel/systbls.S          | 547 -----------------------------------
+ 7 files changed, 28 insertions(+), 1035 deletions(-)
  delete mode 100644 arch/alpha/include/uapi/asm/unistd.h
  create mode 100644 arch/alpha/kernel/syscall.S
  delete mode 100644 arch/alpha/kernel/systbls.S
@@ -598,10 +598,10 @@ index 0000000..eec54e4
 +.endif
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
 deleted file mode 100644
-index 3ca7ef3..0000000
+index 3c04c82..0000000
 --- a/arch/alpha/kernel/systbls.S
 +++ /dev/null
-@@ -1,549 +0,0 @@
+@@ -1,547 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 */
 -/*
 - * arch/alpha/kernel/systbls.S
@@ -610,8 +610,6 @@ index 3ca7ef3..0000000
 - */
 -
 -#include <asm/unistd.h>
--
--#define sys_ni_syscall alpha_ni_syscall
 -
 -	.data
 -	.align 3
@@ -926,10 +924,10 @@ index 3ca7ef3..0000000
 -	.quad sys_old_adjtimex
 -	.quad sys_swapoff
 -	.quad sys_getdents			/* 305 */
--	.quad sys_ni_syscall			/* 306: old create_module */
+-	.quad alpha_ni_syscall			/* 306: old create_module */
 -	.quad sys_init_module
 -	.quad sys_delete_module
--	.quad sys_ni_syscall			/* 309: old get_kernel_syms */
+-	.quad alpha_ni_syscall			/* 309: old get_kernel_syms */
 -	.quad sys_syslog			/* 310 */
 -	.quad sys_reboot
 -	.quad alpha_clone
@@ -940,7 +938,7 @@ index 3ca7ef3..0000000
 -	.quad sys_munlockall
 -	.quad sys_sysinfo
 -	.quad sys_sysctl
--	.quad sys_ni_syscall			/* 320 */
+-	.quad alpha_ni_syscall			/* 320 */
 -	.quad sys_oldumount
 -	.quad sys_swapon
 -	.quad sys_times
@@ -958,16 +956,16 @@ index 3ca7ef3..0000000
 -	.quad sys_sched_get_priority_max	/* 335 */
 -	.quad sys_sched_get_priority_min
 -	.quad sys_sched_rr_get_interval
--	.quad sys_ni_syscall			/* sys_afs_syscall */
+-	.quad alpha_ni_syscall			/* sys_afs_syscall */
 -	.quad sys_newuname
 -	.quad sys_nanosleep			/* 340 */
 -	.quad sys_mremap
--	.quad sys_ni_syscall			/* old nfsservctl */
+-	.quad alpha_ni_syscall			/* old nfsservctl */
 -	.quad sys_setresuid
 -	.quad sys_getresuid
 -	.quad sys_pciconfig_read		/* 345 */
 -	.quad sys_pciconfig_write
--	.quad sys_ni_syscall			/* 347: old query_module */
+-	.quad alpha_ni_syscall			/* 347: old query_module */
 -	.quad sys_prctl
 -	.quad sys_pread64
 -	.quad sys_pwrite64			/* 350 */
@@ -993,14 +991,14 @@ index 3ca7ef3..0000000
 -	.quad sys_sendfile64			/* 370 */
 -	.quad sys_setresgid
 -	.quad sys_getresgid
--	.quad sys_ni_syscall			/* sys_dipc */
+-	.quad alpha_ni_syscall			/* sys_dipc */
 -	.quad sys_pivot_root
 -	.quad sys_mincore			/* 375 */
 -	.quad sys_pciconfig_iobase
 -	.quad sys_getdents64
 -	.quad sys_gettid
 -	.quad sys_readahead
--	.quad sys_ni_syscall			/* 380 */
+-	.quad alpha_ni_syscall			/* 380 */
 -	.quad sys_tkill
 -	.quad sys_setxattr
 -	.quad sys_lsetxattr
@@ -1017,14 +1015,14 @@ index 3ca7ef3..0000000
 -	.quad sys_futex
 -	.quad sys_sched_setaffinity		/* 395 */
 -	.quad sys_sched_getaffinity
--	.quad sys_ni_syscall			/* 397, tux */
+-	.quad alpha_ni_syscall			/* 397, tux */
 -	.quad sys_io_setup
 -	.quad sys_io_destroy
 -	.quad sys_io_getevents			/* 400 */
 -	.quad sys_io_submit
 -	.quad sys_io_cancel
--	.quad sys_ni_syscall			/* 403, sys_alloc_hugepages */
--	.quad sys_ni_syscall			/* 404, sys_free_hugepages */
+-	.quad alpha_ni_syscall			/* 403, sys_alloc_hugepages */
+-	.quad alpha_ni_syscall			/* 404, sys_free_hugepages */
 -	.quad sys_exit_group			/* 405 */
 -	.quad sys_lookup_dcookie
 -	.quad sys_epoll_create
@@ -1048,10 +1046,10 @@ index 3ca7ef3..0000000
 -	.quad sys_stat64			/* 425 */
 -	.quad sys_lstat64
 -	.quad sys_fstat64
--	.quad sys_ni_syscall			/* sys_vserver */
--	.quad sys_ni_syscall			/* sys_mbind */
--	.quad sys_ni_syscall			/* sys_get_mempolicy */
--	.quad sys_ni_syscall			/* sys_set_mempolicy */
+-	.quad alpha_ni_syscall			/* sys_vserver */
+-	.quad alpha_ni_syscall			/* sys_mbind */
+-	.quad alpha_ni_syscall			/* sys_get_mempolicy */
+-	.quad alpha_ni_syscall			/* sys_set_mempolicy */
 -	.quad sys_mq_open
 -	.quad sys_mq_unlink
 -	.quad sys_mq_timedsend
@@ -1097,7 +1095,7 @@ index 3ca7ef3..0000000
 -	.quad sys_epoll_pwait
 -	.quad sys_utimensat			/* 475 */
 -	.quad sys_signalfd
--	.quad sys_ni_syscall			/* sys_timerfd */
+-	.quad alpha_ni_syscall			/* sys_timerfd */
 -	.quad sys_eventfd
 -	.quad sys_recvmmsg
 -	.quad sys_fallocate			/* 480 */

@@ -1,4 +1,4 @@
-From eea7dd59a7eb016ddf6d63e84832f1c6478c5ff7 Mon Sep 17 00:00:00 2001
+From db78f977c0efbe2578e212acaa77d112eb8fdd4f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 28 Jun 2018 10:25:14 +0530
 Subject: [PATCH 1/6] alpha: Move __IGNORE* entries to non uapi header

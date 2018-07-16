@@ -1,4 +1,4 @@
-From b1fe457e9cdf7ac67567c82fbd7de39746f267a9 Mon Sep 17 00:00:00 2001
+From 87d72b276a8f7559ea6af73da6abc89509ceba8b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 13 Jul 2018 10:37:17 +0530
 Subject: [PATCH 3/6] alpha: Unify the not-implemented system call entry name
@@ -7,22 +7,114 @@ systbl.S contain two types of system call entry name which are
 alpha_ni_syscall and sys_ni_syscall. So this patch will unify
 the not-implemented system call entry name as alpha_ni_syscall.
 ---
- arch/alpha/kernel/systbls.S | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/alpha/kernel/systbls.S | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index fcf2f60..0060b70 100644
+index fcf2f60..69c4c48 100644
 --- a/arch/alpha/kernel/systbls.S
 +++ b/arch/alpha/kernel/systbls.S
-@@ -7,6 +7,8 @@
- 
- #include <asm/unistd.h>
- 
-+#define sys_ni_syscall alpha_ni_syscall
-+
- 	.data
- 	.align 3
- 	.globl sys_call_table
+@@ -320,10 +320,10 @@ sys_call_table:
+ 	.quad sys_old_adjtimex
+ 	.quad sys_swapoff
+ 	.quad sys_getdents			/* 305 */
+-	.quad sys_ni_syscall			/* 306: old create_module */
++	.quad alpha_ni_syscall			/* 306: old create_module */
+ 	.quad sys_init_module
+ 	.quad sys_delete_module
+-	.quad sys_ni_syscall			/* 309: old get_kernel_syms */
++	.quad alpha_ni_syscall			/* 309: old get_kernel_syms */
+ 	.quad sys_syslog			/* 310 */
+ 	.quad sys_reboot
+ 	.quad alpha_clone
+@@ -334,7 +334,7 @@ sys_call_table:
+ 	.quad sys_munlockall
+ 	.quad sys_sysinfo
+ 	.quad sys_sysctl
+-	.quad sys_ni_syscall			/* 320 */
++	.quad alpha_ni_syscall			/* 320 */
+ 	.quad sys_oldumount
+ 	.quad sys_swapon
+ 	.quad sys_times
+@@ -352,16 +352,16 @@ sys_call_table:
+ 	.quad sys_sched_get_priority_max	/* 335 */
+ 	.quad sys_sched_get_priority_min
+ 	.quad sys_sched_rr_get_interval
+-	.quad sys_ni_syscall			/* sys_afs_syscall */
++	.quad alpha_ni_syscall			/* sys_afs_syscall */
+ 	.quad sys_newuname
+ 	.quad sys_nanosleep			/* 340 */
+ 	.quad sys_mremap
+-	.quad sys_ni_syscall			/* old nfsservctl */
++	.quad alpha_ni_syscall			/* old nfsservctl */
+ 	.quad sys_setresuid
+ 	.quad sys_getresuid
+ 	.quad sys_pciconfig_read		/* 345 */
+ 	.quad sys_pciconfig_write
+-	.quad sys_ni_syscall			/* 347: old query_module */
++	.quad alpha_ni_syscall			/* 347: old query_module */
+ 	.quad sys_prctl
+ 	.quad sys_pread64
+ 	.quad sys_pwrite64			/* 350 */
+@@ -387,14 +387,14 @@ sys_call_table:
+ 	.quad sys_sendfile64			/* 370 */
+ 	.quad sys_setresgid
+ 	.quad sys_getresgid
+-	.quad sys_ni_syscall			/* sys_dipc */
++	.quad alpha_ni_syscall			/* sys_dipc */
+ 	.quad sys_pivot_root
+ 	.quad sys_mincore			/* 375 */
+ 	.quad sys_pciconfig_iobase
+ 	.quad sys_getdents64
+ 	.quad sys_gettid
+ 	.quad sys_readahead
+-	.quad sys_ni_syscall			/* 380 */
++	.quad alpha_ni_syscall			/* 380 */
+ 	.quad sys_tkill
+ 	.quad sys_setxattr
+ 	.quad sys_lsetxattr
+@@ -411,14 +411,14 @@ sys_call_table:
+ 	.quad sys_futex
+ 	.quad sys_sched_setaffinity		/* 395 */
+ 	.quad sys_sched_getaffinity
+-	.quad sys_ni_syscall			/* 397, tux */
++	.quad alpha_ni_syscall			/* 397, tux */
+ 	.quad sys_io_setup
+ 	.quad sys_io_destroy
+ 	.quad sys_io_getevents			/* 400 */
+ 	.quad sys_io_submit
+ 	.quad sys_io_cancel
+-	.quad sys_ni_syscall			/* 403, sys_alloc_hugepages */
+-	.quad sys_ni_syscall			/* 404, sys_free_hugepages */
++	.quad alpha_ni_syscall			/* 403, sys_alloc_hugepages */
++	.quad alpha_ni_syscall			/* 404, sys_free_hugepages */
+ 	.quad sys_exit_group			/* 405 */
+ 	.quad sys_lookup_dcookie
+ 	.quad sys_epoll_create
+@@ -442,10 +442,10 @@ sys_call_table:
+ 	.quad sys_stat64			/* 425 */
+ 	.quad sys_lstat64
+ 	.quad sys_fstat64
+-	.quad sys_ni_syscall			/* sys_vserver */
+-	.quad sys_ni_syscall			/* sys_mbind */
+-	.quad sys_ni_syscall			/* sys_get_mempolicy */
+-	.quad sys_ni_syscall			/* sys_set_mempolicy */
++	.quad alpha_ni_syscall			/* sys_vserver */
++	.quad alpha_ni_syscall			/* sys_mbind */
++	.quad alpha_ni_syscall			/* sys_get_mempolicy */
++	.quad alpha_ni_syscall			/* sys_set_mempolicy */
+ 	.quad sys_mq_open
+ 	.quad sys_mq_unlink
+ 	.quad sys_mq_timedsend
+@@ -491,7 +491,7 @@ sys_call_table:
+ 	.quad sys_epoll_pwait
+ 	.quad sys_utimensat			/* 475 */
+ 	.quad sys_signalfd
+-	.quad sys_ni_syscall			/* sys_timerfd */
++	.quad alpha_ni_syscall			/* sys_timerfd */
+ 	.quad sys_eventfd
+ 	.quad sys_recvmmsg
+ 	.quad sys_fallocate			/* 480 */
 -- 
 1.9.1
 

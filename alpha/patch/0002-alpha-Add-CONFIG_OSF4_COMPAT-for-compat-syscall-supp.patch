@@ -1,4 +1,4 @@
-From 300e53420cc61d3b6ee1cb8f81c25cc6bbe1f73c Mon Sep 17 00:00:00 2001
+From 077b8a1fc4cb8c1389aa2f3dbc61f070f4ce428d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 28 Jun 2018 10:51:17 +0530
 Subject: [PATCH 2/6] alpha: Add CONFIG_OSF4_COMPAT for compat syscall support

@@ -1,4 +1,4 @@
-From eaf2f9521dcb45a4117eb0583688e2e7d4101dff Mon Sep 17 00:00:00 2001
+From 3d589645ff03a7da8b275e2158405162887e015d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
 Subject: [PATCH 5/6] alpha: Add system call table generation support
@@ -27,10 +27,10 @@ Adding a new table entry consisting of:
         - Entry point name.
 
 syscallhdr.sh and syscalltbl.sh will generate uapi header-
-unistd_64.h and syscall_64.h files respectively. syscall_64.h
-file is included by syscall.S- the real system call table.
-Both .sh files will parse the content syscall.tbl to generate
-the header and table files.
+unistd.h and syscall_table.h files respectively. File
+syscall_table.h is included by syscall.S - the real system
+call table. Both .sh files will parse the content syscall.tbl
+to generate the header and table files.
 
 ARM, s390 and x86 architecuture does have the similar support.
 I leverage their implementation to come up with a generic
