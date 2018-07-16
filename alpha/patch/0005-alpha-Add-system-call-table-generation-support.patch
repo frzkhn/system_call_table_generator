@@ -1,4 +1,4 @@
-From 3d589645ff03a7da8b275e2158405162887e015d Mon Sep 17 00:00:00 2001
+From cfb1c5186537225399544ae8e419e9e9ec7046ed Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
 Subject: [PATCH 5/6] alpha: Add system call table generation support
@@ -35,6 +35,8 @@ to generate the header and table files.
 ARM, s390 and x86 architecuture does have the similar support.
 I leverage their implementation to come up with a generic
 solution.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/alpha/kernel/syscalls/Makefile      |  37 +++
  arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++++++++
@@ -619,5 +621,5 @@ index 0000000..4f5cebd
 +    done
 +) > "$out"
 -- 
-1.9.1
+2.7.4
 

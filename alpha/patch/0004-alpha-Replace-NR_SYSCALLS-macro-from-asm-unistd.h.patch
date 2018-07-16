@@ -1,4 +1,4 @@
-From 71868fefb2da8ae2778d3d71b1d8f7827e549b17 Mon Sep 17 00:00:00 2001
+From 397e7d3c6f3dd9c1b82a2e1dc71cebf0731d11b8 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 13 Jul 2018 16:43:07 +0530
 Subject: [PATCH 4/6] alpha: Replace NR_SYSCALLS macro from asm/unistd.h
@@ -10,6 +10,8 @@ call generation script to generate __NR_syscalls.
 
 While __NR_syscalls isn't strictly part of the uapi, having it as
 part of the generated header to simplifies the implementation.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/alpha/include/asm/unistd.h      | 2 --
  arch/alpha/include/uapi/asm/unistd.h | 2 ++
@@ -64,10 +66,10 @@ index c64806a..8f0d706 100644
  	lda	$27, alpha_ni_syscall
  	cmpult	$0, $1, $1
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 69c4c48..3c04c82 100644
+index 7ef6925..de79de3 100644
 --- a/arch/alpha/kernel/systbls.S
 +++ b/arch/alpha/kernel/systbls.S
-@@ -542,6 +542,6 @@ sys_call_table:
+@@ -544,6 +544,6 @@ sys_call_table:
  	.type sys_call_table, @object
  
  /* Remember to update everything, kids.  */
@@ -76,5 +78,5 @@ index 69c4c48..3c04c82 100644
  .err
  .endif
 -- 
-1.9.1
+2.7.4
 

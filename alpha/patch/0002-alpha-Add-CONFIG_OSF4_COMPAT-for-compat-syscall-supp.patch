@@ -1,4 +1,4 @@
-From 077b8a1fc4cb8c1389aa2f3dbc61f070f4ce428d Mon Sep 17 00:00:00 2001
+From a8955dbf0fb2b7d57dd8f32ae50056c06219c7be Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 28 Jun 2018 10:51:17 +0530
 Subject: [PATCH 2/6] alpha: Add CONFIG_OSF4_COMPAT for compat syscall support
@@ -7,6 +7,8 @@ Removed the CONFIG_OSF4_COMPAT check from systbls.S and
 kept it in osf_sys.c, so it will provide the same system
 call support. To do so, we can keep a generic formatted
 system call table file across all architectures.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/alpha/kernel/osf_sys.c | 9 ++++++---
  arch/alpha/kernel/systbls.S | 5 -----
@@ -16,7 +18,7 @@ diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
 index 6e92175..696a6b7 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
-@@ -1349,7 +1349,6 @@ struct timex32 {
+@@ -1349,7 +1349,6 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
  }
  
  #ifdef CONFIG_OSF4_COMPAT
@@ -24,7 +26,7 @@ index 6e92175..696a6b7 100644
  /* Clear top 32 bits of iov_len in the user's buffer for
     compatibility with old versions of OSF/1 where iov_len
     was defined as int. */
-@@ -1366,27 +1365,31 @@ struct timex32 {
+@@ -1366,27 +1365,31 @@ osf_fix_iov_len(const struct iovec __user *iov, unsigned long count)
  	}
  	return 0;
  }
@@ -77,5 +79,5 @@ index 1374e59..fcf2f60 100644
  	.quad sys_fchown
  	.quad sys_fchmod
 -- 
-1.9.1
+2.7.4
 
