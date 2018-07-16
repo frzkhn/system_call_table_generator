@@ -1,17 +1,15 @@
-From f1cd43b1e18980fed1c23994d099dfffc03a21b4 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
+From 911059216431c992ceccad572375430c5b3aa929 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 13 Jul 2018 16:43:07 +0530
-Subject: [PATCH v1 4/6] alpha: Replace NR_SYSCALLS macro from asm/unistd.h
+Subject: [PATCH 4/6] alpha: Replace NR_SYSCALLS macro from asm/unistd.h
 
 Replace NR_SYSCALLS from asm/unistd.h and keep equivalent macro
 __NR_syscalls in uapi/asm/unistd.h and this will make a unified
 implementation across all the architecture and we can use a system
 call generation script to generate __NR_syscalls.
 
-While __NR_syscalls isn't strictly part of the uapi, having it as part
-of the generated header to simplifies the implementation
-
-Signed-off-by: Firoz Khan <firozk@codeaurora.org>
+While __NR_syscalls isn't strictly part of the uapi, having it as
+part of the generated header to simplifies the implementation.
 ---
  arch/alpha/include/asm/unistd.h      | 2 --
  arch/alpha/include/uapi/asm/unistd.h | 2 ++

@@ -1,14 +1,16 @@
-From 5d431e2aae7ee6e9383ce037cfd6a211b905d46d Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Fri, 13 Jul 2018 18:12:15 +0530
-Subject: [PATCH v1 0/6] System call table generation support
+From d2a830d61b69e9cbf7d2dc66a6c12ff8a98ba453 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Mon, 16 Jul 2018 09:20:36 +0530
+Subject: [PATCH 0/6] System call table generation support
 
 The goal of this patch series is to easily add/modify/delete a
 system call by changing entry in syscall.tbl file. No need
 to manually edit many files.
 
 The another goal of this patch series is to to unify the system
-call implementation across all the architectures.
+call implementation across all the architectures. ARM, s390 and 
+x86 architecuture does have the similar support. I leverage their 
+implementation to come up with a generic solution.
 
 I have done the same support for work for ia64, m68k, microblaze, 
 mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
@@ -16,9 +18,10 @@ the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-ARM, s390 and x86 architecuture does have the similar support.
-I leverage their implementation to come up with a generic
-solution.
+Finally, this is the ground work for solving the Y2038 issue. We 
+need to change two dozen of system calls to solve Y2038 issue. So
+this implementation will help to easily modify from existing system
+call to Y2038 compatible system calls.
 
 Firoz Khan (6):
   alpha: Move __IGNORE* entries to non uapi header

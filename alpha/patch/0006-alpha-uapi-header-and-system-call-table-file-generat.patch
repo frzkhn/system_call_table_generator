@@ -1,17 +1,14 @@
-From 5d431e2aae7ee6e9383ce037cfd6a211b905d46d Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
+From d2a830d61b69e9cbf7d2dc66a6c12ff8a98ba453 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 13 Jul 2018 18:03:40 +0530
-Subject: [PATCH v1 6/6] alpha: uapi header and system call table file
- generation
+Subject: [PATCH 6/6] alpha: uapi header and system call table file generation
 
-This change will generate unistd_64.h and syscall_64.h files by
-the syscall table generation script invoked by arch/alpha/Makefile.
+This change will generate unistd.h and syscall.h files by the
+syscall table generation script invoked by arch/alpha/Makefile.
 
 The generated uapi header file will be included in uapi/asm/unistd.h
 and generated system call table support file will be included by
 alpha/kernel/syscall.S file.
-
-Signed-off-by: Firoz Khan <firozk@codeaurora.org>
 ---
  arch/alpha/Makefile                  |   3 +
  arch/alpha/include/asm/Kbuild        |   3 +-

@@ -1,7 +1,7 @@
-From 0445776f352e25fdcf9f32ea3a2ea1a8f4b80cf7 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
+From eaf2f9521dcb45a4117eb0583688e2e7d4101dff Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
-Subject: [PATCH v1 5/6] alpha: Add system call table generation support
+Subject: [PATCH 5/6] alpha: Add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -35,8 +35,6 @@ the header and table files.
 ARM, s390 and x86 architecuture does have the similar support.
 I leverage their implementation to come up with a generic
 solution.
-
-Signed-off-by: Firoz Khan <firozk@codeaurora.org>
 ---
  arch/alpha/kernel/syscalls/Makefile      |  37 +++
  arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++++++++
