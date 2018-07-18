@@ -1,0 +1,69 @@
+From dc5007e7c0951dd985c76fc0c00c7145b0dc9263 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@linaro.org>
+Date: Wed, 18 Jul 2018 12:51:43 +0530
+Subject: [PATCH 0/6] System call table generation support
+
+The goal of this patch series is to easily add/modify/delete a
+system call by changing entry in syscall.tbl file. No need
+to manually edit many files.
+
+The another goal of this patch series is to to unify the system
+call implementation across all the architectures. ARM, s390 and 
+x86 architecuture does have the similar support. I leverage their 
+implementation to come up with a generic solution.
+
+I have done the same support for work for ia64, m68k, microblaze, 
+mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
+the patch for one architecuture for review. Below mentioned git
+repository contains more details.
+Git repo:- https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work for solving the Y2038 issue. We 
+need to change two dozen of system calls to solve Y2038 issue. So
+this implementation will help to easily modify from existing system
+call to Y2038 compatible system calls.
+
+Questions:-
+1. As we discussed prevously, we need to change mmap2 to mmap_pgoff.
+   Shall I create a extra patch to do the same?
+
+2. Patch 0006 is hack to compile the kernel. Could you have a look
+   into this?
+
+3. I need some *little* change in alpha patch. Do I need to to wait
+   someone to respond and modify after that?
+
+Firoz Khan (6):
+  ia64: Replace NR_syscalls macro from asm/unistd.h
+  ia64: Added an offset for system call number
+  ia64: Replaced the system call table entry from entry.S
+  ia64: Added system call table generation support
+  ia64: uapi header and system call table file generation
+  ia64: Temporary Hack
+
+ arch/ia64/Makefile                      |   3 +
+ arch/ia64/include/asm/Kbuild            |   2 +
+ arch/ia64/include/asm/unistd.h          |   4 -
+ arch/ia64/include/uapi/asm/Kbuild       |   2 +
+ arch/ia64/include/uapi/asm/unistd.h     | 331 +------------------------------
+ arch/ia64/kernel/entry.S                | 335 +-------------------------------
+ arch/ia64/kernel/fsys.S                 |   2 +-
+ arch/ia64/kernel/gate.S                 |   4 +-
+ arch/ia64/kernel/ivt.S                  |   2 +-
+ arch/ia64/kernel/patch.c                |   2 +-
+ arch/ia64/kernel/syscall.S              |  13 ++
+ arch/ia64/kernel/syscalls/Makefile      |  40 ++++
+ arch/ia64/kernel/syscalls/syscall.tbl   | 334 +++++++++++++++++++++++++++++++
+ arch/ia64/kernel/syscalls/syscallhdr.sh |  33 ++++
+ arch/ia64/kernel/syscalls/syscalltbl.sh |  34 ++++
+ arch/ia64/mm/init.c                     |   6 +-
+ 16 files changed, 474 insertions(+), 673 deletions(-)
+ create mode 100644 arch/ia64/kernel/syscall.S
+ create mode 100644 arch/ia64/kernel/syscalls/Makefile
+ create mode 100644 arch/ia64/kernel/syscalls/syscall.tbl
+ create mode 100644 arch/ia64/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/ia64/kernel/syscalls/syscalltbl.sh
+
+-- 
+1.9.1
+

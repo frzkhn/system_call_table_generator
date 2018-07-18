@@ -1,0 +1,62 @@
+From dc5007e7c0951dd985c76fc0c00c7145b0dc9263 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 18 Jul 2018 12:50:20 +0530
+Subject: [PATCH 6/6] ia64: Temporary Hack
+
+Signed-off-by: Firoz Khan <firozk@linaro.org>
+---
+ arch/ia64/include/uapi/asm/Kbuild   | 2 +-
+ arch/ia64/include/uapi/asm/unistd.h | 2 +-
+ arch/ia64/kernel/syscalls/Makefile  | 6 +++---
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/ia64/include/uapi/asm/Kbuild b/arch/ia64/include/uapi/asm/Kbuild
+index c26d7e1..ce14b40 100644
+--- a/arch/ia64/include/uapi/asm/Kbuild
++++ b/arch/ia64/include/uapi/asm/Kbuild
+@@ -9,4 +9,4 @@ generic-y += poll.h
+ generic-y += sembuf.h
+ generic-y += shmbuf.h
+ 
+-generated-y += unistd.h
+\ No newline at end of file
++generated-y += unistd_64.h
+\ No newline at end of file
+diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
+index 6183bbd..c6f33bc 100644
+--- a/arch/ia64/include/uapi/asm/unistd.h
++++ b/arch/ia64/include/uapi/asm/unistd.h
+@@ -14,6 +14,6 @@
+ #define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
+ 
+ #define __NR_Linux      1024
+-#include <generated/uapi/asm/unistd.h>
++#include <asm/unistd_64.h>
+ 
+ #endif /* _UAPI_ASM_IA64_UNISTD_H */
+diff --git a/arch/ia64/kernel/syscalls/Makefile b/arch/ia64/kernel/syscalls/Makefile
+index 458820f..5eda744 100644
+--- a/arch/ia64/kernel/syscalls/Makefile
++++ b/arch/ia64/kernel/syscalls/Makefile
+@@ -21,15 +21,15 @@ quiet_cmd_systbl = SYSTBL  $@
+ 		   '$(systbl_abi_$(basetarget))'	  \
+ 	           '$(systbl_offset_$(basetarget))'
+ 
+-syshdr_offset_unistd := __NR_Linux
+-$(uapi)/unistd.h: $(syscall) $(syshdr)
++syshdr_offset_unistd_64 := __NR_Linux
++$(uapi)/unistd_64.h: $(syscall) $(syshdr)
+ 	$(call if_changed,syshdr)
+ 
+ systbl_offset_syscall_table := 1024
+ $(out)/syscall_table.h: $(syscall) $(systbl)
+ 	$(call if_changed,systbl)
+ 
+-uapisyshdr-y			+= unistd.h
++uapisyshdr-y			+= unistd_64.h
+ syshdr-y			+= syscall_table.h
+ 
+ targets	+= $(uapisyshdr-y) $(syshdr-y)
+-- 
+1.9.1
+
