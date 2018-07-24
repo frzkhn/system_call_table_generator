@@ -1,7 +1,14 @@
-From f7d01ce4367f4201983ed6091459e757b1f71f8c Mon Sep 17 00:00:00 2001
+From 1c634eadf8dd84d2223253deff17b6860388f8f8 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 18 Jul 2018 12:04:51 +0530
-Subject: [PATCH 3/6] ia64: Replaced the system call table entry from entry.S
+Subject: [PATCH 3/5] ia64: Replaced the system call table entry from entry.S
+
+System call table generation script will generated syscall_table.h 
+and that will be included by syscall.S file. System call table is
+currently the part of entry.S file and it does have other information
+too. So remove the syscall table entry from entry.S and keep it in
+syscall.S file simplify the system call generation process and unify
+the implementation across all architecture.
 
 Replaced the system call table from entry.S to new file - syscall.S,
 and this change will unify the implementation across all the

@@ -1,18 +1,36 @@
-From dc5007e7c0951dd985c76fc0c00c7145b0dc9263 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@linaro.org>
-Date: Wed, 18 Jul 2018 12:51:43 +0530
-Subject: [PATCH 0/6] System call table generation support
+From 949f6347b47f792250915027e8e60e27f3a8ddf4 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Sun, 22 Jul 2018 11:46:04 +0530
+Subject: [PATCH 0/5] System call table generation support
 
-The goal of this patch series is to easily add/modify/delete a
-system call by changing entry in syscall.tbl file. No need
-to manually edit many files.
+The purpose of this patch series is:
+1. We can easily add/modify/delete system call by changing entry 
+in syscall.tbl file. No need to manually edit many files.
 
-The another goal of this patch series is to to unify the system
-call implementation across all the architectures. ARM, s390 and 
-x86 architecuture does have the similar support. I leverage their 
-implementation to come up with a generic solution.
+2. It is easy to unify the system call implementation across all 
+the architectures. 
 
-I have done the same support for work for ia64, m68k, microblaze, 
+The system call tables are in different format in all architecture 
+and it will be difficult to manually add or modify the system calls
+in the respective files. To make it easy by keeping a script and 
+which'll generate the header file and syscall table file so this 
+change will unify them across all architectures.
+
+syscall.tbl contains the list of available system calls along with 
+system call number and corresponding entry point. Add a new system 
+call in this architecture will be possible by adding new entry in 
+the syscall.tbl file.
+
+Adding a new table entry consisting of:
+        - System call number.
+        - ABI.
+        - System call name.
+        - Entry point name.
+
+ARM, s390 and x86 architecuture does have the similar support. I 
+leverage their implementation to come up with a generic solution.
+
+I have done the same support for work for alpha, m68k, microblaze, 
 mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
 the patch for one architecuture for review. Below mentioned git
 repository contains more details.
@@ -23,23 +41,12 @@ need to change two dozen of system calls to solve Y2038 issue. So
 this implementation will help to easily modify from existing system
 call to Y2038 compatible system calls.
 
-Questions:-
-1. As we discussed prevously, we need to change mmap2 to mmap_pgoff.
-   Shall I create a extra patch to do the same?
-
-2. Patch 0006 is hack to compile the kernel. Could you have a look
-   into this?
-
-3. I need some *little* change in alpha patch. Do I need to to wait
-   someone to respond and modify after that?
-
-Firoz Khan (6):
+Firoz Khan (5):
   ia64: Replace NR_syscalls macro from asm/unistd.h
   ia64: Added an offset for system call number
   ia64: Replaced the system call table entry from entry.S
   ia64: Added system call table generation support
   ia64: uapi header and system call table file generation
-  ia64: Temporary Hack
 
  arch/ia64/Makefile                      |   3 +
  arch/ia64/include/asm/Kbuild            |   2 +

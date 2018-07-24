@@ -1,15 +1,20 @@
-From c6fe8eadeea641a85bf5495d3090bd633d7c4309 Mon Sep 17 00:00:00 2001
+From 949f6347b47f792250915027e8e60e27f3a8ddf4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 18 Jul 2018 12:42:16 +0530
-Subject: [PATCH 5/6] ia64: uapi header and system call table file generation
+Subject: [PATCH 5/5] ia64: uapi header and system call table file generation
 
-This change will generate unistd.h and syscall_table.h files by the
-syscall table generation script invoked by arch/ia64/Makefile and
-the generated files against the removed files will be identical.
+System call table generation script must be run to generate 
+unistd_64.h and syscall_table.h files. This patch will have 
+changes which will invokes the script.
 
-The generated uapi header file will be included in uapi/asm/unistd.h
-and generated system call table support file will be included by
-ia64/kernel/syscall.S file.
+This patch will generate unistd_64.h and syscall_table.h 
+files by the syscall table generation script invoked by 
+arch/ia64/Makefile and the generated files against the 
+removed files will be identical.
+
+The generated uapi header file will be included in 
+uapi/asm/unistd.h and generated system call table support 
+file will be included by ia64/kernel/syscall.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -46,7 +51,7 @@ index 557bbc8..6e11673 100644
 +generated-y += syscall_table.h
 \ No newline at end of file
 diff --git a/arch/ia64/include/uapi/asm/Kbuild b/arch/ia64/include/uapi/asm/Kbuild
-index 3982e67..c26d7e1 100644
+index 3982e67..ce14b40 100644
 --- a/arch/ia64/include/uapi/asm/Kbuild
 +++ b/arch/ia64/include/uapi/asm/Kbuild
 @@ -8,3 +8,5 @@ generic-y += msgbuf.h
@@ -54,10 +59,10 @@ index 3982e67..c26d7e1 100644
  generic-y += sembuf.h
  generic-y += shmbuf.h
 +
-+generated-y += unistd.h
++generated-y += unistd_64.h
 \ No newline at end of file
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index b96ca91..6183bbd 100644
+index b96ca91..c6f33bc 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
 @@ -14,334 +14,6 @@
@@ -393,7 +398,7 @@ index b96ca91..6183bbd 100644
 -#define __NR_pwritev2	(__NR_Linux + 325)
 -
 -#define __NR_syscalls	326 /* length of syscall table */
-+#include <generated/uapi/asm/unistd.h>
++#include <asm/unistd_64.h>
  
  #endif /* _UAPI_ASM_IA64_UNISTD_H */
 diff --git a/arch/ia64/kernel/syscall.S b/arch/ia64/kernel/syscall.S

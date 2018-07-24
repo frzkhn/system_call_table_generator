@@ -1,7 +1,14 @@
-From 77bfb5ea6f2d1e1155b7bc0e0766c5ec8d72a0af Mon Sep 17 00:00:00 2001
+From cc4feffa602c74b99c83c2920d9c3462eacc0fae Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 14:48:39 +0530
-Subject: [PATCH 2/6] ia64: Added an offset for system call number
+Subject: [PATCH 2/5] ia64: Added an offset for system call number
+
+System call generation script will generate unistd_64.h by reading 
+syscall.tbl file that will be included by unistd.h file. In order 
+to simplify the implementation and unify the support across all 
+architecture, we need the system call number start with 0 in 
+syscall.tbl. But here it is 1024. We can add an offset, so it will 
+unify the implementation across all architecture.
 
 Added an offset - __NR_Linux for system call number in unistd.h
 file to unify the implementation across all the architecture and

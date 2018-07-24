@@ -1,7 +1,7 @@
-From 0d18fc30e54a47b1d2f2ec7d97ac9a186520c49c Mon Sep 17 00:00:00 2001
+From 9134f05a96f2dcd50341f39a389c132e205e665d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 13:39:05 +0530
-Subject: [PATCH 4/6] ia64: Added system call table generation support
+Subject: [PATCH 4/5] ia64: Added system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -34,7 +34,9 @@ to generate the header and table files.
 
 ARM, s390 and x86 architecuture does have the similar support.
 I leverage their implementation to come up with a generic
-solution.
+solution. And this is the ground work for y2038 issue. We need
+to change 52 system call implementation and this work will
+reduce the effort by simply modify 52 entries in syscall.tbl.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -50,7 +52,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/ia64/kernel/syscalls/Makefile b/arch/ia64/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..458820f
+index 0000000..986793d
 --- /dev/null
 +++ b/arch/ia64/kernel/syscalls/Makefile
 @@ -0,0 +1,40 @@
@@ -78,14 +80,14 @@ index 0000000..458820f
 +	           '$(systbl_offset_$(basetarget))'
 +
 +syshdr_offset_unistd := __NR_Linux
-+$(uapi)/unistd.h: $(syscall) $(syshdr)
++$(uapi)/unistd_64.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
 +systbl_offset_syscall_table := 1024
 +$(out)/syscall_table.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
-+uapisyshdr-y			+= unistd.h
++uapisyshdr-y			+= unistd_64.h
 +syshdr-y			+= syscall_table.h
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
