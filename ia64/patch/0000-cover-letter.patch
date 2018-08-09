@@ -1,6 +1,6 @@
-From 949f6347b47f792250915027e8e60e27f3a8ddf4 Mon Sep 17 00:00:00 2001
+From 71a4074664d98d5ad480a9be11686472280ddc09 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Sun, 22 Jul 2018 11:46:04 +0530
+Date: Mon, 6 Aug 2018 10:43:20 +0530
 Subject: [PATCH 0/5] System call table generation support
 
 The purpose of this patch series is:
@@ -12,9 +12,9 @@ the architectures.
 
 The system call tables are in different format in all architecture 
 and it will be difficult to manually add or modify the system calls
-in the respective files. To make it easy by keeping a script and 
-which'll generate the header file and syscall table file so this 
-change will unify them across all architectures.
+manually in the respective files. To make it easy by keeping a script 
+and which'll generate the header file and syscall table file so this 
+change will unify the implementation across all architectures.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -27,7 +27,7 @@ Adding a new table entry consisting of:
         - System call name.
         - Entry point name.
 
-ARM, s390 and x86 architecuture does have the similar support. I 
+ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
 I have done the same support for work for alpha, m68k, microblaze, 
@@ -37,9 +37,19 @@ repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
 Finally, this is the ground work for solving the Y2038 issue. We 
-need to change two dozen of system calls to solve Y2038 issue. So
-this implementation will help to easily modify from existing system
-call to Y2038 compatible system calls.
+need to add/change two dozen of system calls to solve Y2038 issue. 
+So this patch series will help to easily modify from existing 
+system call to Y2038 compatible system calls.
+
+I started working system call table generation on 4.17-rc1. I used 
+marcin's script - https://github.com/hrw/syscalls-table to generate 
+the syscall.tbl file. And this will be the input to the system call 
+table generation script. But there are couple system call got add 
+in the latest rc release. If run Marcin's script on latest release,
+it will generate a different syscall.tbl. But I still use the old 
+file - syscall.tbl and once all review got over I'll update 
+syscall.tbl alone w.r.to the tip of the kernel. The impact of this
+is, few of the system call won't work.
 
 Firoz Khan (5):
   ia64: Replace NR_syscalls macro from asm/unistd.h

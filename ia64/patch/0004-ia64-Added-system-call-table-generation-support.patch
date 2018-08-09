@@ -1,4 +1,4 @@
-From 9134f05a96f2dcd50341f39a389c132e205e665d Mon Sep 17 00:00:00 2001
+From 5048a072096938b043fe778792f024564bc35085 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 13:39:05 +0530
 Subject: [PATCH 4/5] ia64: Added system call table generation support
@@ -52,7 +52,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/ia64/kernel/syscalls/Makefile b/arch/ia64/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..986793d
+index 0000000..ddb26c0
 --- /dev/null
 +++ b/arch/ia64/kernel/syscalls/Makefile
 @@ -0,0 +1,40 @@
@@ -92,7 +92,7 @@ index 0000000..986793d
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
 +
-+PHONY += all (addprefix $(uapi)/,$(uapisyshdr-y)) $(addprefix $(out)/,$(syshdr-y))
++PHONY += all
 +all: $(addprefix $(uapi)/,$(uapisyshdr-y))
 +all: $(addprefix $(out)/,$(syshdr-y))
 +	@:

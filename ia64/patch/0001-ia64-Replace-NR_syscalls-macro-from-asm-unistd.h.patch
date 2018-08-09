@@ -1,23 +1,34 @@
-From 50da2436023249c334d02a2b0e5dc692a951628e Mon Sep 17 00:00:00 2001
+From 6d22f5a64e5e7c2072c030faba82f3f39c492175 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 10:12:04 +0530
 Subject: [PATCH 1/5] ia64: Replace NR_syscalls macro from asm/unistd.h
 
-The system call table generation script is used to generate uapi 
-header and it will use system.tbl file as input. By modifying a
-system call may change the __NR_syscalls value. So modifying a
-system call need to  update the syscall.tbl file and __NR_syscalls
-macro in asm/unistd.h file. Modifying asm/unistd.h is burden and 
-this can be avoided.
+__NR_syscalls macro holds the number of system call exist in IA64
+architecture. This macro is currently the part of asm/unistd.h file.
+We have to change the value of __NR_syscalls, if we add or delete a
+system call.
 
-In order to avoid this, we can add __NR_syscalls support to system
-call generation script. Replace NR_syscalls from asm/unistd.h and
-keep equivalent macro __NR_syscalls in uapi/asm/unistd.h and this
-will make a unified implementation across all the architecture and
-we can use a system call generation script to generate __NR_syscalls.
+One of the patch in this patch series has a script which will generate
+a uapi header based on syscall.tbl file. The syscall.tbl file contains
+the number of system call information. So we have two option to update
+__NR_syscalls value.
 
-While __NR_syscalls isn't strictly part of the uapi, having it as
-part of the generated header to simplifies the implementation.
+1. Update __NR_syscalls in asm/unistd.h manually by counting the
+   no.of system calls. No need to update __NR_syscalls untill
+   we either add a new system call or delete an existing system
+   call.
+
+2. We can keep this feature it above mentioned script, that'll
+   count the number of syscalls and keep it in a generated file.
+   In this case we don't need to explicitly update __NR_syscalls
+   in asm/unistd.h file.
+
+The 2nd option will be the recommended one. For that, I moved the
+NR_syscalls macro from asm/unistd.h to uapi/asm/unistd.h. The macro
+name also changed form NR_syscalls to __NR_syscalls for making the
+name convention same across all architecture. While __NR_syscalls
+isn't strictly part of the uapi, having it as part of the generated
+header to simplifies the implementation.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -132,10 +143,10 @@ index 7f21a8c..d2e7e31 100644
  	u64 ip;
  
 diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
-index 18278b4..a5d12b3 100644
+index 3b85c3e..0096be4 100644
 --- a/arch/ia64/mm/init.c
 +++ b/arch/ia64/mm/init.c
-@@ -637,9 +637,9 @@ int __init register_active_ranges(u64 start, u64 len, int nid)
+@@ -635,9 +635,9 @@ int __init register_active_ranges(u64 start, u64 len, int nid)
  	 * (heavy-weight) handler, but mark it by setting bit 0, so the fsyscall entry
  	 * code can tell them apart.
  	 */
