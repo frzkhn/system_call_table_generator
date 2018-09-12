@@ -1,1030 +1,60 @@
-From 842cd8d2e146b2835c677f23113a4e5fc04a913d Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Sun, 1 Jul 2018 22:08:30 +0530
-Subject: [PATCH] arch: parisc: add system call generation script
+From 4eddb9b66bae3a0296ae8bd2a6b793032f28a343 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Sun, 9 Sep 2018 07:22:50 +0530
+Subject: [PATCH 3/4] parisc: Add system call table generation support
 
+The system call tables are in different format in all
+architecture and it will be difficult to manually add or
+modify the system calls in the respective files. To make
+it easy by keeping a script and which'll generate the
+header file and syscall table file so this change will
+unify them across all architectures.
+
+The system call table generation script is added in
+syscalls directory which contain the script to generate
+both uapi header file system call table generation file
+and syscall_32/64.tbl file which'll be the input for the
+scripts.
+
+syscall_32/64.tbl contains the list of available system calls
+along with system call number and corresponding entry point.
+Add a new system call in this architecture will be possible
+by adding new entry in the syscall_32/64.tbl file.
+
+Adding a new table entry consisting of:
+        - System call number.
+        - ABI.
+        - System call name.
+        - Entry point name.
+	- Compat entry name, if required.
+
+syscallhdr.sh and syscalltbl.sh will generate uapi header-
+unistd_32/64.h and syscall_table_32/64/c32.h files respectively.
+File syscall_table_32/64/c32.h is included by syscall.S - the
+real system call table. Both .sh files will parse the content
+syscall.tbl to generate the header and table files.
+
+ARM, s390 and x86 architecuture does have the similar support.
+I leverage their implementation to come up with a generic
+solution.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/parisc/Makefile                       |   4 +
- arch/parisc/include/asm/Kbuild             |   2 +
- arch/parisc/include/asm/unistd.h           |   8 +
- arch/parisc/include/uapi/asm/Kbuild        |   2 +
- arch/parisc/include/uapi/asm/unistd.h      | 377 +-----------------------
- arch/parisc/kernel/Makefile                |   3 +-
- arch/parisc/kernel/syscall.S               |  14 -
- arch/parisc/kernel/syscall_32.S            |   9 +
- arch/parisc/kernel/syscall_64.S            |   8 +
- arch/parisc/kernel/syscall_table.S         | 458 -----------------------------
- arch/parisc/kernel/syscall_x32.S           |   9 +
- arch/parisc/kernel/syscalls/Makefile       |  52 ++++
- arch/parisc/kernel/syscalls/syscall_32.tbl | 358 ++++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscall_64.tbl | 358 ++++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh  |  31 ++
+ arch/parisc/kernel/syscalls/Makefile       |  52 +++++
+ arch/parisc/kernel/syscalls/syscall_32.tbl | 358 +++++++++++++++++++++++++++++
+ arch/parisc/kernel/syscalls/syscall_64.tbl | 357 ++++++++++++++++++++++++++++
+ arch/parisc/kernel/syscalls/syscallhdr.sh  |  38 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh  |  36 +++
- 16 files changed, 884 insertions(+), 845 deletions(-)
- create mode 100644 arch/parisc/kernel/syscall_32.S
- create mode 100644 arch/parisc/kernel/syscall_64.S
- delete mode 100644 arch/parisc/kernel/syscall_table.S
- create mode 100644 arch/parisc/kernel/syscall_x32.S
+ 5 files changed, 841 insertions(+)
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall_32.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscall_64.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
  create mode 100644 arch/parisc/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
-index 714284e..e964f84 100644
---- a/arch/parisc/Makefile
-+++ b/arch/parisc/Makefile
-@@ -163,6 +163,10 @@ endef
- 
- # we require gcc 3.3 or above to compile the kernel
- archprepare: checkbin
-+
-+archheaders:
-+	$(Q)$(MAKE) $(build)=arch/parisc/kernel/syscalls all
-+
- checkbin:
- 	@if test "$(cc-version)" -lt "0303"; then \
- 		echo -n "Sorry, GCC v3.3 or above is required to build " ; \
-diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
-index 2013d63..803d125 100644
---- a/arch/parisc/include/asm/Kbuild
-+++ b/arch/parisc/include/asm/Kbuild
-@@ -23,3 +23,5 @@ generic-y += user.h
- generic-y += vga.h
- generic-y += word-at-a-time.h
- generic-y += xor.h
-+generic-y += syscall_32.h
-+generic-y += syscall_64.h
-\ No newline at end of file
-diff --git a/arch/parisc/include/asm/unistd.h b/arch/parisc/include/asm/unistd.h
-index 3d507d0..268d309 100644
---- a/arch/parisc/include/asm/unistd.h
-+++ b/arch/parisc/include/asm/unistd.h
-@@ -165,6 +165,14 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)	\
- #define __ARCH_WANT_SYS_CLONE
- #define __ARCH_WANT_COMPAT_SYS_SENDFILE
- 
-+#define __IGNORE_select		/* newselect */
-+#define __IGNORE_fadvise64	/* fadvise64_64 */
-+#define __IGNORE_pkey_mprotect
-+#define __IGNORE_pkey_alloc
-+#define __IGNORE_pkey_free
-+
-+#define LINUX_GATEWAY_ADDR      0x100
-+
- #endif /* __ASSEMBLY__ */
- 
- #undef STR
-diff --git a/arch/parisc/include/uapi/asm/Kbuild b/arch/parisc/include/uapi/asm/Kbuild
-index 286ef5a..02103fc 100644
---- a/arch/parisc/include/uapi/asm/Kbuild
-+++ b/arch/parisc/include/uapi/asm/Kbuild
-@@ -7,3 +7,5 @@ generic-y += kvm_para.h
- generic-y += param.h
- generic-y += poll.h
- generic-y += resource.h
-+generic-y += unistd_32.h
-+generic-y += unistd_64.h
-\ No newline at end of file
-diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index 4872e77..ee32c84 100644
---- a/arch/parisc/include/uapi/asm/unistd.h
-+++ b/arch/parisc/include/uapi/asm/unistd.h
-@@ -2,378 +2,11 @@
- #ifndef _UAPI_ASM_PARISC_UNISTD_H_
- #define _UAPI_ASM_PARISC_UNISTD_H_
- 
--/*
-- * Linux system call numbers.
-- *
-- * Cary Coutant says that we should just use another syscall gateway
-- * page to avoid clashing with the HPUX space, and I think he's right:
-- * it will would keep a branch out of our syscall entry path, at the
-- * very least.  If we decide to change it later, we can ``just'' tweak
-- * the LINUX_GATEWAY_ADDR define at the bottom and make __NR_Linux be
-- * 1024 or something.  Oh, and recompile libc. =)
-- */
--
--#define __NR_Linux                0
--#define __NR_restart_syscall      (__NR_Linux + 0)
--#define __NR_exit                 (__NR_Linux + 1)
--#define __NR_fork                 (__NR_Linux + 2)
--#define __NR_read                 (__NR_Linux + 3)
--#define __NR_write                (__NR_Linux + 4)
--#define __NR_open                 (__NR_Linux + 5)
--#define __NR_close                (__NR_Linux + 6)
--#define __NR_waitpid              (__NR_Linux + 7)
--#define __NR_creat                (__NR_Linux + 8)
--#define __NR_link                 (__NR_Linux + 9)
--#define __NR_unlink              (__NR_Linux + 10)
--#define __NR_execve              (__NR_Linux + 11)
--#define __NR_chdir               (__NR_Linux + 12)
--#define __NR_time                (__NR_Linux + 13)
--#define __NR_mknod               (__NR_Linux + 14)
--#define __NR_chmod               (__NR_Linux + 15)
--#define __NR_lchown              (__NR_Linux + 16)
--#define __NR_socket              (__NR_Linux + 17)
--#define __NR_stat                (__NR_Linux + 18)
--#define __NR_lseek               (__NR_Linux + 19)
--#define __NR_getpid              (__NR_Linux + 20)
--#define __NR_mount               (__NR_Linux + 21)
--#define __NR_bind                (__NR_Linux + 22)
--#define __NR_setuid              (__NR_Linux + 23)
--#define __NR_getuid              (__NR_Linux + 24)
--#define __NR_stime               (__NR_Linux + 25)
--#define __NR_ptrace              (__NR_Linux + 26)
--#define __NR_alarm               (__NR_Linux + 27)
--#define __NR_fstat               (__NR_Linux + 28)
--#define __NR_pause               (__NR_Linux + 29)
--#define __NR_utime               (__NR_Linux + 30)
--#define __NR_connect             (__NR_Linux + 31)
--#define __NR_listen              (__NR_Linux + 32)
--#define __NR_access              (__NR_Linux + 33)
--#define __NR_nice                (__NR_Linux + 34)
--#define __NR_accept              (__NR_Linux + 35)
--#define __NR_sync                (__NR_Linux + 36)
--#define __NR_kill                (__NR_Linux + 37)
--#define __NR_rename              (__NR_Linux + 38)
--#define __NR_mkdir               (__NR_Linux + 39)
--#define __NR_rmdir               (__NR_Linux + 40)
--#define __NR_dup                 (__NR_Linux + 41)
--#define __NR_pipe                (__NR_Linux + 42)
--#define __NR_times               (__NR_Linux + 43)
--#define __NR_getsockname         (__NR_Linux + 44)
--#define __NR_brk                 (__NR_Linux + 45)
--#define __NR_setgid              (__NR_Linux + 46)
--#define __NR_getgid              (__NR_Linux + 47)
--#define __NR_signal              (__NR_Linux + 48)
--#define __NR_geteuid             (__NR_Linux + 49)
--#define __NR_getegid             (__NR_Linux + 50)
--#define __NR_acct                (__NR_Linux + 51)
--#define __NR_umount2             (__NR_Linux + 52)
--#define __NR_getpeername         (__NR_Linux + 53)
--#define __NR_ioctl               (__NR_Linux + 54)
--#define __NR_fcntl               (__NR_Linux + 55)
--#define __NR_socketpair          (__NR_Linux + 56)
--#define __NR_setpgid             (__NR_Linux + 57)
--#define __NR_send                (__NR_Linux + 58)
--#define __NR_uname               (__NR_Linux + 59)
--#define __NR_umask               (__NR_Linux + 60)
--#define __NR_chroot              (__NR_Linux + 61)
--#define __NR_ustat               (__NR_Linux + 62)
--#define __NR_dup2                (__NR_Linux + 63)
--#define __NR_getppid             (__NR_Linux + 64)
--#define __NR_getpgrp             (__NR_Linux + 65)
--#define __NR_setsid              (__NR_Linux + 66)
--#define __NR_pivot_root          (__NR_Linux + 67)
--#define __NR_sgetmask            (__NR_Linux + 68)
--#define __NR_ssetmask            (__NR_Linux + 69)
--#define __NR_setreuid            (__NR_Linux + 70)
--#define __NR_setregid            (__NR_Linux + 71)
--#define __NR_mincore             (__NR_Linux + 72)
--#define __NR_sigpending          (__NR_Linux + 73)
--#define __NR_sethostname         (__NR_Linux + 74)
--#define __NR_setrlimit           (__NR_Linux + 75)
--#define __NR_getrlimit           (__NR_Linux + 76)
--#define __NR_getrusage           (__NR_Linux + 77)
--#define __NR_gettimeofday        (__NR_Linux + 78)
--#define __NR_settimeofday        (__NR_Linux + 79)
--#define __NR_getgroups           (__NR_Linux + 80)
--#define __NR_setgroups           (__NR_Linux + 81)
--#define __NR_sendto              (__NR_Linux + 82)
--#define __NR_symlink             (__NR_Linux + 83)
--#define __NR_lstat               (__NR_Linux + 84)
--#define __NR_readlink            (__NR_Linux + 85)
--#define __NR_uselib              (__NR_Linux + 86)
--#define __NR_swapon              (__NR_Linux + 87)
--#define __NR_reboot              (__NR_Linux + 88)
--#define __NR_mmap2               (__NR_Linux + 89)
--#define __NR_mmap                (__NR_Linux + 90)
--#define __NR_munmap              (__NR_Linux + 91)
--#define __NR_truncate            (__NR_Linux + 92)
--#define __NR_ftruncate           (__NR_Linux + 93)
--#define __NR_fchmod              (__NR_Linux + 94)
--#define __NR_fchown              (__NR_Linux + 95)
--#define __NR_getpriority         (__NR_Linux + 96)
--#define __NR_setpriority         (__NR_Linux + 97)
--#define __NR_recv                (__NR_Linux + 98)
--#define __NR_statfs              (__NR_Linux + 99)
--#define __NR_fstatfs            (__NR_Linux + 100)
--#define __NR_stat64             (__NR_Linux + 101)
--/* #define __NR_socketcall         (__NR_Linux + 102) */
--#define __NR_syslog             (__NR_Linux + 103)
--#define __NR_setitimer          (__NR_Linux + 104)
--#define __NR_getitimer          (__NR_Linux + 105)
--#define __NR_capget             (__NR_Linux + 106)
--#define __NR_capset             (__NR_Linux + 107)
--#define __NR_pread64            (__NR_Linux + 108)
--#define __NR_pwrite64           (__NR_Linux + 109)
--#define __NR_getcwd             (__NR_Linux + 110)
--#define __NR_vhangup            (__NR_Linux + 111)
--#define __NR_fstat64            (__NR_Linux + 112)
--#define __NR_vfork              (__NR_Linux + 113)
--#define __NR_wait4              (__NR_Linux + 114)
--#define __NR_swapoff            (__NR_Linux + 115)
--#define __NR_sysinfo            (__NR_Linux + 116)
--#define __NR_shutdown           (__NR_Linux + 117)
--#define __NR_fsync              (__NR_Linux + 118)
--#define __NR_madvise            (__NR_Linux + 119)
--#define __NR_clone              (__NR_Linux + 120)
--#define __NR_setdomainname      (__NR_Linux + 121)
--#define __NR_sendfile           (__NR_Linux + 122)
--#define __NR_recvfrom           (__NR_Linux + 123)
--#define __NR_adjtimex           (__NR_Linux + 124)
--#define __NR_mprotect           (__NR_Linux + 125)
--#define __NR_sigprocmask        (__NR_Linux + 126)
--#define __NR_create_module      (__NR_Linux + 127) /* not used */
--#define __NR_init_module        (__NR_Linux + 128)
--#define __NR_delete_module      (__NR_Linux + 129)
--#define __NR_get_kernel_syms    (__NR_Linux + 130) /* not used */
--#define __NR_quotactl           (__NR_Linux + 131)
--#define __NR_getpgid            (__NR_Linux + 132)
--#define __NR_fchdir             (__NR_Linux + 133)
--#define __NR_bdflush            (__NR_Linux + 134)
--#define __NR_sysfs              (__NR_Linux + 135)
--#define __NR_personality        (__NR_Linux + 136)
--#define __NR_afs_syscall        (__NR_Linux + 137) /* not used */
--#define __NR_setfsuid           (__NR_Linux + 138)
--#define __NR_setfsgid           (__NR_Linux + 139)
--#define __NR__llseek            (__NR_Linux + 140)
--#define __NR_getdents           (__NR_Linux + 141)
--#define __NR__newselect         (__NR_Linux + 142)
--#define __NR_flock              (__NR_Linux + 143)
--#define __NR_msync              (__NR_Linux + 144)
--#define __NR_readv              (__NR_Linux + 145)
--#define __NR_writev             (__NR_Linux + 146)
--#define __NR_getsid             (__NR_Linux + 147)
--#define __NR_fdatasync          (__NR_Linux + 148)
--#define __NR__sysctl            (__NR_Linux + 149)
--#define __NR_mlock              (__NR_Linux + 150)
--#define __NR_munlock            (__NR_Linux + 151)
--#define __NR_mlockall           (__NR_Linux + 152)
--#define __NR_munlockall         (__NR_Linux + 153)
--#define __NR_sched_setparam             (__NR_Linux + 154)
--#define __NR_sched_getparam             (__NR_Linux + 155)
--#define __NR_sched_setscheduler         (__NR_Linux + 156)
--#define __NR_sched_getscheduler         (__NR_Linux + 157)
--#define __NR_sched_yield                (__NR_Linux + 158)
--#define __NR_sched_get_priority_max     (__NR_Linux + 159)
--#define __NR_sched_get_priority_min     (__NR_Linux + 160)
--#define __NR_sched_rr_get_interval      (__NR_Linux + 161)
--#define __NR_nanosleep          (__NR_Linux + 162)
--#define __NR_mremap             (__NR_Linux + 163)
--#define __NR_setresuid          (__NR_Linux + 164)
--#define __NR_getresuid          (__NR_Linux + 165)
--#define __NR_sigaltstack        (__NR_Linux + 166)
--#define __NR_query_module       (__NR_Linux + 167) /* not used */
--#define __NR_poll               (__NR_Linux + 168)
--#define __NR_nfsservctl         (__NR_Linux + 169) /* not used */
--#define __NR_setresgid          (__NR_Linux + 170)
--#define __NR_getresgid          (__NR_Linux + 171)
--#define __NR_prctl              (__NR_Linux + 172)
--#define __NR_rt_sigreturn       (__NR_Linux + 173)
--#define __NR_rt_sigaction       (__NR_Linux + 174)
--#define __NR_rt_sigprocmask     (__NR_Linux + 175)
--#define __NR_rt_sigpending      (__NR_Linux + 176)
--#define __NR_rt_sigtimedwait    (__NR_Linux + 177)
--#define __NR_rt_sigqueueinfo    (__NR_Linux + 178)
--#define __NR_rt_sigsuspend      (__NR_Linux + 179)
--#define __NR_chown              (__NR_Linux + 180)
--#define __NR_setsockopt         (__NR_Linux + 181)
--#define __NR_getsockopt         (__NR_Linux + 182)
--#define __NR_sendmsg            (__NR_Linux + 183)
--#define __NR_recvmsg            (__NR_Linux + 184)
--#define __NR_semop              (__NR_Linux + 185)
--#define __NR_semget             (__NR_Linux + 186)
--#define __NR_semctl             (__NR_Linux + 187)
--#define __NR_msgsnd             (__NR_Linux + 188)
--#define __NR_msgrcv             (__NR_Linux + 189)
--#define __NR_msgget             (__NR_Linux + 190)
--#define __NR_msgctl             (__NR_Linux + 191)
--#define __NR_shmat              (__NR_Linux + 192)
--#define __NR_shmdt              (__NR_Linux + 193)
--#define __NR_shmget             (__NR_Linux + 194)
--#define __NR_shmctl             (__NR_Linux + 195)
--#define __NR_getpmsg            (__NR_Linux + 196) /* not used */
--#define __NR_putpmsg            (__NR_Linux + 197) /* not used */
--#define __NR_lstat64            (__NR_Linux + 198)
--#define __NR_truncate64         (__NR_Linux + 199)
--#define __NR_ftruncate64        (__NR_Linux + 200)
--#define __NR_getdents64         (__NR_Linux + 201)
--#define __NR_fcntl64            (__NR_Linux + 202)
--#define __NR_attrctl            (__NR_Linux + 203) /* not used */
--#define __NR_acl_get            (__NR_Linux + 204) /* not used */
--#define __NR_acl_set            (__NR_Linux + 205) /* not used */
--#define __NR_gettid             (__NR_Linux + 206)
--#define __NR_readahead          (__NR_Linux + 207)
--#define __NR_tkill              (__NR_Linux + 208)
--#define __NR_sendfile64         (__NR_Linux + 209)
--#define __NR_futex              (__NR_Linux + 210)
--#define __NR_sched_setaffinity  (__NR_Linux + 211)
--#define __NR_sched_getaffinity  (__NR_Linux + 212)
--#define __NR_set_thread_area    (__NR_Linux + 213) /* not used */
--#define __NR_get_thread_area    (__NR_Linux + 214) /* not used */
--#define __NR_io_setup           (__NR_Linux + 215)
--#define __NR_io_destroy         (__NR_Linux + 216)
--#define __NR_io_getevents       (__NR_Linux + 217)
--#define __NR_io_submit          (__NR_Linux + 218)
--#define __NR_io_cancel          (__NR_Linux + 219)
--#define __NR_alloc_hugepages    (__NR_Linux + 220) /* not used */
--#define __NR_free_hugepages     (__NR_Linux + 221) /* not used */
--#define __NR_exit_group         (__NR_Linux + 222)
--#define __NR_lookup_dcookie     (__NR_Linux + 223)
--#define __NR_epoll_create       (__NR_Linux + 224)
--#define __NR_epoll_ctl          (__NR_Linux + 225)
--#define __NR_epoll_wait         (__NR_Linux + 226)
--#define __NR_remap_file_pages   (__NR_Linux + 227)
--#define __NR_semtimedop         (__NR_Linux + 228)
--#define __NR_mq_open            (__NR_Linux + 229)
--#define __NR_mq_unlink          (__NR_Linux + 230)
--#define __NR_mq_timedsend       (__NR_Linux + 231)
--#define __NR_mq_timedreceive    (__NR_Linux + 232)
--#define __NR_mq_notify          (__NR_Linux + 233)
--#define __NR_mq_getsetattr      (__NR_Linux + 234)
--#define __NR_waitid		(__NR_Linux + 235)
--#define __NR_fadvise64_64	(__NR_Linux + 236)
--#define __NR_set_tid_address	(__NR_Linux + 237)
--#define __NR_setxattr		(__NR_Linux + 238)
--#define __NR_lsetxattr		(__NR_Linux + 239)
--#define __NR_fsetxattr		(__NR_Linux + 240)
--#define __NR_getxattr		(__NR_Linux + 241)
--#define __NR_lgetxattr		(__NR_Linux + 242)
--#define __NR_fgetxattr		(__NR_Linux + 243)
--#define __NR_listxattr		(__NR_Linux + 244)
--#define __NR_llistxattr		(__NR_Linux + 245)
--#define __NR_flistxattr		(__NR_Linux + 246)
--#define __NR_removexattr	(__NR_Linux + 247)
--#define __NR_lremovexattr	(__NR_Linux + 248)
--#define __NR_fremovexattr	(__NR_Linux + 249)
--#define __NR_timer_create	(__NR_Linux + 250)
--#define __NR_timer_settime	(__NR_Linux + 251)
--#define __NR_timer_gettime	(__NR_Linux + 252)
--#define __NR_timer_getoverrun	(__NR_Linux + 253)
--#define __NR_timer_delete	(__NR_Linux + 254)
--#define __NR_clock_settime	(__NR_Linux + 255)
--#define __NR_clock_gettime	(__NR_Linux + 256)
--#define __NR_clock_getres	(__NR_Linux + 257)
--#define __NR_clock_nanosleep	(__NR_Linux + 258)
--#define __NR_tgkill		(__NR_Linux + 259)
--#define __NR_mbind		(__NR_Linux + 260)
--#define __NR_get_mempolicy	(__NR_Linux + 261)
--#define __NR_set_mempolicy	(__NR_Linux + 262)
--#define __NR_vserver		(__NR_Linux + 263) /* not used */
--#define __NR_add_key		(__NR_Linux + 264)
--#define __NR_request_key	(__NR_Linux + 265)
--#define __NR_keyctl		(__NR_Linux + 266)
--#define __NR_ioprio_set		(__NR_Linux + 267)
--#define __NR_ioprio_get		(__NR_Linux + 268)
--#define __NR_inotify_init	(__NR_Linux + 269)
--#define __NR_inotify_add_watch	(__NR_Linux + 270)
--#define __NR_inotify_rm_watch	(__NR_Linux + 271)
--#define __NR_migrate_pages	(__NR_Linux + 272)
--#define __NR_pselect6		(__NR_Linux + 273)
--#define __NR_ppoll		(__NR_Linux + 274)
--#define __NR_openat		(__NR_Linux + 275)
--#define __NR_mkdirat		(__NR_Linux + 276)
--#define __NR_mknodat		(__NR_Linux + 277)
--#define __NR_fchownat		(__NR_Linux + 278)
--#define __NR_futimesat		(__NR_Linux + 279)
--#define __NR_fstatat64		(__NR_Linux + 280)
--#define __NR_unlinkat		(__NR_Linux + 281)
--#define __NR_renameat		(__NR_Linux + 282)
--#define __NR_linkat		(__NR_Linux + 283)
--#define __NR_symlinkat		(__NR_Linux + 284)
--#define __NR_readlinkat		(__NR_Linux + 285)
--#define __NR_fchmodat		(__NR_Linux + 286)
--#define __NR_faccessat		(__NR_Linux + 287)
--#define __NR_unshare		(__NR_Linux + 288)
--#define __NR_set_robust_list	(__NR_Linux + 289)
--#define __NR_get_robust_list	(__NR_Linux + 290)
--#define __NR_splice		(__NR_Linux + 291)
--#define __NR_sync_file_range	(__NR_Linux + 292)
--#define __NR_tee		(__NR_Linux + 293)
--#define __NR_vmsplice		(__NR_Linux + 294)
--#define __NR_move_pages		(__NR_Linux + 295)
--#define __NR_getcpu		(__NR_Linux + 296)
--#define __NR_epoll_pwait	(__NR_Linux + 297)
--#define __NR_statfs64		(__NR_Linux + 298)
--#define __NR_fstatfs64		(__NR_Linux + 299)
--#define __NR_kexec_load		(__NR_Linux + 300)
--#define __NR_utimensat		(__NR_Linux + 301)
--#define __NR_signalfd		(__NR_Linux + 302)
--#define __NR_timerfd		(__NR_Linux + 303) /* not used */
--#define __NR_eventfd		(__NR_Linux + 304)
--#define __NR_fallocate		(__NR_Linux + 305)
--#define __NR_timerfd_create	(__NR_Linux + 306)
--#define __NR_timerfd_settime	(__NR_Linux + 307)
--#define __NR_timerfd_gettime	(__NR_Linux + 308)
--#define __NR_signalfd4		(__NR_Linux + 309)
--#define __NR_eventfd2		(__NR_Linux + 310)
--#define __NR_epoll_create1	(__NR_Linux + 311)
--#define __NR_dup3		(__NR_Linux + 312)
--#define __NR_pipe2		(__NR_Linux + 313)
--#define __NR_inotify_init1	(__NR_Linux + 314)
--#define __NR_preadv		(__NR_Linux + 315)
--#define __NR_pwritev		(__NR_Linux + 316)
--#define __NR_rt_tgsigqueueinfo	(__NR_Linux + 317)
--#define __NR_perf_event_open	(__NR_Linux + 318)
--#define __NR_recvmmsg		(__NR_Linux + 319)
--#define __NR_accept4		(__NR_Linux + 320)
--#define __NR_prlimit64		(__NR_Linux + 321)
--#define __NR_fanotify_init	(__NR_Linux + 322)
--#define __NR_fanotify_mark	(__NR_Linux + 323)
--#define __NR_clock_adjtime	(__NR_Linux + 324)
--#define __NR_name_to_handle_at	(__NR_Linux + 325)
--#define __NR_open_by_handle_at	(__NR_Linux + 326)
--#define __NR_syncfs		(__NR_Linux + 327)
--#define __NR_setns		(__NR_Linux + 328)
--#define __NR_sendmmsg		(__NR_Linux + 329)
--#define __NR_process_vm_readv	(__NR_Linux + 330)
--#define __NR_process_vm_writev	(__NR_Linux + 331)
--#define __NR_kcmp		(__NR_Linux + 332)
--#define __NR_finit_module	(__NR_Linux + 333)
--#define __NR_sched_setattr	(__NR_Linux + 334)
--#define __NR_sched_getattr	(__NR_Linux + 335)
--#define __NR_utimes		(__NR_Linux + 336)
--#define __NR_renameat2		(__NR_Linux + 337)
--#define __NR_seccomp		(__NR_Linux + 338)
--#define __NR_getrandom		(__NR_Linux + 339)
--#define __NR_memfd_create	(__NR_Linux + 340)
--#define __NR_bpf		(__NR_Linux + 341)
--#define __NR_execveat		(__NR_Linux + 342)
--#define __NR_membarrier		(__NR_Linux + 343)
--#define __NR_userfaultfd	(__NR_Linux + 344)
--#define __NR_mlock2		(__NR_Linux + 345)
--#define __NR_copy_file_range	(__NR_Linux + 346)
--#define __NR_preadv2		(__NR_Linux + 347)
--#define __NR_pwritev2		(__NR_Linux + 348)
--#define __NR_statx		(__NR_Linux + 349)
--
-+#ifdef CONFIG 64BIT
-+#include <asm/unistd_64.h>
-+#else
-+#include <asm/unistd_32.h>
-+#endif
- #define __NR_Linux_syscalls	(__NR_statx + 1)
- 
--
--#define __IGNORE_select		/* newselect */
--#define __IGNORE_fadvise64	/* fadvise64_64 */
--#define __IGNORE_pkey_mprotect
--#define __IGNORE_pkey_alloc
--#define __IGNORE_pkey_free
--
--#define LINUX_GATEWAY_ADDR      0x100
--
- #endif /* _UAPI_ASM_PARISC_UNISTD_H_ */
-diff --git a/arch/parisc/kernel/Makefile b/arch/parisc/kernel/Makefile
-index e5de34d..64c5c5a 100644
---- a/arch/parisc/kernel/Makefile
-+++ b/arch/parisc/kernel/Makefile
-@@ -6,7 +6,8 @@
- extra-y			:= head.o vmlinux.lds
- 
- obj-y	     	:= cache.o pacache.o setup.o pdt.o traps.o time.o irq.o \
--		   pa7300lc.o syscall.o entry.o sys_parisc.o firmware.o \
-+		   pa7300lc.o syscall_32.o syscall_64.o syscall_x32.o \
-+		   entry.o sys_parisc.o firmware.o \
- 		   ptrace.o hardware.o inventory.o drivers.o \
- 		   signal.o hpmc.o real2.o parisc_ksyms.o unaligned.o \
- 		   process.o processor.o pdc_cons.o pdc_chassis.o unwind.o
-diff --git a/arch/parisc/kernel/syscall.S b/arch/parisc/kernel/syscall.S
-index e775f80..e0f4723 100644
---- a/arch/parisc/kernel/syscall.S
-+++ b/arch/parisc/kernel/syscall.S
-@@ -912,20 +912,6 @@ ENTRY(lws_table)
- END(lws_table)
- 	/* End of lws table */
- 
--	.align 8
--ENTRY(sys_call_table)
--	.export sys_call_table,data
--#include "syscall_table.S"
--END(sys_call_table)
--
--#ifdef CONFIG_64BIT
--	.align 8
--ENTRY(sys_call_table64)
--#define SYSCALL_TABLE_64BIT
--#include "syscall_table.S"
--END(sys_call_table64)
--#endif
--
- 	/*
- 		All light-weight-syscall atomic operations 
- 		will use this set of locks 
-diff --git a/arch/parisc/kernel/syscall_32.S b/arch/parisc/kernel/syscall_32.S
-new file mode 100644
-index 0000000..b10dbac
---- /dev/null
-+++ b/arch/parisc/kernel/syscall_32.S
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#define __SYSCALL(nr, entry, nargs) .word entry
-+	
-+.align 8
-+ENTRY(sys_call_table)
-+.export sys_call_table,data
-+#include <asm/syscall_32.h>
-+END(sys_call_table)
-diff --git a/arch/parisc/kernel/syscall_64.S b/arch/parisc/kernel/syscall_64.S
-new file mode 100644
-index 0000000..043862f
---- /dev/null
-+++ b/arch/parisc/kernel/syscall_64.S
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#define __SYSCALL(nr, entry, nargs) .dword entry
-+	
-+.align 8
-+ENTRY(sys_call_table64)
-+#include <asm/syscall_64.h>
-+END(sys_call_table64)
-diff --git a/arch/parisc/kernel/syscall_table.S b/arch/parisc/kernel/syscall_table.S
-deleted file mode 100644
-index 6308749..0000000
---- a/arch/parisc/kernel/syscall_table.S
-+++ /dev/null
-@@ -1,458 +0,0 @@
--/*    System Call Table
-- *
-- *    Copyright (C) 1999-2004 Matthew Wilcox <willy at parisc-linux.org>
-- *    Copyright (C) 2000-2001 John Marvin <jsm at parisc-linux.org>
-- *    Copyright (C) 2000 Alan Modra <amodra at parisc-linux.org>
-- *    Copyright (C) 2000-2003 Paul Bame <bame at parisc-linux.org>
-- *    Copyright (C) 2000 Philipp Rumpf <prumpf with tux.org>
-- *    Copyright (C) 2000 Michael Ang <mang with subcarrier.org>
-- *    Copyright (C) 2000 David Huggins-Daines <dhd with pobox.org>
-- *    Copyright (C) 2000 Grant Grundler <grundler at parisc-linux.org>
-- *    Copyright (C) 2001 Richard Hirst <rhirst with parisc-linux.org>
-- *    Copyright (C) 2001-2002 Ryan Bradetich <rbrad at parisc-linux.org>
-- *    Copyright (C) 2001-2007 Helge Deller <deller at parisc-linux.org>
-- *    Copyright (C) 2000-2001 Thomas Bogendoerfer <tsbogend at parisc-linux.org>
-- *    Copyright (C) 2002 Randolph Chung <tausq with parisc-linux.org>
-- *    Copyright (C) 2005-2006 Kyle McMartin <kyle at parisc-linux.org>
-- *
-- *    This program is free software; you can redistribute it and/or modify
-- *    it under the terms of the GNU General Public License as published by
-- *    the Free Software Foundation; either version 2 of the License, or
-- *    (at your option) any later version.
-- *
-- *    This program is distributed in the hope that it will be useful,
-- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *    GNU General Public License for more details.
-- *
-- *    You should have received a copy of the GNU General Public License
-- *    along with this program; if not, write to the Free Software
-- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--#if defined(CONFIG_64BIT) && !defined(SYSCALL_TABLE_64BIT)
--/* Use ENTRY_SAME for 32-bit syscalls which are the same on wide and
-- * narrow palinux.  Use ENTRY_DIFF for those where a 32-bit specific
-- * implementation is required on wide palinux.  Use ENTRY_COMP where
-- * the compatibility layer has a useful 32-bit implementation.
-- */
--#define ENTRY_SAME(_name_) .dword sys_##_name_
--#define ENTRY_DIFF(_name_) .dword sys32_##_name_
--#define ENTRY_UHOH(_name_) .dword sys32_##unimplemented
--#define ENTRY_OURS(_name_) .dword parisc_##_name_
--#define ENTRY_COMP(_name_) .dword compat_sys_##_name_
--#elif defined(CONFIG_64BIT) && defined(SYSCALL_TABLE_64BIT)
--#define ENTRY_SAME(_name_) .dword sys_##_name_
--#define ENTRY_DIFF(_name_) .dword sys_##_name_
--#define ENTRY_UHOH(_name_) .dword sys_##_name_
--#define ENTRY_OURS(_name_) .dword sys_##_name_
--#define ENTRY_COMP(_name_) .dword sys_##_name_
--#else
--#define ENTRY_SAME(_name_) .word sys_##_name_
--#define ENTRY_DIFF(_name_) .word sys_##_name_
--#define ENTRY_UHOH(_name_) .word sys_##_name_
--#define ENTRY_OURS(_name_) .word parisc_##_name_
--#define ENTRY_COMP(_name_) .word sys_##_name_
--#endif
--
--90:	ENTRY_SAME(restart_syscall)	/* 0 */
--91:	ENTRY_SAME(exit)
--	ENTRY_SAME(fork_wrapper)
--	ENTRY_SAME(read)
--	ENTRY_SAME(write)
--	ENTRY_COMP(open)		/* 5 */
--	ENTRY_SAME(close)
--	ENTRY_SAME(waitpid)
--	ENTRY_SAME(creat)
--	ENTRY_SAME(link)
--	ENTRY_SAME(unlink)		/* 10 */
--	ENTRY_COMP(execve)
--	ENTRY_SAME(chdir)
--	/* See comments in kernel/time.c!!! Maybe we don't need this? */
--	ENTRY_COMP(time)
--	ENTRY_SAME(mknod)
--	ENTRY_SAME(chmod)		/* 15 */
--	ENTRY_SAME(lchown)
--	ENTRY_SAME(socket)
--	/* struct stat is MAYBE identical wide and narrow ?? */
--	ENTRY_COMP(newstat)
--	ENTRY_COMP(lseek)
--	ENTRY_SAME(getpid)		/* 20 */
--	/* the 'void * data' parameter may need re-packing in wide */
--	ENTRY_COMP(mount)
--	/* concerned about struct sockaddr in wide/narrow */
--	/* ---> I think sockaddr is OK unless the compiler packs the struct */
--	/*      differently to align the char array */
--	ENTRY_SAME(bind)
--	ENTRY_SAME(setuid)
--	ENTRY_SAME(getuid)
--	ENTRY_COMP(stime)		/* 25 */
--	ENTRY_COMP(ptrace)
--	ENTRY_SAME(alarm)
--	/* see stat comment */
--	ENTRY_COMP(newfstat)
--	ENTRY_SAME(pause)
--	/* struct utimbuf uses time_t which might vary */
--	ENTRY_COMP(utime)		/* 30 */
--	/* struct sockaddr... */
--	ENTRY_SAME(connect)
--	ENTRY_SAME(listen)
--	ENTRY_SAME(access)
--	ENTRY_SAME(nice)
--	/* struct sockaddr... */
--	ENTRY_SAME(accept)		/* 35 */
--	ENTRY_SAME(sync)
--	ENTRY_SAME(kill)
--	ENTRY_SAME(rename)
--	ENTRY_SAME(mkdir)
--	ENTRY_SAME(rmdir)		/* 40 */
--	ENTRY_SAME(dup)
--	ENTRY_SAME(pipe)
--	ENTRY_COMP(times)
--	/* struct sockaddr... */
--	ENTRY_SAME(getsockname)
--	/* it seems possible brk() could return a >4G pointer... */
--	ENTRY_SAME(brk)			/* 45 */
--	ENTRY_SAME(setgid)
--	ENTRY_SAME(getgid)
--	ENTRY_SAME(signal)
--	ENTRY_SAME(geteuid)
--	ENTRY_SAME(getegid)		/* 50 */
--	ENTRY_SAME(acct)
--	ENTRY_SAME(umount)
--	/* struct sockaddr... */
--	ENTRY_SAME(getpeername)
--	ENTRY_COMP(ioctl)
--	ENTRY_COMP(fcntl)		/* 55 */
--	ENTRY_SAME(socketpair)
--	ENTRY_SAME(setpgid)
--	ENTRY_SAME(send)
--	ENTRY_SAME(newuname)
--	ENTRY_SAME(umask)		/* 60 */
--	ENTRY_SAME(chroot)
--	ENTRY_COMP(ustat)
--	ENTRY_SAME(dup2)
--	ENTRY_SAME(getppid)
--	ENTRY_SAME(getpgrp)		/* 65 */
--	ENTRY_SAME(setsid)
--	ENTRY_SAME(pivot_root)
--	/* I don't like this */
--	ENTRY_UHOH(sgetmask)
--	ENTRY_UHOH(ssetmask)
--	ENTRY_SAME(setreuid)		/* 70 */
--	ENTRY_SAME(setregid)
--	ENTRY_SAME(mincore)
--	ENTRY_COMP(sigpending)
--	ENTRY_SAME(sethostname)
--	/* Following 3 have linux-common-code structs containing longs -( */
--	ENTRY_COMP(setrlimit)		/* 75 */
--	ENTRY_COMP(getrlimit)
--	ENTRY_COMP(getrusage)
--	/* struct timeval and timezone are maybe?? consistent wide and narrow */
--	ENTRY_COMP(gettimeofday)
--	ENTRY_COMP(settimeofday)
--	ENTRY_SAME(getgroups)		/* 80 */
--	ENTRY_SAME(setgroups)
--	/* struct socketaddr... */
--	ENTRY_SAME(sendto)
--	ENTRY_SAME(symlink)
--	/* see stat comment */
--	ENTRY_COMP(newlstat)
--	ENTRY_SAME(readlink)		/* 85 */
--	ENTRY_SAME(ni_syscall)	/* was uselib */
--	ENTRY_SAME(swapon)
--	ENTRY_SAME(reboot)
--	ENTRY_SAME(mmap2)
--	ENTRY_SAME(mmap)		/* 90 */
--	ENTRY_SAME(munmap)
--	ENTRY_COMP(truncate)
--	ENTRY_COMP(ftruncate)
--	ENTRY_SAME(fchmod)
--	ENTRY_SAME(fchown)		/* 95 */
--	ENTRY_SAME(getpriority)
--	ENTRY_SAME(setpriority)
--	ENTRY_SAME(recv)
--	ENTRY_COMP(statfs)
--	ENTRY_COMP(fstatfs)		/* 100 */
--	ENTRY_SAME(stat64)
--	ENTRY_SAME(ni_syscall)	/* was socketcall */
--	ENTRY_SAME(syslog)
--	/* even though manpage says struct timeval contains longs, ours has
--	 * time_t and suseconds_t -- both of which are safe wide/narrow */
--	ENTRY_COMP(setitimer)
--	ENTRY_COMP(getitimer)		/* 105 */
--	ENTRY_SAME(capget)
--	ENTRY_SAME(capset)
--	ENTRY_OURS(pread64)
--	ENTRY_OURS(pwrite64)
--	ENTRY_SAME(getcwd)		/* 110 */
--	ENTRY_SAME(vhangup)
--	ENTRY_SAME(fstat64)
--	ENTRY_SAME(vfork_wrapper)
--	/* struct rusage contains longs... */
--	ENTRY_COMP(wait4)
--	ENTRY_SAME(swapoff)		/* 115 */
--	ENTRY_COMP(sysinfo)
--	ENTRY_SAME(shutdown)
--	ENTRY_SAME(fsync)
--	ENTRY_SAME(madvise)
--	ENTRY_SAME(clone_wrapper)	/* 120 */
--	ENTRY_SAME(setdomainname)
--	ENTRY_COMP(sendfile)
--	/* struct sockaddr... */
--	ENTRY_SAME(recvfrom)
--	/* struct timex contains longs */
--	ENTRY_COMP(adjtimex)
--	ENTRY_SAME(mprotect)		/* 125 */
--	/* old_sigset_t forced to 32 bits.  Beware glibc sigset_t */
--	ENTRY_COMP(sigprocmask)
--	ENTRY_SAME(ni_syscall)	/* create_module */
--	ENTRY_SAME(init_module)
--	ENTRY_SAME(delete_module)
--	ENTRY_SAME(ni_syscall)		/* 130: get_kernel_syms */
--	/* time_t inside struct dqblk */
--	ENTRY_SAME(quotactl)
--	ENTRY_SAME(getpgid)
--	ENTRY_SAME(fchdir)
--	ENTRY_SAME(bdflush)
--	ENTRY_SAME(sysfs)		/* 135 */
--	ENTRY_OURS(personality)
--	ENTRY_SAME(ni_syscall)	/* for afs_syscall */
--	ENTRY_SAME(setfsuid)
--	ENTRY_SAME(setfsgid)
--	/* I think this might work */
--	ENTRY_SAME(llseek)		/* 140 */
--	ENTRY_COMP(getdents)
--	/* it is POSSIBLE that select will be OK because even though fd_set
--	 * contains longs, the macros and sizes are clever. */
--	ENTRY_COMP(select)
--	ENTRY_SAME(flock)
--	ENTRY_SAME(msync)
--	/* struct iovec contains pointers */
--	ENTRY_COMP(readv)		/* 145 */
--	ENTRY_COMP(writev)
--	ENTRY_SAME(getsid)
--	ENTRY_SAME(fdatasync)
--	/* struct __sysctl_args is a mess */
--	ENTRY_COMP(sysctl)
--	ENTRY_SAME(mlock)		/* 150 */
--	ENTRY_SAME(munlock)
--	ENTRY_SAME(mlockall)
--	ENTRY_SAME(munlockall)
--	/* struct sched_param is ok for now */
--	ENTRY_SAME(sched_setparam)
--	ENTRY_SAME(sched_getparam)	/* 155 */
--	ENTRY_SAME(sched_setscheduler)
--	ENTRY_SAME(sched_getscheduler)
--	ENTRY_SAME(sched_yield)
--	ENTRY_SAME(sched_get_priority_max)
--	ENTRY_SAME(sched_get_priority_min)	/* 160 */
--	ENTRY_COMP(sched_rr_get_interval)
--	ENTRY_COMP(nanosleep)
--	ENTRY_SAME(mremap)
--	ENTRY_SAME(setresuid)
--	ENTRY_SAME(getresuid)		/* 165 */
--	ENTRY_COMP(sigaltstack)
--	ENTRY_SAME(ni_syscall)		/* query_module */
--	ENTRY_SAME(poll)
--	/* structs contain pointers and an in_addr... */
--	ENTRY_SAME(ni_syscall)		/* was nfsservctl */
--	ENTRY_SAME(setresgid)		/* 170 */
--	ENTRY_SAME(getresgid)
--	ENTRY_SAME(prctl)
--	/* signals need a careful review */
--	ENTRY_SAME(rt_sigreturn_wrapper)
--	ENTRY_COMP(rt_sigaction)
--	ENTRY_COMP(rt_sigprocmask)	/* 175 */
--	ENTRY_COMP(rt_sigpending)
--	ENTRY_COMP(rt_sigtimedwait)
--	/* even though the struct siginfo_t is different, it appears like
--	 * all the paths use values which should be same wide and narrow.
--	 * Also the struct is padded to 128 bytes which means we don't have
--	 * to worry about faulting trying to copy in a larger 64-bit
--	 * struct from a 32-bit user-space app.
--	 */
--	ENTRY_COMP(rt_sigqueueinfo)
--	ENTRY_COMP(rt_sigsuspend)
--	ENTRY_SAME(chown)		/* 180 */
--	/* setsockopt() used by iptables: SO_SET_REPLACE/SO_SET_ADD_COUNTERS */
--	ENTRY_COMP(setsockopt)
--	ENTRY_COMP(getsockopt)
--	ENTRY_COMP(sendmsg)
--	ENTRY_COMP(recvmsg)
--	ENTRY_SAME(semop)		/* 185 */
--	ENTRY_SAME(semget)
--	ENTRY_COMP(semctl)
--	ENTRY_COMP(msgsnd)
--	ENTRY_COMP(msgrcv)
--	ENTRY_SAME(msgget)		/* 190 */
--	ENTRY_COMP(msgctl)
--	ENTRY_COMP(shmat)
--	ENTRY_SAME(shmdt)
--	ENTRY_SAME(shmget)
--	ENTRY_COMP(shmctl)		/* 195 */
--	ENTRY_SAME(ni_syscall)		/* streams1 */
--	ENTRY_SAME(ni_syscall)		/* streams2 */
--	ENTRY_SAME(lstat64)
--	ENTRY_OURS(truncate64)
--	ENTRY_OURS(ftruncate64)		/* 200 */
--	ENTRY_SAME(getdents64)
--	ENTRY_COMP(fcntl64)
--	ENTRY_SAME(ni_syscall)	/* attrctl -- dead */
--	ENTRY_SAME(ni_syscall)	/* acl_get -- dead */
--	ENTRY_SAME(ni_syscall)		/* 205 (acl_set -- dead) */
--	ENTRY_SAME(gettid)
--	ENTRY_OURS(readahead)
--	ENTRY_SAME(tkill)
--	ENTRY_COMP(sendfile64)
--	ENTRY_COMP(futex)		/* 210 */
--	ENTRY_COMP(sched_setaffinity)
--	ENTRY_COMP(sched_getaffinity)
--	ENTRY_SAME(ni_syscall)	/* set_thread_area */
--	ENTRY_SAME(ni_syscall)	/* get_thread_area */
--	ENTRY_COMP(io_setup)		/* 215 */
--	ENTRY_SAME(io_destroy)
--	ENTRY_COMP(io_getevents)
--	ENTRY_COMP(io_submit)
--	ENTRY_SAME(io_cancel)
--	ENTRY_SAME(ni_syscall)		/* 220: was alloc_hugepages */
--	ENTRY_SAME(ni_syscall)		/* was free_hugepages */
--	ENTRY_SAME(exit_group)
--	ENTRY_COMP(lookup_dcookie)
--	ENTRY_SAME(epoll_create)
--	ENTRY_SAME(epoll_ctl)		/* 225 */
--	ENTRY_SAME(epoll_wait)
-- 	ENTRY_SAME(remap_file_pages)
--	ENTRY_COMP(semtimedop)
--	ENTRY_COMP(mq_open)
--	ENTRY_SAME(mq_unlink)		/* 230 */
--	ENTRY_COMP(mq_timedsend)
--	ENTRY_COMP(mq_timedreceive)
--	ENTRY_COMP(mq_notify)
--	ENTRY_COMP(mq_getsetattr)
--	ENTRY_COMP(waitid)		/* 235 */
--	ENTRY_OURS(fadvise64_64)
--	ENTRY_SAME(set_tid_address)
--	ENTRY_SAME(setxattr)
--	ENTRY_SAME(lsetxattr)
--	ENTRY_SAME(fsetxattr)		/* 240 */
--	ENTRY_SAME(getxattr)
--	ENTRY_SAME(lgetxattr)
--	ENTRY_SAME(fgetxattr)
--	ENTRY_SAME(listxattr)
--	ENTRY_SAME(llistxattr)		/* 245 */
--	ENTRY_SAME(flistxattr)
--	ENTRY_SAME(removexattr)
--	ENTRY_SAME(lremovexattr)
--	ENTRY_SAME(fremovexattr)
--	ENTRY_COMP(timer_create)	/* 250 */
--	ENTRY_COMP(timer_settime)
--	ENTRY_COMP(timer_gettime)
--	ENTRY_SAME(timer_getoverrun)
--	ENTRY_SAME(timer_delete)
--	ENTRY_COMP(clock_settime)	/* 255 */
--	ENTRY_COMP(clock_gettime)
--	ENTRY_COMP(clock_getres)
--	ENTRY_COMP(clock_nanosleep)
--	ENTRY_SAME(tgkill)
--	ENTRY_COMP(mbind)		/* 260 */
--	ENTRY_COMP(get_mempolicy)
--	ENTRY_COMP(set_mempolicy)
--	ENTRY_SAME(ni_syscall)	/* 263: reserved for vserver */
--	ENTRY_SAME(add_key)
--	ENTRY_SAME(request_key)		/* 265 */
--	ENTRY_COMP(keyctl)
--	ENTRY_SAME(ioprio_set)
--	ENTRY_SAME(ioprio_get)
--	ENTRY_SAME(inotify_init)
--	ENTRY_SAME(inotify_add_watch)	/* 270 */
--	ENTRY_SAME(inotify_rm_watch)
--	ENTRY_SAME(migrate_pages)
--	ENTRY_COMP(pselect6)
--	ENTRY_COMP(ppoll)
--	ENTRY_COMP(openat)		/* 275 */
--	ENTRY_SAME(mkdirat)
--	ENTRY_SAME(mknodat)
--	ENTRY_SAME(fchownat)
--	ENTRY_COMP(futimesat)
--	ENTRY_SAME(fstatat64)		/* 280 */
--	ENTRY_SAME(unlinkat)
--	ENTRY_SAME(renameat)
--	ENTRY_SAME(linkat)
--	ENTRY_SAME(symlinkat)
--	ENTRY_SAME(readlinkat)		/* 285 */
--	ENTRY_SAME(fchmodat)
--	ENTRY_SAME(faccessat)
--	ENTRY_SAME(unshare)
--	ENTRY_COMP(set_robust_list)
--	ENTRY_COMP(get_robust_list)	/* 290 */
--	ENTRY_SAME(splice)
--	ENTRY_OURS(sync_file_range)
--	ENTRY_SAME(tee)
--	ENTRY_COMP(vmsplice)
--	ENTRY_COMP(move_pages)		/* 295 */
--	ENTRY_SAME(getcpu)
--	ENTRY_COMP(epoll_pwait)
--	ENTRY_COMP(statfs64)
--	ENTRY_COMP(fstatfs64)
--	ENTRY_COMP(kexec_load)		/* 300 */
--	ENTRY_COMP(utimensat)
--	ENTRY_COMP(signalfd)
--	ENTRY_SAME(ni_syscall)		/* was timerfd */
--	ENTRY_SAME(eventfd)
--	ENTRY_OURS(fallocate)		/* 305 */
--	ENTRY_SAME(timerfd_create)
--	ENTRY_COMP(timerfd_settime)
--	ENTRY_COMP(timerfd_gettime)
--	ENTRY_COMP(signalfd4)
--	ENTRY_SAME(eventfd2)		/* 310 */
--	ENTRY_SAME(epoll_create1)
--	ENTRY_SAME(dup3)
--	ENTRY_SAME(pipe2)
--	ENTRY_SAME(inotify_init1)
--	ENTRY_COMP(preadv)		/* 315 */
--	ENTRY_COMP(pwritev)
--	ENTRY_COMP(rt_tgsigqueueinfo)
--	ENTRY_SAME(perf_event_open)
--	ENTRY_COMP(recvmmsg)
--	ENTRY_SAME(accept4)		/* 320 */
--	ENTRY_SAME(prlimit64)
--	ENTRY_SAME(fanotify_init)
--	ENTRY_DIFF(fanotify_mark)
--	ENTRY_COMP(clock_adjtime)
--	ENTRY_SAME(name_to_handle_at)	/* 325 */
--	ENTRY_COMP(open_by_handle_at)
--	ENTRY_SAME(syncfs)
--	ENTRY_SAME(setns)
--	ENTRY_COMP(sendmmsg)
--	ENTRY_COMP(process_vm_readv)	/* 330 */
--	ENTRY_COMP(process_vm_writev)
--	ENTRY_SAME(kcmp)
--	ENTRY_SAME(finit_module)
--	ENTRY_SAME(sched_setattr)
--	ENTRY_SAME(sched_getattr)	/* 335 */
--	ENTRY_COMP(utimes)
--	ENTRY_SAME(renameat2)
--	ENTRY_SAME(seccomp)
--	ENTRY_SAME(getrandom)
--	ENTRY_SAME(memfd_create)	/* 340 */
--	ENTRY_SAME(bpf)
--	ENTRY_COMP(execveat)
--	ENTRY_SAME(membarrier)
--	ENTRY_SAME(userfaultfd)
--	ENTRY_SAME(mlock2)		/* 345 */
--	ENTRY_SAME(copy_file_range)
--	ENTRY_COMP(preadv2)
--	ENTRY_COMP(pwritev2)
--	ENTRY_SAME(statx)
--
--
--.ifne (. - 90b) - (__NR_Linux_syscalls * (91b - 90b))
--.error "size of syscall table does not fit value of __NR_Linux_syscalls"
--.endif
--
--#undef ENTRY_SAME
--#undef ENTRY_DIFF
--#undef ENTRY_UHOH
--#undef ENTRY_COMP
--#undef ENTRY_OURS
-diff --git a/arch/parisc/kernel/syscall_x32.S b/arch/parisc/kernel/syscall_x32.S
-new file mode 100644
-index 0000000..02e47c6
---- /dev/null
-+++ b/arch/parisc/kernel/syscall_x32.S
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#define __SYSCALL(nr, entry, nargs) .dword entry
-+	
-+.align 8
-+ENTRY(sys_call_table)
-+.export sys_call_table,data
-+#include <asm/syscall_x32.h>
-+END(sys_call_table)
 diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..4e7a02e
+index 0000000..12d1def
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/Makefile
 @@ -0,0 +1,52 @@
@@ -1059,20 +89,20 @@ index 0000000..4e7a02e
 +$(uapi)/unistd_64.h: $(syscall64) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+systbl_abi_syscall_32 := 32
-+$(out)/syscall_32.h: $(syscall32) $(systbl)
++systbl_abi_syscall_table_32 := 32
++$(out)/syscall_table_32.h: $(syscall32) $(systbl)
 +	$(call if_changed,systbl)
 +
-+systbl_abi_syscall_64 := 64
-+$(out)/syscall_64.h: $(syscall64) $(systbl)
++systbl_abi_syscall_table_64 := 64
++$(out)/syscall_table_64.h: $(syscall64) $(systbl)
 +	$(call if_changed,systbl)
 +
-+systbl_abi_syscall_x32 := x32
-+$(out)/syscall_x32.h: $(syscall32) $(systbl)
++systbl_abi_syscall_table_c32 := c32
++$(out)/syscall_table_c32.h: $(syscall32) $(systbl)
 +	$(call if_changed,systbl)
 +
 +uapisyshdr-y			+= unistd_32.h unistd_64.h
-+syshdr-y			+= syscall_32.h syscall_64.h syscall_x32.h
++syshdr-y			+= syscall_table_32.h syscall_table_64.h syscall_table_c32.h
 +
 +targets	+= $(uapisyshdr-y) $(syshdr-y)
 +
@@ -1082,7 +112,7 @@ index 0000000..4e7a02e
 +	@:
 diff --git a/arch/parisc/kernel/syscalls/syscall_32.tbl b/arch/parisc/kernel/syscalls/syscall_32.tbl
 new file mode 100644
-index 0000000..f751fb6
+index 0000000..637abc8
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscall_32.tbl
 @@ -0,0 +1,358 @@
@@ -1224,7 +254,7 @@ index 0000000..f751fb6
 +127     common  create_module                   sys_ni_syscall                  
 +128     common  init_module                     sys_init_module                 
 +129     common  delete_module                   sys_delete_module               
-+130     common  get_kernel_syms                 sys_get_kernel_syms             
++#130     common  get_kernel_syms                 sys_get_kernel_syms             
 +131     common  quotactl                        sys_quotactl                    
 +132     common  getpgid                         sys_getpgid                     
 +133     common  fchdir                          sys_fchdir                      
@@ -1446,10 +476,10 @@ index 0000000..f751fb6
 +349     common  statx                           sys_statx                       
 diff --git a/arch/parisc/kernel/syscalls/syscall_64.tbl b/arch/parisc/kernel/syscalls/syscall_64.tbl
 new file mode 100644
-index 0000000..c0bba74
+index 0000000..34f9191
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscall_64.tbl
-@@ -0,0 +1,358 @@
+@@ -0,0 +1,357 @@
 +#
 +# 64-bit system call numbers and entry vectors
 +#
@@ -1588,7 +618,6 @@ index 0000000..c0bba74
 +127     common  create_module                   sys_ni_syscall
 +128     common  init_module                     sys_init_module
 +129     common  delete_module                   sys_delete_module
-+130     common  get_kernel_syms                 sys_get_kernel_syms
 +131     common  quotactl                        sys_quotactl
 +132     common  getpgid                         sys_getpgid
 +133     common  fchdir                          sys_fchdir
@@ -1810,10 +839,10 @@ index 0000000..c0bba74
 +349     common  statx                           sys_statx
 diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..b0c28e2
+index 0000000..c6f26f2
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,38 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -1832,22 +861,29 @@ index 0000000..b0c28e2
 +    echo ""
 +    echo -e "#define __NR_Linux\t0"
 +
++    nxt=0
 +    while read nr abi name entry compat ; do
 +	if [ -z "$offset" ]; then
 +	    echo -e "#define __NR_${prefix}${name}\t$nr"
 +	else
 +	    echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
 +	fi
++	nxt=$nr
++	let nxt=nxt+1
 +    done
 +
 +    echo ""
-+    echo -e "#define __NR_Linux_syscalls\t(__NR_statx + 1)"
++    if [ -z "$offset" ]; then
++	echo -e "#define __NR_syscalls\t$nxt"
++    else
++	echo -e "#define __NR_syscalls\t($offset + $nxt)"
++    fi
 +    echo ""
 +    echo "#endif /* ${fileguard} */"
 +) > "$out"
 diff --git a/arch/parisc/kernel/syscalls/syscalltbl.sh b/arch/parisc/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..9857420
+index 0000000..8e38dd0
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscalltbl.sh
 @@ -0,0 +1,36 @@
@@ -1876,7 +912,7 @@ index 0000000..9857420
 +    while read nr abi name entry compat ; do
 +	if [ "$my_abi" = "64" -o "$my_abi" = "32" ]; then
 +            emit $nxt $nr $entry
-+	elif [ "$my_abi" = "x32" ]; then
++	elif [ "$my_abi" = "c32" ]; then
 +	    if [ -z "$compat" ]; then
 +                emit $nxt $nr $entry
 +            else
