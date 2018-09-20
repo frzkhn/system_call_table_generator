@@ -1,13 +1,14 @@
-From a29300e19345febb57464d8c51c1ded72c3470f4 Mon Sep 17 00:00:00 2001
+From 0393be2cb08322c020c3445442fd877228683319 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Sun, 29 Jul 2018 12:24:01 +0530
-Subject: [PATCH 4/4] m68k: uapi header and system call table file generation
+Date: Thu, 20 Sep 2018 14:54:21 +0530
+Subject: [PATCH v2 4/5] m68k: uapi header and system call table file
+ generation
 
 System call table generation script must be run to generate
 unistd_32.h and syscall_table.h files. This patch will have
 changes which will invokes the script.
 
-This patch will generate unistd_64.h and syscall_table.h
+This patch will generate unistd_32.h and syscall_table.h
 files by the syscall table generation script invoked by
 arch/m68k/Makefile and the generated files against the
 removed files will be identical.
@@ -20,14 +21,14 @@ file.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/m68k/Makefile                  |   3 +
- arch/m68k/include/asm/Kbuild        |   2 +
- arch/m68k/include/uapi/asm/Kbuild   |   2 +
- arch/m68k/include/uapi/asm/unistd.h | 387 +----------------------------------
- arch/m68k/kernel/syscall_table.S    | 397 +-----------------------------------
- 5 files changed, 12 insertions(+), 779 deletions(-)
+ arch/m68k/include/asm/Kbuild        |   1 +
+ arch/m68k/include/uapi/asm/Kbuild   |   1 +
+ arch/m68k/include/uapi/asm/unistd.h | 389 +----------------------------------
+ arch/m68k/kernel/syscall_table.S    | 399 +-----------------------------------
+ 5 files changed, 11 insertions(+), 782 deletions(-)
 
 diff --git a/arch/m68k/Makefile b/arch/m68k/Makefile
-index f0dd9fc..8ee2f36 100644
+index 997c9f2..f00ca53 100644
 --- a/arch/m68k/Makefile
 +++ b/arch/m68k/Makefile
 @@ -154,5 +154,8 @@ endif
@@ -40,32 +41,30 @@ index f0dd9fc..8ee2f36 100644
  install:
  	sh $(srctree)/arch/m68k/install.sh $(KERNELRELEASE) vmlinux.gz System.map "$(INSTALL_PATH)"
 diff --git a/arch/m68k/include/asm/Kbuild b/arch/m68k/include/asm/Kbuild
-index 4d8d68c..e3ff55d 100644
+index a4b8d33..68501411 100644
 --- a/arch/m68k/include/asm/Kbuild
 +++ b/arch/m68k/include/asm/Kbuild
-@@ -23,3 +23,5 @@ generic-y += topology.h
+@@ -24,3 +24,4 @@ generic-y += topology.h
  generic-y += trace_clock.h
  generic-y += word-at-a-time.h
  generic-y += xor.h
-+
-+generated-y += syscall_table.h
++generic-y += syscall_table.h
 \ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/Kbuild b/arch/m68k/include/uapi/asm/Kbuild
-index c2e26a4..baa7c4f 100644
+index c2e26a4..6d600e9 100644
 --- a/arch/m68k/include/uapi/asm/Kbuild
 +++ b/arch/m68k/include/uapi/asm/Kbuild
-@@ -21,3 +21,5 @@ generic-y += statfs.h
+@@ -21,3 +21,4 @@ generic-y += statfs.h
  generic-y += termbits.h
  generic-y += termios.h
  generic-y += types.h
-+
-+generated-y += unistd_32.h
++generic-y += unistd_32.h
 \ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/unistd.h b/arch/m68k/include/uapi/asm/unistd.h
-index b17ae53..cdbd090 100644
+index ba4176aa..cdbd090 100644
 --- a/arch/m68k/include/uapi/asm/unistd.h
 +++ b/arch/m68k/include/uapi/asm/unistd.h
-@@ -2,391 +2,6 @@
+@@ -2,393 +2,6 @@
  #ifndef _UAPI_ASM_M68K_UNISTD_H_
  #define _UAPI_ASM_M68K_UNISTD_H_
  
@@ -454,12 +453,14 @@ index b17ae53..cdbd090 100644
 -#define __NR_pwritev2		378
 -#define __NR_statx		379
 -
+-#ifdef __KERNEL__
 -#define __NR_syscalls		380
+-#endif
 +#include <asm/unistd_32.h>
  
  #endif /* _UAPI_ASM_M68K_UNISTD_H_ */
 diff --git a/arch/m68k/kernel/syscall_table.S b/arch/m68k/kernel/syscall_table.S
-index 2c8402e..c4fd2c4 100644
+index 2c8402e..56e9d03 100644
 --- a/arch/m68k/kernel/syscall_table.S
 +++ b/arch/m68k/kernel/syscall_table.S
 @@ -1,403 +1,14 @@
@@ -484,9 +485,9 @@ index 2c8402e..c4fd2c4 100644
 +#define sys_mmap2 sys_mmap_pgoff
  #endif
  
+-.section .rodata
 +#define __SYSCALL(nr, entry, nargs) .long entry
-+
- .section .rodata
++	.section .rodata
  ALIGN
  ENTRY(sys_call_table)
 -	.long sys_restart_syscall	/* 0 - old "setup()" system call, used for restarting */
@@ -870,6 +871,7 @@ index 2c8402e..c4fd2c4 100644
 -	.long sys_pwritev2
 -	.long sys_statx
 +#include <asm/syscall_table.h>
++#undef __SYSCALL
 -- 
 1.9.1
 

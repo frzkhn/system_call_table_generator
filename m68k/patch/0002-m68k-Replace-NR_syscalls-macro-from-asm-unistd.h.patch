@@ -1,7 +1,7 @@
-From 7338917becc1d0e1576edfcbaf9d053db516f937 Mon Sep 17 00:00:00 2001
+From 7ac7700a9e3cfd7ac386dccd59353857edf79124 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Sun, 29 Jul 2018 12:07:34 +0530
-Subject: [PATCH 2/4] m68k: Replace NR_syscalls macro from asm/unistd.h
+Date: Thu, 20 Sep 2018 14:13:57 +0530
+Subject: [PATCH v2 2/5] m68k: Replace NR_syscalls macro from asm/unistd.h
 
 NR_syscalls macro holds the number of system call exist in m68k
 architecture. This macro is currently the part of asm/unistd.h file.
@@ -23,104 +23,46 @@ option to update NR_syscalls value.
    In this case we don't need to explicitly update NR_syscalls
    in asm/unistd.h file.
 
-The 2nd option will be the recommended one. For that, I moved the
-NR_syscalls macro from asm/unistd.h to uapi/asm/unistd.h. The macro
-name also changed form NR_syscalls to __NR_syscalls for making the
-name convention same across all architecture. While __NR_syscalls
+The 2nd option will be the recommended one. For that, I come up
+with another macro - __NR_syscalls which will be updated by the
+script and it will be present in api/asm/unistd.h. While __NR_syscalls
 isn't strictly part of the uapi, having it as part of the generated
-header to simplifies the implementation.
+header to simplifies the implementation. So we need to enclose this
+macro with #ifdef __KERNEL__ to avoid side effects.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/m68k/68000/entry.S             | 4 ++--
- arch/m68k/coldfire/entry.S          | 2 +-
- arch/m68k/include/asm/unistd.h      | 3 ---
- arch/m68k/include/uapi/asm/unistd.h | 2 ++
- arch/m68k/kernel/entry.S            | 4 ++--
- 5 files changed, 7 insertions(+), 8 deletions(-)
+ arch/m68k/include/asm/unistd.h      | 3 +--
+ arch/m68k/include/uapi/asm/unistd.h | 4 ++++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/m68k/68000/entry.S b/arch/m68k/68000/entry.S
-index 259b366..91522e9 100644
---- a/arch/m68k/68000/entry.S
-+++ b/arch/m68k/68000/entry.S
-@@ -49,7 +49,7 @@ do_trace:
- 	addql	#4,%sp
- 	movel	%sp@(PT_OFF_ORIG_D0),%d1
- 	movel	#-ENOSYS,%d0
--	cmpl	#NR_syscalls,%d1
-+	cmpl	#__NR_syscalls,%d1
- 	jcc	1f
- 	lsl	#2,%d1
- 	lea	sys_call_table, %a0
-@@ -80,7 +80,7 @@ ENTRY(system_call)
- 	movel	%d1,%a2
- 	btst	#(TIF_SYSCALL_TRACE%8),%a2@(TINFO_FLAGS+(31-TIF_SYSCALL_TRACE)/8)
- 	jne	do_trace
--	cmpl	#NR_syscalls,%d0
-+	cmpl	#__NR_syscalls,%d0
- 	jcc	badsys
- 	lsl	#2,%d0
- 	lea	sys_call_table,%a0
-diff --git a/arch/m68k/coldfire/entry.S b/arch/m68k/coldfire/entry.S
-index 52d312d..efe777d 100644
---- a/arch/m68k/coldfire/entry.S
-+++ b/arch/m68k/coldfire/entry.S
-@@ -64,7 +64,7 @@ ENTRY(system_call)
- 	move	#0x2000,%sr		/* enable intrs again */
- 	GET_CURRENT(%d2)
- 
--	cmpl	#NR_syscalls,%d0
-+	cmpl	#__NR_syscalls,%d0
- 	jcc	enosys
- 	lea	sys_call_table,%a0
- 	lsll	#2,%d0			/* movel %a0@(%d0:l:4),%d3 */
 diff --git a/arch/m68k/include/asm/unistd.h b/arch/m68k/include/asm/unistd.h
-index 30d0d3f..52111fb 100644
+index 30d0d3f..5072e94 100644
 --- a/arch/m68k/include/asm/unistd.h
 +++ b/arch/m68k/include/asm/unistd.h
-@@ -4,9 +4,6 @@
+@@ -4,8 +4,7 @@
  
  #include <uapi/asm/unistd.h>
  
 -
 -#define NR_syscalls		380
--
++#define NR_syscalls __NR_syscalls
+ 
  #define __ARCH_WANT_OLD_READDIR
  #define __ARCH_WANT_OLD_STAT
- #define __ARCH_WANT_STAT64
 diff --git a/arch/m68k/include/uapi/asm/unistd.h b/arch/m68k/include/uapi/asm/unistd.h
-index de3054f..b17ae53 100644
+index de3054f..ba4176aa 100644
 --- a/arch/m68k/include/uapi/asm/unistd.h
 +++ b/arch/m68k/include/uapi/asm/unistd.h
-@@ -387,4 +387,6 @@
+@@ -387,4 +387,8 @@
  #define __NR_pwritev2		378
  #define __NR_statx		379
  
++#ifdef __KERNEL__
 +#define __NR_syscalls		380
++#endif
 +
  #endif /* _UAPI_ASM_M68K_UNISTD_H_ */
-diff --git a/arch/m68k/kernel/entry.S b/arch/m68k/kernel/entry.S
-index 97cd3ea..dab0cfd 100644
---- a/arch/m68k/kernel/entry.S
-+++ b/arch/m68k/kernel/entry.S
-@@ -161,7 +161,7 @@ do_trace_entry:
- 	RESTORE_SWITCH_STACK
- 	addql	#4,%sp
- 	movel	%sp@(PT_OFF_ORIG_D0),%d0
--	cmpl	#NR_syscalls,%d0
-+	cmpl	#__NR_syscalls,%d0
- 	jcs	syscall
- badsys:
- 	movel	#-ENOSYS,%sp@(PT_OFF_D0)
-@@ -206,7 +206,7 @@ ENTRY(system_call)
- 	| syscall trace?
- 	tstb	%a1@(TINFO_FLAGS+2)
- 	jmi	do_trace_entry
--	cmpl	#NR_syscalls,%d0
-+	cmpl	#__NR_syscalls,%d0
- 	jcc	badsys
- syscall:
- 	jbsr	@(sys_call_table,%d0:l:4)@(0)
 -- 
 1.9.1
 

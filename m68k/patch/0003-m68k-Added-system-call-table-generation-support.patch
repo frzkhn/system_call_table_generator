@@ -1,7 +1,7 @@
-From ac8ca71ad1936c33c89151dc549445d3a6a3b377 Mon Sep 17 00:00:00 2001
+From 557fb452eb9de50dec5d724f503869c4c46a716d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 29 Jul 2018 12:18:24 +0530
-Subject: [PATCH 3/4] m68k: Added system call table generation support
+Subject: [PATCH v2 3/5] m68k: Added system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -28,23 +28,24 @@ Adding a new table entry consisting of:
 
 syscallhdr.sh and syscalltbl.sh will generate uapi header-
 unistd.h and syscall_table.h files respectively. File
-syscall_table.h is included by syscall.S - the real system
-call table. Both .sh files will parse the content syscall.tbl
-to generate the header and table files.
+syscall_table.h is included by syscall_table.S - the real
+system call table. Both .sh files will parse the content
+syscall.tbl to generate the header and table files.
 
 ARM, s390 and x86 architecuture does have the similar support.
 I leverage their implementation to come up with a generic
 solution. And this is the ground work for y2038 issue. We need
-to change 52 system call implementation and this work will
-reduce the effort by simply modify 52 entries in syscall.tbl.
+to change two dozons of system call implementation and this
+work will reduce the effort by simply modify two dozon entries
+in syscall.tbl.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/m68k/kernel/syscalls/Makefile      |  37 +++
- arch/m68k/kernel/syscalls/syscall.tbl   | 386 ++++++++++++++++++++++++++++++++
- arch/m68k/kernel/syscalls/syscallhdr.sh |  33 +++
+ arch/m68k/kernel/syscalls/Makefile      |  37 ++++
+ arch/m68k/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++++++++++
+ arch/m68k/kernel/syscalls/syscallhdr.sh |  39 ++++
  arch/m68k/kernel/syscalls/syscalltbl.sh |  28 +++
- 4 files changed, 484 insertions(+)
+ 4 files changed, 473 insertions(+)
  create mode 100644 arch/m68k/kernel/syscalls/Makefile
  create mode 100644 arch/m68k/kernel/syscalls/syscall.tbl
  create mode 100644 arch/m68k/kernel/syscalls/syscallhdr.sh
@@ -95,10 +96,10 @@ index 0000000..7624044
 +	@:
 diff --git a/arch/m68k/kernel/syscalls/syscall.tbl b/arch/m68k/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..00a44ba
+index 0000000..ab151cd
 --- /dev/null
 +++ b/arch/m68k/kernel/syscalls/syscall.tbl
-@@ -0,0 +1,386 @@
+@@ -0,0 +1,369 @@
 +#
 +# Linux system call numbers and entry vectors
 +#
@@ -124,7 +125,6 @@ index 0000000..00a44ba
 +14      common   mknod                    sys_mknod
 +15      common   chmod                    sys_chmod
 +16      common   chown                    sys_chown16
-+17	common	 break			  sys_ni_syscall
 +18      common   oldstat                  sys_stat
 +19      common   lseek                    sys_lseek
 +20      common   getpid                   sys_getpid
@@ -138,11 +138,8 @@ index 0000000..00a44ba
 +28      common   oldfstat                 sys_fstat
 +29      common   pause                    sys_pause
 +30      common   utime                    sys_utime
-+31	common 	 stty			  sys_ni_syscall
-+32	common	 gtty			  sys_ni_syscall
 +33      common   access                   sys_access
 +34      common   nice                     sys_nice
-+35	common	 ftime			  sys_ni_syscall
 +36      common   sync                     sys_sync
 +37      common   kill                     sys_kill
 +38      common   rename                   sys_rename
@@ -151,7 +148,6 @@ index 0000000..00a44ba
 +41      common   dup                      sys_dup
 +42      common   pipe                     sys_pipe
 +43      common   times                    sys_times
-+44	common	 prof			  sys_ni_syscall
 +45      common   brk                      sys_brk
 +46      common   setgid                   sys_setgid16
 +47      common   getgid                   sys_getgid16
@@ -160,13 +156,9 @@ index 0000000..00a44ba
 +50      common   getegid                  sys_getegid16
 +51      common   acct                     sys_acct
 +52      common   umount2                  sys_umount
-+53	common	 lock			  sys_ni_syscall
 +54      common   ioctl                    sys_ioctl
 +55      common   fcntl                    sys_fcntl
-+56	common	 mpx			  sys_ni_syscall
 +57      common   setpgid                  sys_setpgid
-+58	common	 ulimit			  sys_ni_syscall
-+59	common	 oldolduname		  sys_ni_syscall
 +60      common   umask                    sys_umask
 +61      common   chroot                   sys_chroot
 +62      common   ustat                    sys_ustat
@@ -205,10 +197,8 @@ index 0000000..00a44ba
 +95      common   fchown                   sys_fchown16
 +96      common   getpriority              sys_getpriority
 +97      common   setpriority              sys_setpriority
-+98	common	 profil			  sys_ni_syscall
 +99      common   statfs                   sys_statfs
 +100     common   fstatfs                  sys_fstatfs
-+101	common	 ioperm			  sys_ni_syscall
 +102     common   socketcall               sys_socketcall
 +103     common   syslog                   sys_syslog
 +104     common   setitimer                sys_setitimer
@@ -216,11 +206,7 @@ index 0000000..00a44ba
 +106     common   stat                     sys_newstat
 +107     common   lstat                    sys_newlstat
 +108     common   fstat                    sys_newfstat
-+109	common	 olduname		  sys_ni_syscall
-+110	common	 iopl			  sys_ni_syscall
 +111     common   vhangup                  sys_vhangup
-+112	common	 idle			  sys_ni_syscall
-+113	common	 vm86			  sys_ni_syscall
 +114     common   wait4                    sys_wait4
 +115     common   swapoff                  sys_swapoff
 +116     common   sysinfo                  sys_sysinfo
@@ -244,7 +230,6 @@ index 0000000..00a44ba
 +134     common   bdflush                  sys_bdflush
 +135     common   sysfs                    sys_sysfs
 +136     common   personality              sys_personality
-+137	common	 afs_syscall		  sys_ni_syscall
 +138     common   setfsuid                 sys_setfsuid16
 +139     common   setfsgid                 sys_setfsgid16
 +140     common   _llseek                  sys_llseek
@@ -383,7 +368,6 @@ index 0000000..00a44ba
 +275     common   mq_notify                sys_mq_notify
 +276     common   mq_getsetattr            sys_mq_getsetattr
 +277     common   waitid                   sys_waitid
-+278	common	 vserver		  sys_ni_syscall
 +279     common   add_key                  sys_add_key
 +280     common   request_key              sys_request_key
 +281     common   keyctl                   sys_keyctl
@@ -487,10 +471,10 @@ index 0000000..00a44ba
 +379     common   statx                    sys_statx
 diff --git a/arch/m68k/kernel/syscalls/syscallhdr.sh b/arch/m68k/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..f9db7f5
+index 0000000..77d40acf
 --- /dev/null
 +++ b/arch/m68k/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,39 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -520,13 +504,19 @@ index 0000000..f9db7f5
 +    done
 +
 +    echo ""
-+    echo -e "#define __NR_syscalls\t$nxt"
++    echo "#ifdef __KERNEL__"
++    if [ -z "$offset" ]; then
++        echo -e "#define __NR_syscalls\t$nxt"
++    else
++        echo -e "#define __NR_syscalls\t($offset + $nxt)"
++    fi
++    echo "#endif"
 +    echo ""
 +    echo "#endif /* ${fileguard} */"
 +) > "$out"
 diff --git a/arch/m68k/kernel/syscalls/syscalltbl.sh b/arch/m68k/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..8121a05
+index 0000000..e9ee347
 --- /dev/null
 +++ b/arch/m68k/kernel/syscalls/syscalltbl.sh
 @@ -0,0 +1,28 @@
@@ -541,7 +531,7 @@ index 0000000..8121a05
 +    nxt="$1"
 +    nr="$2"
 +    entry="$3"
-+    
++
 +    while [ $nxt -lt $nr ]; do
 +	echo "__SYSCALL($nxt, sys_ni_syscall, )"
 +	let nxt=nxt+1
