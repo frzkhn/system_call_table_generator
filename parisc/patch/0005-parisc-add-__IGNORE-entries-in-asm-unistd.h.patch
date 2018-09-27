@@ -1,0 +1,32 @@
+From 0cda6eb7d3810d7e1c430933c49af4875352a535 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 26 Sep 2018 10:58:51 +0530
+Subject: [PATCH v2 5/5] parisc: add __IGNORE* entries in asm/unistd.h
+
+Add __IGNORE* entries for nfsservctl, io_pgetevents and rseq
+in the file asm/unistd.h as it is correct to keep __IGNORE*
+entry in non uapi header asm/unistd.h while uapi/asm/unistd.h
+must hold information only useful for user space applications.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/parisc/include/asm/unistd.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/parisc/include/asm/unistd.h b/arch/parisc/include/asm/unistd.h
+index 93fd9f6..9294e10 100644
+--- a/arch/parisc/include/asm/unistd.h
++++ b/arch/parisc/include/asm/unistd.h
+@@ -13,6 +13,9 @@
+ #define __IGNORE_pkey_mprotect
+ #define __IGNORE_pkey_alloc
+ #define __IGNORE_pkey_free
++#define __IGNORE_nfsservctl
++#define __IGNORE_io_pgetevents
++#define __IGNORE_rseq
+ 
+ #ifndef ASM_LINE_SEP
+ # define ASM_LINE_SEP ;
+-- 
+1.9.1
+

@@ -1,15 +1,17 @@
-From 9be069481b3338aa0f4501540fd834b0b6d799df Mon Sep 17 00:00:00 2001
+From c6698d5a623ca76fd84544d24779e999878d112a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:04:16 +0530
-Subject: [PATCH 1/4] parisc: Move __IGNORE* entries to non uapi header
+Subject: [PATCH v2 1/5] parisc: move __IGNORE* entries to non uapi header
 
 All the  __IGNORE* entries are resides in the uapi header
-file and it is not used by any user space applications.
+file moved to non uapi header. Basically it is not used by
+any user space applications.
 
 One of the patch in this patch series will generate the
 uapi header file and system call table file. So if we move
-all the __IGNORE* entries to non uapi header, it will simplify
-the uapi header and system call table file generation script.
+all the __IGNORE* entries to non uapi header, it will help
+to simplify the uapi header and system call table file
+generation script.
 
 It is correct to keep __IGNORE* entry in non uapi header
 asm/unistd.h while uapi/asm/unistd.h must hold information
@@ -22,22 +24,22 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/arch/parisc/include/asm/unistd.h b/arch/parisc/include/asm/unistd.h
-index 3d507d0..fc71edf 100644
+index 3d507d0..93fd9f6 100644
 --- a/arch/parisc/include/asm/unistd.h
 +++ b/arch/parisc/include/asm/unistd.h
-@@ -165,6 +165,12 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)	\
- #define __ARCH_WANT_SYS_CLONE
- #define __ARCH_WANT_COMPAT_SYS_SENDFILE
+@@ -8,6 +8,12 @@
  
-+#define __IGNORE_select		/* newselect */
-+#define __IGNORE_fadvise64	/* fadvise64_64 */
+ #define SYS_ify(syscall_name)   __NR_##syscall_name
+ 
++#define __IGNORE_select                /* newselect */
++#define __IGNORE_fadvise64             /* fadvise64_64 */
 +#define __IGNORE_pkey_mprotect
 +#define __IGNORE_pkey_alloc
 +#define __IGNORE_pkey_free
 +
- #endif /* __ASSEMBLY__ */
- 
- #undef STR
+ #ifndef ASM_LINE_SEP
+ # define ASM_LINE_SEP ;
+ #endif
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
 index dc77c5a..bb52e12 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h

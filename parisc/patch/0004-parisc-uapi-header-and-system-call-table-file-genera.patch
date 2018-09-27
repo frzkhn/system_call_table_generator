@@ -1,7 +1,8 @@
-From 3d22ad6dc495e17e35327ecace994608f72c6907 Mon Sep 17 00:00:00 2001
+From 89c29d3abd8a9831e747dbd80587b7c92a0d9c2a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Sun, 9 Sep 2018 07:24:05 +0530
-Subject: [PATCH 4/4] parisc: uapi header and system call table file generation
+Date: Wed, 26 Sep 2018 13:55:53 +0530
+Subject: [PATCH v2 4/5] parisc: uapi header and system call table file
+ generation
 
 System call table generation script must be run to generate
 unistd_32/64.h and syscall_table_32/64/c32.h files. This patch
@@ -9,7 +10,7 @@ will have changes which will invokes the script.
 
 This patch will generate unistd_32/64.h and syscall_table_
 32/64/c32.h files by the syscall table generation script
-invoked by arch/sparc/Makefile and the generated files against
+invoked by arch/parisc/Makefile and the generated files against
 the removed files will be identical.
 
 The generated uapi header file will be included in uapi/asm/
@@ -21,12 +22,12 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/parisc/Makefile                  |   4 +
  arch/parisc/include/asm/Kbuild        |   3 +
  arch/parisc/include/uapi/asm/Kbuild   |   2 +
- arch/parisc/include/uapi/asm/unistd.h | 370 +--------------------------
- arch/parisc/kernel/syscall.S          |  14 +-
+ arch/parisc/include/uapi/asm/unistd.h | 375 +--------------------------
+ arch/parisc/kernel/syscall.S          |  12 +-
  arch/parisc/kernel/syscall_table.S    | 459 ----------------------------------
- arch/parisc/kernel/syscall_table_32.S |  11 +
- arch/parisc/kernel/syscall_table_64.S |  19 ++
- 8 files changed, 47 insertions(+), 835 deletions(-)
+ arch/parisc/kernel/syscall_table_32.S |  13 +
+ arch/parisc/kernel/syscall_table_64.S |  20 ++
+ 8 files changed, 51 insertions(+), 837 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscall_table_32.S
  create mode 100644 arch/parisc/kernel/syscall_table_64.S
@@ -47,33 +48,33 @@ index 5ce0302..6b217da 100644
  	@if test "$(cc-version)" -lt "0303"; then \
  		echo -n "Sorry, GCC v3.3 or above is required to build " ; \
 diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
-index 2013d63..f67046d 100644
+index 2013d63..dd52f2c 100644
 --- a/arch/parisc/include/asm/Kbuild
 +++ b/arch/parisc/include/asm/Kbuild
 @@ -23,3 +23,6 @@ generic-y += user.h
  generic-y += vga.h
  generic-y += word-at-a-time.h
  generic-y += xor.h
-+generated-y += syscall_table_32.h
-+generated-y += syscall_table_64.h
-+generated-y += syscall_table_c32.h
++generic-y += syscall_table_32.h
++generic-y += syscall_table_64.h
++generic-y += syscall_table_c32.h
 \ No newline at end of file
 diff --git a/arch/parisc/include/uapi/asm/Kbuild b/arch/parisc/include/uapi/asm/Kbuild
-index 286ef5a..dc1823a 100644
+index 286ef5a..02103fc 100644
 --- a/arch/parisc/include/uapi/asm/Kbuild
 +++ b/arch/parisc/include/uapi/asm/Kbuild
 @@ -7,3 +7,5 @@ generic-y += kvm_para.h
  generic-y += param.h
  generic-y += poll.h
  generic-y += resource.h
-+generated-y += unistd_32.h
-+generated-y += unistd_64.h
++generic-y += unistd_32.h
++generic-y += unistd_64.h
 \ No newline at end of file
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index 7532817..5b7578e 100644
+index f1375e8..12ea150 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
-@@ -2,371 +2,11 @@
+@@ -2,376 +2,15 @@
  #ifndef _UAPI_ASM_PARISC_UNISTD_H_
  #define _UAPI_ASM_PARISC_UNISTD_H_
  
@@ -441,20 +442,27 @@ index 7532817..5b7578e 100644
 -#define __NR_statx		(__NR_Linux + 349)
 -#define __NR_io_pgetevents	(__NR_Linux + 350)
 -
+-#ifdef __KERNEL__
 -#define __NR_syscalls           (__NR_Linux + 351)
++#define __NR_Linux  0
 +#ifdef CONFIG_64BIT
 +#include <asm/unistd_64.h>
 +#else
 +#include <asm/unistd_32.h>
-+#endif
+ #endif
  
- #define LINUX_GATEWAY_ADDR      0x100
+-#define __NR_Linux_syscalls     __NR_syscalls
++#define __NR_Linux_syscalls  __NR_syscalls
  
+-#define LINUX_GATEWAY_ADDR      0x100
++#define LINUX_GATEWAY_ADDR   0x100
+ 
+ #endif /* _UAPI_ASM_PARISC_UNISTD_H_ */
 diff --git a/arch/parisc/kernel/syscall.S b/arch/parisc/kernel/syscall.S
-index f453997..ece76a5 100644
+index f453997..2523b83 100644
 --- a/arch/parisc/kernel/syscall.S
 +++ b/arch/parisc/kernel/syscall.S
-@@ -923,20 +923,12 @@ ENTRY(lws_table)
+@@ -923,18 +923,10 @@ ENTRY(lws_table)
  END(lws_table)
  	/* End of lws table */
  
@@ -473,11 +481,8 @@ index f453997..ece76a5 100644
 -END(sys_call_table64)
 +#include "syscall_table_64.S"
  #endif
--
-+	
+ 
  	/*
- 		All light-weight-syscall atomic operations 
- 		will use this set of locks 
 diff --git a/arch/parisc/kernel/syscall_table.S b/arch/parisc/kernel/syscall_table.S
 deleted file mode 100644
 index fe3f2a4..0000000
@@ -945,27 +950,29 @@ index fe3f2a4..0000000
 -#undef ENTRY_OURS
 diff --git a/arch/parisc/kernel/syscall_table_32.S b/arch/parisc/kernel/syscall_table_32.S
 new file mode 100644
-index 0000000..6da0746
+index 0000000..eec2c9a
 --- /dev/null
 +++ b/arch/parisc/kernel/syscall_table_32.S
-@@ -0,0 +1,11 @@
+@@ -0,0 +1,13 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +#include <linux/linkage.h>
 +
 +	.align 8
 +ENTRY(sys_call_table)
 +	.export sys_call_table,data
-+#if !defined(CONFIG_64BIT)	
++#if !defined(CONFIG_64BIT)
 +#define __SYSCALL(nr, entry, nargs) .word entry
 +#include <asm/syscall_table_32.h>
 +#endif
++#undef __SYSCALL
 +END(sys_call_table)
++
 diff --git a/arch/parisc/kernel/syscall_table_64.S b/arch/parisc/kernel/syscall_table_64.S
 new file mode 100644
-index 0000000..896033c
+index 0000000..af915688
 --- /dev/null
 +++ b/arch/parisc/kernel/syscall_table_64.S
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +#include <linux/linkage.h>
 +
@@ -975,15 +982,16 @@ index 0000000..896033c
 +#define __SYSCALL(nr, entry, nargs) .dword entry
 +#include <asm/syscall_table_64.h>
 +#endif
++#undef __SYSCALL
 +END(sys_call_table64)
 +
 +	.align 8
 +ENTRY(sys_call_tablec32)
-+//	.export sys_call_table,data
 +#if defined(CONFIG_64BIT) && !defined(SYSCALL_TABLE_64BIT)
 +#define __SYSCALL(nr, entry, nargs) .dword entry
 +#include <asm/syscall_table_c32.h>
 +#endif
++#undef __SYSCALL
 +END(sys_call_tablec32)
 -- 
 1.9.1
