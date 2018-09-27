@@ -1,4 +1,4 @@
-From c6698d5a623ca76fd84544d24779e999878d112a Mon Sep 17 00:00:00 2001
+From cdddec92873783baaa7a363b069d8df9543fa37b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:04:16 +0530
 Subject: [PATCH v2 1/5] parisc: move __IGNORE* entries to non uapi header

@@ -1,6 +1,6 @@
-From 89c29d3abd8a9831e747dbd80587b7c92a0d9c2a Mon Sep 17 00:00:00 2001
+From 157672ca3f5d9ce26276b0acff1cbe55f5af07ae Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 26 Sep 2018 13:55:53 +0530
+Date: Thu, 27 Sep 2018 12:33:55 +0530
 Subject: [PATCH v2 4/5] parisc: uapi header and system call table file
  generation
 
@@ -71,7 +71,7 @@ index 286ef5a..02103fc 100644
 +generic-y += unistd_64.h
 \ No newline at end of file
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index f1375e8..12ea150 100644
+index 255c62a..643a006 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
 @@ -2,376 +2,15 @@
@@ -443,8 +443,8 @@ index f1375e8..12ea150 100644
 -#define __NR_io_pgetevents	(__NR_Linux + 350)
 -
 -#ifdef __KERNEL__
--#define __NR_syscalls           (__NR_Linux + 351)
-+#define __NR_Linux  0
+-#define __NR_syscalls           351
++#define __NR_Linux           0
 +#ifdef CONFIG_64BIT
 +#include <asm/unistd_64.h>
 +#else

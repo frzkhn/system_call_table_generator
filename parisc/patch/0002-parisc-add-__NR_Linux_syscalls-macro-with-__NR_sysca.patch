@@ -1,4 +1,4 @@
-From a91b5075465167234ba938bbc70ef2f9303126e9 Mon Sep 17 00:00:00 2001
+From d1c7b20815dcc001274dcb995b9f513aa8bc3e3d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 26 Sep 2018 11:06:25 +0530
 Subject: [PATCH v2 2/5] parisc: add __NR_Linux_syscalls macro with
@@ -40,7 +40,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index bb52e12..f1375e8 100644
+index bb52e12..255c62a 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
 @@ -366,7 +366,11 @@
@@ -49,7 +49,7 @@ index bb52e12..f1375e8 100644
  
 -#define __NR_Linux_syscalls	(__NR_io_pgetevents + 1)
 +#ifdef __KERNEL__
-+#define __NR_syscalls           (__NR_Linux + 351)
++#define __NR_syscalls           351
 +#endif
 +
 +#define __NR_Linux_syscalls     __NR_syscalls

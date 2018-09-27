@@ -1,4 +1,4 @@
-From 64e6f2edbc764f056cb8a409b4493496e7585d70 Mon Sep 17 00:00:00 2001
+From 69919dc94665f4860faef1312b0c6e4bd5c6c0d2 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:22:50 +0530
 Subject: [PATCH v2 3/5] parisc: add system call table generation support
@@ -44,9 +44,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/parisc/kernel/syscalls/Makefile       |  55 +++++
  arch/parisc/kernel/syscalls/syscall_32.tbl | 342 +++++++++++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscall_64.tbl | 342 +++++++++++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh  |  39 ++++
+ arch/parisc/kernel/syscalls/syscallhdr.sh  |  35 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh  |  42 ++++
- 5 files changed, 820 insertions(+)
+ 5 files changed, 816 insertions(+)
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall_32.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscall_64.tbl
@@ -814,10 +814,10 @@ index 0000000..48d6366
 \ No newline at end of file
 diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..1556bd4
+index 0000000..607d4ca
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,35 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -848,11 +848,7 @@ index 0000000..1556bd4
 +
 +    echo ""
 +    echo "#ifdef __KERNEL__"
-+    if [ -z "$offset" ]; then
-+	echo -e "#define __NR_syscalls\t$nxt"
-+    else
-+	echo -e "#define __NR_syscalls\t($offset + $nxt)"
-+    fi
++    echo -e "#define __NR_syscalls\t$nxt"
 +    echo "#endif"
 +    echo ""
 +    echo "#endif /* ${fileguard} */"

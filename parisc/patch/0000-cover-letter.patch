@@ -1,6 +1,6 @@
-From 0cda6eb7d3810d7e1c430933c49af4875352a535 Mon Sep 17 00:00:00 2001
+From dc3de584548baa5d679e8a31b83ba16ee43f0ce4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 09:35:59 +0530
+Date: Thu, 27 Sep 2018 12:35:51 +0530
 Subject: [PATCH v2 0/5] System call table generation support
 
 The purpose of this patch series is:
@@ -63,9 +63,9 @@ Firoz Khan (5):
  arch/parisc/kernel/syscalls/Makefile       |  55 ++++
  arch/parisc/kernel/syscalls/syscall_32.tbl | 342 +++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscall_64.tbl | 342 +++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh  |  39 +++
+ arch/parisc/kernel/syscalls/syscallhdr.sh  |  35 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh  |  42 +++
- 14 files changed, 881 insertions(+), 841 deletions(-)
+ 14 files changed, 877 insertions(+), 841 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscall_table_32.S
  create mode 100644 arch/parisc/kernel/syscall_table_64.S

@@ -1,4 +1,4 @@
-From 0cda6eb7d3810d7e1c430933c49af4875352a535 Mon Sep 17 00:00:00 2001
+From dc3de584548baa5d679e8a31b83ba16ee43f0ce4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 26 Sep 2018 10:58:51 +0530
 Subject: [PATCH v2 5/5] parisc: add __IGNORE* entries in asm/unistd.h
