@@ -1,7 +1,7 @@
-From ba5a16d577d2f176d9e99376f2aa74e26c1239db Mon Sep 17 00:00:00 2001
+From 923328e01df8ed4231c1ca435c2ce4bc304555a0 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 12:03:51 +0530
-Subject: [PATCH v2 0/6] System call table generation support
+Date: Thu, 27 Sep 2018 15:51:50 +0530
+Subject: [PATCH v2 0/7] System call table generation support
 
 The purpose of this patch series is:
 1. We can easily add/modify/delete system call by changing entry 
@@ -37,6 +37,7 @@ the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
+Added an extra patch to add __NR_old_getpagesize macro.
 Added an extra patch to keep __IGNORE* entries in asm/unistd.h.
 
 Finally, this is the ground work for solving the Y2038 issue. We 
@@ -44,7 +45,8 @@ need to add/change two dozen of system calls to solve Y2038 issue.
 So this patch series will help to easily modify from existing 
 system call to Y2038 compatible system calls.
 
-Firoz Khan (6):
+Firoz Khan (7):
+  ia64: add __NR_old_getpagesize macro
   ia64: replace NR_syscalls macro from asm/unistd.h
   ia64: add an offset for system call number
   ia64: replace the system call table entries from entry.S
@@ -56,14 +58,14 @@ Firoz Khan (6):
  arch/ia64/include/asm/Kbuild            |   1 +
  arch/ia64/include/asm/unistd.h          |  13 +-
  arch/ia64/include/uapi/asm/Kbuild       |   1 +
- arch/ia64/include/uapi/asm/unistd.h     | 332 +------------------------------
- arch/ia64/kernel/entry.S                | 333 +-------------------------------
+ arch/ia64/include/uapi/asm/unistd.h     | 334 +-------------------------------
+ arch/ia64/kernel/entry.S                | 333 +------------------------------
  arch/ia64/kernel/syscall_table.S        |  12 ++
  arch/ia64/kernel/syscalls/Makefile      |  40 ++++
- arch/ia64/kernel/syscalls/syscall.tbl   | 327 +++++++++++++++++++++++++++++++
+ arch/ia64/kernel/syscalls/syscall.tbl   | 328 +++++++++++++++++++++++++++++++
  arch/ia64/kernel/syscalls/syscallhdr.sh |  35 ++++
  arch/ia64/kernel/syscalls/syscalltbl.sh |  34 ++++
- 11 files changed, 467 insertions(+), 664 deletions(-)
+ 11 files changed, 469 insertions(+), 665 deletions(-)
  create mode 100644 arch/ia64/kernel/syscall_table.S
  create mode 100644 arch/ia64/kernel/syscalls/Makefile
  create mode 100644 arch/ia64/kernel/syscalls/syscall.tbl

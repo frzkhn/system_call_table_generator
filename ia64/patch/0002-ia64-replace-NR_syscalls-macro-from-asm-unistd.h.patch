@@ -1,7 +1,7 @@
-From 65ff91977e2cec82f774ef6e14f14dba2bd9ed40 Mon Sep 17 00:00:00 2001
+From 54fd9649cc2adb30a14820d6a1f82cc23137f7f7 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Sep 2018 14:48:38 +0530
-Subject: [PATCH v2 1/6] ia64: replace NR_syscalls macro from asm/unistd.h
+Subject: [PATCH v2 2/7] ia64: replace NR_syscalls macro from asm/unistd.h
 
 NR_syscalls macro holds the number of system call exist in IA64
 architecture. This macro is currently the part of asm/unistd.h
@@ -54,7 +54,7 @@ index ffb705d..397b143 100644
  /*
   * The following defines stop scripts/checksyscalls.sh from complaining about
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index 5fe71d4..6c830b9 100644
+index 4d590c9..4186dc2 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
 @@ -341,4 +341,8 @@

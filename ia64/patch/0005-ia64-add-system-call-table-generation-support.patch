@@ -1,7 +1,7 @@
-From 199c452076354c677e597fae28579e9595fd7ea3 Mon Sep 17 00:00:00 2001
+From e40edb73c79d94bd907f30f43ca6fef03f748c20 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 13:39:05 +0530
-Subject: [PATCH v2 4/6] ia64: add system call table generation support
+Subject: [PATCH v2 5/7] ia64: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -42,10 +42,10 @@ in syscall.tbl.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/ia64/kernel/syscalls/Makefile      |  40 ++++
- arch/ia64/kernel/syscalls/syscall.tbl   | 327 ++++++++++++++++++++++++++++++++
+ arch/ia64/kernel/syscalls/syscall.tbl   | 328 ++++++++++++++++++++++++++++++++
  arch/ia64/kernel/syscalls/syscallhdr.sh |  35 ++++
  arch/ia64/kernel/syscalls/syscalltbl.sh |  34 ++++
- 4 files changed, 436 insertions(+)
+ 4 files changed, 437 insertions(+)
  create mode 100644 arch/ia64/kernel/syscalls/Makefile
  create mode 100644 arch/ia64/kernel/syscalls/syscall.tbl
  create mode 100644 arch/ia64/kernel/syscalls/syscallhdr.sh
@@ -99,10 +99,10 @@ index 0000000..ddb26c0
 +	@:
 diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..b3eb9bc
+index 0000000..2c1d57f
 --- /dev/null
 +++ b/arch/ia64/kernel/syscalls/syscall.tbl
-@@ -0,0 +1,327 @@
+@@ -0,0 +1,328 @@
 +#
 +# Linux system call numbers and entry vectors
 +#
@@ -252,6 +252,7 @@ index 0000000..b3eb9bc
 +144     common  nanosleep                       sys_nanosleep
 +145     common  nfsservctl                      sys_ni_syscall
 +146     common  prctl                           sys_prctl
++147	common  old_getpagesize			sys_getpagesize
 +148     common  mmap2                      	sys_mmap2
 +149     common  pciconfig_read                  sys_pciconfig_read
 +150     common  pciconfig_write                 sys_pciconfig_write

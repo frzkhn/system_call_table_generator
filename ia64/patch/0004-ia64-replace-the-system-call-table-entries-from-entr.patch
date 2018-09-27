@@ -1,7 +1,7 @@
-From 03cbb25d822a5bd25ae3a9c1f150ead425a219db Mon Sep 17 00:00:00 2001
+From 670629e32e90968612a55c533fa6bc69428a0b7c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 25 Sep 2018 14:42:46 +0530
-Subject: [PATCH v2 3/6] ia64: replace the system call table entries from
+Subject: [PATCH v2 4/7] ia64: replace the system call table entries from
  entry.S
 
 In IA64, system call table entries are the part of entry.S file.

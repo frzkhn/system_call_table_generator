@@ -1,7 +1,7 @@
-From ba5a16d577d2f176d9e99376f2aa74e26c1239db Mon Sep 17 00:00:00 2001
+From 923328e01df8ed4231c1ca435c2ce4bc304555a0 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 25 Sep 2018 15:58:05 +0530
-Subject: [PATCH v2 6/6] ia64: add __IGNORE* entries in asm/unistd.h
+Subject: [PATCH v2 7/7] ia64: add __IGNORE* entries in asm/unistd.h
 
 Add __IGNORE* entries for perf_event_open, seccomp, pkey_
 mprotect, pkey_alloc, pkey_free, statx, io_pgetevents and

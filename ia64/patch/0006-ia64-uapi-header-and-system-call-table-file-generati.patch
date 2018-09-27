@@ -1,7 +1,7 @@
-From 9caa850506f371ddc66446c127f8053f2e5433e9 Mon Sep 17 00:00:00 2001
+From 2772d926c4e572968d993e7b89cedf95e3082829 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 25 Sep 2018 15:45:07 +0530
-Subject: [PATCH v2 5/6] ia64: uapi header and system call table file
+Date: Thu, 27 Sep 2018 15:48:38 +0530
+Subject: [PATCH v2 6/7] ia64: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -22,9 +22,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/ia64/Makefile                  |   3 +
  arch/ia64/include/asm/Kbuild        |   1 +
  arch/ia64/include/uapi/asm/Kbuild   |   1 +
- arch/ia64/include/uapi/asm/unistd.h | 332 +-----------------------------------
+ arch/ia64/include/uapi/asm/unistd.h | 337 +-----------------------------------
  arch/ia64/kernel/syscall_table.S    | 330 +----------------------------------
- 5 files changed, 9 insertions(+), 658 deletions(-)
+ 5 files changed, 11 insertions(+), 661 deletions(-)
 
 diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
 index 45f5980..320d86f 100644
@@ -59,13 +59,20 @@ index 3982e67..5c30543 100644
  generic-y += shmbuf.h
 +generic-y += unistd_64.h
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index ab20a5c..286349b 100644
+index ee6d6bd..c210b5c 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -13,336 +13,6 @@
- #define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
+@@ -8,342 +8,11 @@
+ #ifndef _UAPI_ASM_IA64_UNISTD_H
+ #define _UAPI_ASM_IA64_UNISTD_H
  
- #define __NR_Linux      1024
+-
+ #include <asm/break.h>
+ 
+-#define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
++#define __BREAK_SYSCALL	 __IA64_BREAK_SYSCALL
+  
+-#define __NR_Linux      1024
 -#define __NR_ni_syscall	(__NR_Linux + 0)
 -#define __NR_exit	(__NR_Linux + 1)
 -#define __NR_read	(__NR_Linux + 2)
@@ -159,13 +166,13 @@ index ab20a5c..286349b 100644
 -#define __NR_shmat	(__NR_Linux + 90)
 -#define __NR_shmdt	(__NR_Linux + 91)
 -#define __NR_shmctl	(__NR_Linux + 92)
--/* also known as klogctl() in GNU libc: */
+- /* also known as klogctl() in GNU libc: */
 -#define __NR_syslog	(__NR_Linux + 93)
 -#define __NR_setitimer	(__NR_Linux + 94)
 -#define __NR_getitimer	(__NR_Linux + 95)
--/* 1120 was __NR_old_stat */
--/* 1121 was __NR_old_lstat */
--/* 1122 was __NR_old_fstat */
+- /* 1120 was __NR_old_stat */
+- /* 1121 was __NR_old_lstat */
+- /* 1122 was __NR_old_fstat */
 -#define __NR_vhangup	(__NR_Linux + 99)
 -#define __NR_lchown	(__NR_Linux + 100)
 -#define __NR_remap_file_pages	(__NR_Linux + 101)
@@ -175,11 +182,11 @@ index ab20a5c..286349b 100644
 -#define __NR_setdomainname	(__NR_Linux + 105)
 -#define __NR_uname	(__NR_Linux + 106)
 -#define __NR_adjtimex	(__NR_Linux + 107)
--/* 1132 was __NR_create_module */
+- /* 1132 was __NR_create_module */
 -#define __NR_init_module	(__NR_Linux + 109)
 -#define __NR_delete_module	(__NR_Linux + 110)
--/* 1135 was __NR_get_kernel_syms */
--/* 1136 was __NR_query_module */
+- /* 1135 was __NR_get_kernel_syms */
+- /* 1136 was __NR_query_module */
 -#define __NR_quotactl	(__NR_Linux + 113)
 -#define __NR_bdflush	(__NR_Linux + 114)
 -#define __NR_sysfs	(__NR_Linux + 115)
@@ -214,7 +221,7 @@ index ab20a5c..286349b 100644
 -#define __NR_nanosleep	(__NR_Linux + 144)
 -#define __NR_nfsservctl	(__NR_Linux + 145)
 -#define __NR_prctl	(__NR_Linux + 146)
--/* 1171 is reserved for backwards compatibility with old __NR_getpagesize */
+-#define __NR_old_getpagesize    (__NR_Linux + 147)
 -#define __NR_mmap2	(__NR_Linux + 148)
 -#define __NR_pciconfig_read	(__NR_Linux + 149)
 -#define __NR_pciconfig_write	(__NR_Linux + 150)
@@ -397,6 +404,7 @@ index ab20a5c..286349b 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			326
 -#endif
++#define __NR_Linux       1024
 +#include <asm/unistd_64.h>
  
  #endif /* _UAPI_ASM_IA64_UNISTD_H */
