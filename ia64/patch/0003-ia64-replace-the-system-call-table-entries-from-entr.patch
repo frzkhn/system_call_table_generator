@@ -1,27 +1,28 @@
-From 6daaa23b1971fa1eaed9f12e17acf187e477920c Mon Sep 17 00:00:00 2001
+From 03cbb25d822a5bd25ae3a9c1f150ead425a219db Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 18 Jul 2018 12:04:51 +0530
-Subject: [PATCH 3/5] ia64: Replaced the system call table entry from entry.S
+Date: Tue, 25 Sep 2018 14:42:46 +0530
+Subject: [PATCH v2 3/6] ia64: replace the system call table entries from
+ entry.S
 
-In IA64, system call table entries are the part of entry.S file. We
-need to keep it in a seperate file so that one of the patch in this
-patch seriers does have a system call table generation script which
-can seperatly handle system call table entries.
+In IA64, system call table entries are the part of entry.S file.
+We need to keep it in a separate file so that one of the patch in
+this patch series contains a system call table generation script
+which can separately handle system call table entries.
 
-Replaced the system call table from entry.S to new file - syscall.S,
-and this change will unify the implementation across all the
-architecture and to simplify the implementation for system call
-table generation using the script.
+Replaced the system call table from entry.S to syscall_table.S,
+this is a new file. This change will unify the implementation
+across all the architecture and to simplify the implementation for
+system call table generation using the script.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/ia64/kernel/entry.S   | 333 +-------------------------------------------
- arch/ia64/kernel/syscall.S | 334 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 335 insertions(+), 332 deletions(-)
- create mode 100644 arch/ia64/kernel/syscall.S
+ arch/ia64/kernel/entry.S         | 333 +-------------------------------------
+ arch/ia64/kernel/syscall_table.S | 336 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 337 insertions(+), 332 deletions(-)
+ create mode 100644 arch/ia64/kernel/syscall_table.S
 
 diff --git a/arch/ia64/kernel/entry.S b/arch/ia64/kernel/entry.S
-index f40d9fd..cf463a6 100644
+index 68362b3..249b2e9 100644
 --- a/arch/ia64/kernel/entry.S
 +++ b/arch/ia64/kernel/entry.S
 @@ -1426,335 +1426,4 @@ END(ftrace_stub)
@@ -359,15 +360,17 @@ index f40d9fd..cf463a6 100644
 -	data8 sys_preadv2
 -	data8 sys_pwritev2
 -
--	.org sys_call_table + 8*__NR_syscalls	// guard against failures to increase __NR_syscalls
-+#include "syscall.S"
-diff --git a/arch/ia64/kernel/syscall.S b/arch/ia64/kernel/syscall.S
+-	.org sys_call_table + 8*NR_syscalls	// guard against failures to increase NR_syscalls
++#include "syscall_table.S"
+diff --git a/arch/ia64/kernel/syscall_table.S b/arch/ia64/kernel/syscall_table.S
 new file mode 100644
-index 0000000..970e0e6
+index 0000000..56b5149
 --- /dev/null
-+++ b/arch/ia64/kernel/syscall.S
-@@ -0,0 +1,334 @@
++++ b/arch/ia64/kernel/syscall_table.S
+@@ -0,0 +1,336 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
++
++#include <asm/unistd.h>
 +
 +	.rodata
 +	.align 8
@@ -700,7 +703,7 @@ index 0000000..970e0e6
 +	data8 sys_preadv2
 +	data8 sys_pwritev2
 +
-+	.org sys_call_table + 8*__NR_syscalls	// guard against failures to increase NR_syscalls
++	.org sys_call_table + 8*NR_syscalls	// guard against failures to increase NR_syscalls
 -- 
 1.9.1
 

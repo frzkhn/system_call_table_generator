@@ -1,29 +1,32 @@
-From 2335e9ac39794adf0ac4d01d70e48c41b8f6c0b3 Mon Sep 17 00:00:00 2001
+From 54413814cc29b1cb18633bdf2129de70d842f8cf Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 17 Jul 2018 14:48:39 +0530
-Subject: [PATCH 2/5] ia64: Added an offset for system call number
+Date: Tue, 25 Sep 2018 14:33:26 +0530
+Subject: [PATCH v2 2/6] ia64: add an offset for system call number
 
-The system call number in IA64 architecture starts with 1024. Most
-of the other architecute starts with 0. In order to come up with
-a common implementation to generate uapi header we need to add an
-offset - __NR_Linux with a value 1024.
+The system call number in IA64 architecture starts with 1024. But
+most of the other architecute starts with 0. In order to come up
+with a common implementation to generate uapi header we need to add
+an offset - __NR_Linux with a value 1024.
 
 One of the patch in this patch series does have a script to generate
 uapi header which uses syscall.tbl file. In syscall.tbl contain
-system call number. With the use of __NR_Linux, we can start the number
-0 instead of 1024.
+system call number. With the use of __NR_Linux, we can start the
+number from 0 instead of 1024.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/ia64/include/uapi/asm/unistd.h | 643 ++++++++++++++++++------------------
- 1 file changed, 322 insertions(+), 321 deletions(-)
+ arch/ia64/include/uapi/asm/unistd.h | 642 ++++++++++++++++++------------------
+ 1 file changed, 321 insertions(+), 321 deletions(-)
 
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index 52c6712..b96ca91 100644
+index 6c830b9..ab20a5c 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -11,336 +11,337 @@
+@@ -8,338 +8,338 @@
+ #ifndef _UAPI_ASM_IA64_UNISTD_H
+ #define _UAPI_ASM_IA64_UNISTD_H
  
+-
  #include <asm/break.h>
  
 -#define __BREAK_SYSCALL			__IA64_BREAK_SYSCALL
@@ -677,10 +680,8 @@ index 52c6712..b96ca91 100644
 +#define __NR_preadv2	(__NR_Linux + 324)
 +#define __NR_pwritev2	(__NR_Linux + 325)
  
--#define __NR_syscalls			326 /* length of syscall table */
-+#define __NR_syscalls	326 /* length of syscall table */
- 
- #endif /* _UAPI_ASM_IA64_UNISTD_H */
+ #ifdef __KERNEL__
+ #define __NR_syscalls			326
 -- 
 1.9.1
 

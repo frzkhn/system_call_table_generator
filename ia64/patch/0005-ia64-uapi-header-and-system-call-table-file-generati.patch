@@ -1,7 +1,8 @@
-From 71a4074664d98d5ad480a9be11686472280ddc09 Mon Sep 17 00:00:00 2001
+From 9caa850506f371ddc66446c127f8053f2e5433e9 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 18 Jul 2018 12:42:16 +0530
-Subject: [PATCH 5/5] ia64: uapi header and system call table file generation
+Date: Tue, 25 Sep 2018 15:45:07 +0530
+Subject: [PATCH v2 5/6] ia64: uapi header and system call table file
+ generation
 
 System call table generation script must be run to generate
 unistd_64.h and syscall_table.h files. This patch will have
@@ -19,11 +20,11 @@ file will be included by ia64/kernel/syscall_table.S file.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/ia64/Makefile                  |   3 +
- arch/ia64/include/asm/Kbuild        |   2 +
- arch/ia64/include/uapi/asm/Kbuild   |   2 +
- arch/ia64/include/uapi/asm/unistd.h | 330 +----------------------------------
- arch/ia64/kernel/syscall.S          | 339 +-----------------------------------
- 5 files changed, 17 insertions(+), 659 deletions(-)
+ arch/ia64/include/asm/Kbuild        |   1 +
+ arch/ia64/include/uapi/asm/Kbuild   |   1 +
+ arch/ia64/include/uapi/asm/unistd.h | 332 +-----------------------------------
+ arch/ia64/kernel/syscall_table.S    | 330 +----------------------------------
+ 5 files changed, 9 insertions(+), 658 deletions(-)
 
 diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
 index 45f5980..320d86f 100644
@@ -40,32 +41,28 @@ index 45f5980..320d86f 100644
  
  boot:	lib/lib.a vmlinux
 diff --git a/arch/ia64/include/asm/Kbuild b/arch/ia64/include/asm/Kbuild
-index 557bbc8..6e11673 100644
+index 557bbc8..5b17695 100644
 --- a/arch/ia64/include/asm/Kbuild
 +++ b/arch/ia64/include/asm/Kbuild
-@@ -7,3 +7,5 @@ generic-y += preempt.h
+@@ -7,3 +7,4 @@ generic-y += preempt.h
  generic-y += trace_clock.h
  generic-y += vtime.h
  generic-y += word-at-a-time.h
-+
-+generated-y += syscall_table.h
-\ No newline at end of file
++generic-y += syscall_table.h
 diff --git a/arch/ia64/include/uapi/asm/Kbuild b/arch/ia64/include/uapi/asm/Kbuild
-index 3982e67..ce14b40 100644
+index 3982e67..5c30543 100644
 --- a/arch/ia64/include/uapi/asm/Kbuild
 +++ b/arch/ia64/include/uapi/asm/Kbuild
-@@ -8,3 +8,5 @@ generic-y += msgbuf.h
+@@ -8,3 +8,4 @@ generic-y += msgbuf.h
  generic-y += poll.h
  generic-y += sembuf.h
  generic-y += shmbuf.h
-+
-+generated-y += unistd_64.h
-\ No newline at end of file
++generic-y += unistd_64.h
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index b96ca91..c6f33bc 100644
+index ab20a5c..286349b 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -14,334 +14,6 @@
+@@ -13,336 +13,6 @@
  #define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
  
  #define __NR_Linux      1024
@@ -397,27 +394,24 @@ index b96ca91..c6f33bc 100644
 -#define __NR_preadv2	(__NR_Linux + 324)
 -#define __NR_pwritev2	(__NR_Linux + 325)
 -
--#define __NR_syscalls	326 /* length of syscall table */
+-#ifdef __KERNEL__
+-#define __NR_syscalls			326
+-#endif
 +#include <asm/unistd_64.h>
  
  #endif /* _UAPI_ASM_IA64_UNISTD_H */
-diff --git a/arch/ia64/kernel/syscall.S b/arch/ia64/kernel/syscall.S
-index 970e0e6..06bfa9a 100644
---- a/arch/ia64/kernel/syscall.S
-+++ b/arch/ia64/kernel/syscall.S
-@@ -1,334 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/arch/ia64/kernel/syscall_table.S b/arch/ia64/kernel/syscall_table.S
+index 56b5149..b66941b 100644
+--- a/arch/ia64/kernel/syscall_table.S
++++ b/arch/ia64/kernel/syscall_table.S
+@@ -2,335 +2,11 @@
  
--	.rodata
--	.align 8
--	.globl sys_call_table
-+.rodata
-+.align 8
-+.globl sys_call_table
-+#include <asm/unistd.h>
-+
+ #include <asm/unistd.h>
+ 
 +#define __SYSCALL(nr, entry, nargs) data8 entry
-+
+ 	.rodata
+ 	.align 8
+ 	.globl sys_call_table
  sys_call_table:
 -	data8 sys_ni_syscall		//  This must be sys_ni_syscall!  See ivt.S.
 -	data8 sys_exit				// 1025
@@ -745,10 +739,10 @@ index 970e0e6..06bfa9a 100644
 -	data8 sys_copy_file_range
 -	data8 sys_preadv2
 -	data8 sys_pwritev2
+-
 +#include <asm/syscall_table.h>
- 
--	.org sys_call_table + 8*__NR_syscalls	// guard against failures to increase NR_syscalls
-+.org sys_call_table + 8*__NR_syscalls
+ 	.org sys_call_table + 8*NR_syscalls	// guard against failures to increase NR_syscalls
++#undef __SYSCALL
 -- 
 1.9.1
 
