@@ -1,7 +1,7 @@
-From ee64526d140dc5f3cd3c3d873208d88f6217699f Mon Sep 17 00:00:00 2001
+From a059407f777222f018abb9def6e21fba27ac939a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 27 Jul 2018 15:39:52 +0530
-Subject: [PATCH 3/3] microblaze: uapi header and system call table file
+Date: Mon, 24 Sep 2018 11:52:19 +0530
+Subject: [PATCH v2 3/3] microblaze: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -15,19 +15,19 @@ removed files will be identical.
 
 The generated uapi header file will be included in
 uapi/asm/unistd.h and generated system call table support
-file will be included by microblaze/kernel/syscall.S file.
+file will be included by kernel/syscall_table.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/microblaze/Makefile                  |   3 +
- arch/microblaze/include/asm/Kbuild        |   2 +
- arch/microblaze/include/uapi/asm/Kbuild   |   2 +
- arch/microblaze/include/uapi/asm/unistd.h | 409 +-----------------------------
+ arch/microblaze/include/asm/Kbuild        |   1 +
+ arch/microblaze/include/uapi/asm/Kbuild   |   1 +
+ arch/microblaze/include/uapi/asm/unistd.h | 411 +-----------------------------
  arch/microblaze/kernel/syscall_table.S    | 406 +----------------------------
- 5 files changed, 12 insertions(+), 810 deletions(-)
+ 5 files changed, 10 insertions(+), 812 deletions(-)
 
 diff --git a/arch/microblaze/Makefile b/arch/microblaze/Makefile
-index d269dd4b..6121a2b 100644
+index 4f3ab57..cda5e03 100644
 --- a/arch/microblaze/Makefile
 +++ b/arch/microblaze/Makefile
 @@ -81,6 +81,9 @@ all: linux.bin
@@ -41,32 +41,30 @@ index d269dd4b..6121a2b 100644
  	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
  
 diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
-index fe6a6c6..99225ab 100644
+index 569ba9e..d64f5e7 100644
 --- a/arch/microblaze/include/asm/Kbuild
 +++ b/arch/microblaze/include/asm/Kbuild
-@@ -30,3 +30,5 @@ generic-y += trace_clock.h
+@@ -31,3 +31,4 @@ generic-y += trace_clock.h
  generic-y += vga.h
  generic-y += word-at-a-time.h
  generic-y += xor.h
-+
-+generated-y += syscall_table.h
++generic-y += syscall_table.h
 \ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/Kbuild b/arch/microblaze/include/uapi/asm/Kbuild
-index 2c6a6bf..8fe26a3 100644
+index 2c6a6bf..3a40659 100644
 --- a/arch/microblaze/include/uapi/asm/Kbuild
 +++ b/arch/microblaze/include/uapi/asm/Kbuild
-@@ -28,3 +28,5 @@ generic-y += termbits.h
+@@ -28,3 +28,4 @@ generic-y += termbits.h
  generic-y += termios.h
  generic-y += types.h
  generic-y += ucontext.h
-+
-+generated-y += unistd_32.h
++generic-y += unistd_32.h
 \ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/unistd.h b/arch/microblaze/include/uapi/asm/unistd.h
-index bde6b38..3f2d7cb 100644
+index ed9c6f5..3f2d7cb 100644
 --- a/arch/microblaze/include/uapi/asm/unistd.h
 +++ b/arch/microblaze/include/uapi/asm/unistd.h
-@@ -11,413 +11,6 @@
+@@ -11,415 +11,6 @@
  #ifndef _UAPI_ASM_MICROBLAZE_UNISTD_H
  #define _UAPI_ASM_MICROBLAZE_UNISTD_H
  
@@ -477,19 +475,20 @@ index bde6b38..3f2d7cb 100644
 -#define __NR_io_pgetevents	399
 -#define __NR_rseq		400
 -
+-#ifdef __KERNEL__
 -#define __NR_syscalls         401
+-#endif
 +#include <asm/unistd_32.h>
  
  #endif /* _UAPI_ASM_MICROBLAZE_UNISTD_H */
 diff --git a/arch/microblaze/kernel/syscall_table.S b/arch/microblaze/kernel/syscall_table.S
-index 6ab6505..f7598b2 100644
+index 6ab6505..ce00664 100644
 --- a/arch/microblaze/kernel/syscall_table.S
 +++ b/arch/microblaze/kernel/syscall_table.S
 @@ -1,404 +1,6 @@
  /* SPDX-License-Identifier: GPL-2.0 */
 +
 +#define __SYSCALL(nr, entry, nargs) .long entry
-+
  ENTRY(sys_call_table)
 -	.long sys_restart_syscall	/* 0 - old "setup()" system call,
 -					 * used for restarting */
@@ -894,6 +893,7 @@ index 6ab6505..f7598b2 100644
 -	.long sys_io_pgetevents
 -	.long sys_rseq
 +#include <asm/syscall_table.h>
++#undef __SYSCALL
 -- 
 1.9.1
 
