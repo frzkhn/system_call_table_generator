@@ -1,7 +1,7 @@
-From 7ac7700a9e3cfd7ac386dccd59353857edf79124 Mon Sep 17 00:00:00 2001
+From eb6668e90cf5e073b7c7b1d04675e3147d63b659 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 20 Sep 2018 14:13:57 +0530
-Subject: [PATCH v2 2/5] m68k: Replace NR_syscalls macro from asm/unistd.h
+Subject: [PATCH v3 2/5] m68k: replace NR_syscalls macro from asm/unistd.h
 
 NR_syscalls macro holds the number of system call exist in m68k
 architecture. This macro is currently the part of asm/unistd.h file.
@@ -14,7 +14,7 @@ contains the number of system call information. So we have two
 option to update NR_syscalls value.
 
 1. Update NR_syscalls in asm/unistd.h manually by counting the
-   no.of system calls. No need to update NR_syscalls untill
+   no.of system calls. No need to update NR_syscalls until
    we either add a new system call or delete an existing system
    call.
 

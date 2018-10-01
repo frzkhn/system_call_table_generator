@@ -1,7 +1,7 @@
-From ea47da42b879532f64d04eda2f780d4c5caec07a Mon Sep 17 00:00:00 2001
+From d7a54c47a29b7fbe1c317cbf14e3bf23a26c6b37 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 20 Sep 2018 18:07:22 +0530
-Subject: [PATCH v2 0/5] System call table generation support
+Date: Mon, 1 Oct 2018 10:00:55 +0530
+Subject: [PATCH v3 0/5] System call table generation support
 
 The purpose of this patch series is:
 1. We can easily add/modify/delete system call by changing entry 
@@ -31,13 +31,11 @@ Adding a new table entry consisting of:
 ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
-I have done the same support for work for alpha, microblaze, sparc,
-mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
+I have done the same support for work for alpha, ia64, sparc, mips, 
+parisc, powerpc, sh, sparc, and xtensa. But I started sending 
 the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
-
-Added an extra patch to keep __IGNORE* entries in asm/unistd.h.
 
 Finally, this is the ground work for solving the Y2038 issue. We 
 need to add/change two dozen of system calls to solve Y2038 issue. 
@@ -45,11 +43,11 @@ So this patch series will help to easily modify from existing
 system call to Y2038 compatible system calls.
 
 Firoz Khan (5):
-  m68k: Rename system call table file name
-  m68k: Replace NR_syscalls macro from asm/unistd.h
-  m68k: Added system call table generation support
+  m68k: rename system call table file name
+  m68k: replace NR_syscalls macro from asm/unistd.h
+  m68k: add system call table generation support
   m68k: uapi header and system call table file generation
-  m68k: added __IGNORE* entries in asm/unistd.h
+  m68k: add __IGNORE* entries in asm/unistd.h
 
  arch/m68k/Makefile                      |   3 +
  arch/m68k/include/asm/Kbuild            |   1 +
@@ -58,12 +56,12 @@ Firoz Khan (5):
  arch/m68k/include/uapi/asm/unistd.h     | 385 +-----------------------------
  arch/m68k/kernel/Makefile               |   2 +-
  arch/m68k/kernel/syscall_table.S        |  14 ++
- arch/m68k/kernel/syscalls/Makefile      |  37 +++
+ arch/m68k/kernel/syscalls/Makefile      |  38 +++
  arch/m68k/kernel/syscalls/syscall.tbl   | 369 +++++++++++++++++++++++++++++
- arch/m68k/kernel/syscalls/syscallhdr.sh |  39 ++++
- arch/m68k/kernel/syscalls/syscalltbl.sh |  28 +++
+ arch/m68k/kernel/syscalls/syscallhdr.sh |  35 +++
+ arch/m68k/kernel/syscalls/syscalltbl.sh |  34 +++
  arch/m68k/kernel/syscalltable.S         | 403 --------------------------------
- 12 files changed, 502 insertions(+), 790 deletions(-)
+ 12 files changed, 505 insertions(+), 790 deletions(-)
  create mode 100644 arch/m68k/kernel/syscall_table.S
  create mode 100644 arch/m68k/kernel/syscalls/Makefile
  create mode 100644 arch/m68k/kernel/syscalls/syscall.tbl

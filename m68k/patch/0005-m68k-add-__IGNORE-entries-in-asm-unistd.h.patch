@@ -1,10 +1,10 @@
-From ea47da42b879532f64d04eda2f780d4c5caec07a Mon Sep 17 00:00:00 2001
+From d7a54c47a29b7fbe1c317cbf14e3bf23a26c6b37 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 20 Sep 2018 17:44:16 +0530
-Subject: [PATCH v2 5/5] m68k: added __IGNORE* entries in asm/unistd.h
+Subject: [PATCH v3 5/5] m68k: add __IGNORE* entries in asm/unistd.h
 
-Added few __IGNORE* entries for seccomp, pkey_mprotect,
-pkey_alloc, pkey_free, io_pgetevents and rseq in the file
+Add __IGNORE* entries for seccomp, pkey_mprotect, pkey_
+alloc, pkey_free, io_pgetevents and rseq in the file
 asm/unistd.h as it is correct to keep __IGNORE* entry in
 non uapi header asm/unistd.h while uapi/asm/unistd.h must
 hold information only useful for user space applications.
