@@ -1,7 +1,7 @@
-From 157672ca3f5d9ce26276b0acff1cbe55f5af07ae Mon Sep 17 00:00:00 2001
+From c982a0ea6840d4a9d1d111a9d7a321f440896195 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 12:33:55 +0530
-Subject: [PATCH v2 4/5] parisc: uapi header and system call table file
+Date: Wed, 3 Oct 2018 15:12:38 +0530
+Subject: [PATCH v3 4/6] parisc: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -22,12 +22,12 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/parisc/Makefile                  |   4 +
  arch/parisc/include/asm/Kbuild        |   3 +
  arch/parisc/include/uapi/asm/Kbuild   |   2 +
- arch/parisc/include/uapi/asm/unistd.h | 375 +--------------------------
+ arch/parisc/include/uapi/asm/unistd.h | 373 +--------------------------
  arch/parisc/kernel/syscall.S          |  12 +-
  arch/parisc/kernel/syscall_table.S    | 459 ----------------------------------
  arch/parisc/kernel/syscall_table_32.S |  13 +
  arch/parisc/kernel/syscall_table_64.S |  20 ++
- 8 files changed, 51 insertions(+), 837 deletions(-)
+ 8 files changed, 50 insertions(+), 836 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscall_table_32.S
  create mode 100644 arch/parisc/kernel/syscall_table_64.S
@@ -48,7 +48,7 @@ index 5ce0302..6b217da 100644
  	@if test "$(cc-version)" -lt "0303"; then \
  		echo -n "Sorry, GCC v3.3 or above is required to build " ; \
 diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
-index 2013d63..dd52f2c 100644
+index 2013d63..6b66fb9 100644
 --- a/arch/parisc/include/asm/Kbuild
 +++ b/arch/parisc/include/asm/Kbuild
 @@ -23,3 +23,6 @@ generic-y += user.h
@@ -58,9 +58,8 @@ index 2013d63..dd52f2c 100644
 +generic-y += syscall_table_32.h
 +generic-y += syscall_table_64.h
 +generic-y += syscall_table_c32.h
-\ No newline at end of file
 diff --git a/arch/parisc/include/uapi/asm/Kbuild b/arch/parisc/include/uapi/asm/Kbuild
-index 286ef5a..02103fc 100644
+index 286ef5a..04360d9 100644
 --- a/arch/parisc/include/uapi/asm/Kbuild
 +++ b/arch/parisc/include/uapi/asm/Kbuild
 @@ -7,3 +7,5 @@ generic-y += kvm_para.h
@@ -69,12 +68,11 @@ index 286ef5a..02103fc 100644
  generic-y += resource.h
 +generic-y += unistd_32.h
 +generic-y += unistd_64.h
-\ No newline at end of file
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index 255c62a..643a006 100644
+index f10d065..76e3a3b 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
-@@ -2,376 +2,15 @@
+@@ -2,374 +2,13 @@
  #ifndef _UAPI_ASM_PARISC_UNISTD_H_
  #define _UAPI_ASM_PARISC_UNISTD_H_
  
@@ -450,9 +448,6 @@ index 255c62a..643a006 100644
 +#else
 +#include <asm/unistd_32.h>
  #endif
- 
--#define __NR_Linux_syscalls     __NR_syscalls
-+#define __NR_Linux_syscalls  __NR_syscalls
  
 -#define LINUX_GATEWAY_ADDR      0x100
 +#define LINUX_GATEWAY_ADDR   0x100

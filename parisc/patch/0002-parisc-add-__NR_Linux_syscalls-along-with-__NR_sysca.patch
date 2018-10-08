@@ -1,7 +1,7 @@
-From 0f1b731183a91d724758e216c16e6834e7cae776 Mon Sep 17 00:00:00 2001
+From 82478f61e67ece9eb26dea516368d3970869f1bb Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 26 Sep 2018 11:06:25 +0530
-Subject: [PATCH v3 2/4] parisc: add __NR_Linux_syscalls along with
+Subject: [PATCH v3 2/6] parisc: add __NR_Linux_syscalls along with
  __NR_syscalls
 
 __NR_Linux_syscalls macro holds the number of system call

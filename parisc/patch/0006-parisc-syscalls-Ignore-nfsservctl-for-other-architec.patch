@@ -1,0 +1,35 @@
+From 514f3c5fca5770d83846833f6905ec0a96863cf5 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Mon, 8 Oct 2018 09:36:47 +0530
+Subject: [PATCH v3 6/6] parisc: syscalls: Ignore nfsservctl for other
+ architectures
+
+This adds an exception to the syscall table checking script.
+
+nfsservctl entry is only provided on x86, and there is no
+reason to add it elsewhere. However, including it on the
+syscall table caused a warning for most configurations on
+non-x86.
+
+<stdin>:696:2: warning: #warning syscall nfsservctl not implemented [-Wcpp]
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ scripts/checksyscalls.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/scripts/checksyscalls.sh b/scripts/checksyscalls.sh
+index ee3dfb5..cf93100 100755
+--- a/scripts/checksyscalls.sh
++++ b/scripts/checksyscalls.sh
+@@ -150,6 +150,7 @@ cat << EOF
+ #define __IGNORE_uselib
+ #define __IGNORE__sysctl
+ #define __IGNORE_arch_prctl
++#define __IGNORE_nfsservctl
+ 
+ /* ... including the "new" 32-bit uid syscalls */
+ #define __IGNORE_lchown32
+-- 
+1.9.1
+

@@ -1,0 +1,25 @@
+From f9605c107e91a05b744f2f707fef26f7cb60ef56 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Mon, 8 Oct 2018 09:33:05 +0530
+Subject: [PATCH v3 5/6] parisc: wire up rseq system call
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/parisc/kernel/syscalls/syscall.tbl | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
+index 4e85293..4334bb7 100644
+--- a/arch/parisc/kernel/syscalls/syscall.tbl
++++ b/arch/parisc/kernel/syscalls/syscall.tbl
+@@ -349,4 +349,5 @@
+ 347     common  preadv2                         sys_preadv2                     compat_sys_preadv2
+ 348     common  pwritev2                        sys_pwritev2                    compat_sys_pwritev2
+ 349     common  statx                           sys_statx
+-350	common  io_pgetevents			sys_io_pgetevents		compat_sys_io_pgetevents
+\ No newline at end of file
++350	common  io_pgetevents			sys_io_pgetevents		compat_sys_io_pgetevents
++351	common	rseq				sys_rseq			compat_sys_rseq
+-- 
+1.9.1
+

@@ -1,7 +1,7 @@
-From dc3de584548baa5d679e8a31b83ba16ee43f0ce4 Mon Sep 17 00:00:00 2001
+From 514f3c5fca5770d83846833f6905ec0a96863cf5 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 12:35:51 +0530
-Subject: [PATCH v2 0/5] System call table generation support
+Date: Mon, 8 Oct 2018 10:22:42 +0530
+Subject: [PATCH v3 0/6] System call table generation support
 
 The purpose of this patch series is:
 1. We can easily add/modify/delete system call by changing entry 
@@ -37,41 +37,42 @@ the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-Added an extra patch to keep __IGNORE* entries in asm/unistd.h.
+Added an ignore entry for nfsservctl in script/checksyscalls.sh.
+Wired up rseq system call.
 
 Finally, this is the ground work for solving the Y2038 issue. We 
 need to add/change two dozen of system calls to solve Y2038 issue. 
 So this patch series will help to easily modify from existing 
 system call to Y2038 compatible system calls.
 
-Firoz Khan (5):
+Firoz Khan (6):
   parisc: move __IGNORE* entries to non uapi header
-  parisc: add __NR_Linux_syscalls macro with __NR_syscalls
+  parisc: add __NR_Linux_syscalls along with __NR_syscalls
   parisc: add system call table generation support
   parisc: uapi header and system call table file generation
-  parisc: add __IGNORE* entries in asm/unistd.h
+  parisc: wire up rseq system call
+  parisc: syscalls: Ignore nfsservctl for other architectures
 
- arch/parisc/Makefile                       |   4 +
- arch/parisc/include/asm/Kbuild             |   3 +
- arch/parisc/include/asm/unistd.h           |   9 +
- arch/parisc/include/uapi/asm/Kbuild        |   2 +
- arch/parisc/include/uapi/asm/unistd.h      | 380 +-----------------------
- arch/parisc/kernel/syscall.S               |  12 +-
- arch/parisc/kernel/syscall_table.S         | 459 -----------------------------
- arch/parisc/kernel/syscall_table_32.S      |  13 +
- arch/parisc/kernel/syscall_table_64.S      |  20 ++
- arch/parisc/kernel/syscalls/Makefile       |  55 ++++
- arch/parisc/kernel/syscalls/syscall_32.tbl | 342 +++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscall_64.tbl | 342 +++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh  |  35 +++
- arch/parisc/kernel/syscalls/syscalltbl.sh  |  42 +++
- 14 files changed, 877 insertions(+), 841 deletions(-)
+ arch/parisc/Makefile                      |   4 +
+ arch/parisc/include/asm/Kbuild            |   3 +
+ arch/parisc/include/asm/unistd.h          |   8 +
+ arch/parisc/include/uapi/asm/Kbuild       |   2 +
+ arch/parisc/include/uapi/asm/unistd.h     | 382 +------------------------
+ arch/parisc/kernel/syscall.S              |  12 +-
+ arch/parisc/kernel/syscall_table.S        | 459 ------------------------------
+ arch/parisc/kernel/syscall_table_32.S     |  13 +
+ arch/parisc/kernel/syscall_table_64.S     |  20 ++
+ arch/parisc/kernel/syscalls/Makefile      |  55 ++++
+ arch/parisc/kernel/syscalls/syscall.tbl   | 353 +++++++++++++++++++++++
+ arch/parisc/kernel/syscalls/syscallhdr.sh |  35 +++
+ arch/parisc/kernel/syscalls/syscalltbl.sh |  41 +++
+ scripts/checksyscalls.sh                  |   1 +
+ 14 files changed, 545 insertions(+), 843 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscall_table_32.S
  create mode 100644 arch/parisc/kernel/syscall_table_64.S
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
- create mode 100644 arch/parisc/kernel/syscalls/syscall_32.tbl
- create mode 100644 arch/parisc/kernel/syscalls/syscall_64.tbl
+ create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
  create mode 100644 arch/parisc/kernel/syscalls/syscalltbl.sh
 
