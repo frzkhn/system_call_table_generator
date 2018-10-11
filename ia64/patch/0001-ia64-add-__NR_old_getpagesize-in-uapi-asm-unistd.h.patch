@@ -1,7 +1,10 @@
-From 2e60ad9b4e501bb56c13913dd2fd41f4aafdca11 Mon Sep 17 00:00:00 2001
+From 1c0910a7d027eeb3dcdb368020aa6065244610cf Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 27 Sep 2018 15:25:27 +0530
-Subject: [PATCH v2 1/7] ia64: add __NR_old_getpagesize macro
+Subject: [PATCH v3 1/7] ia64: add __NR_old_getpagesize in uapi/asm/unistd.h
+
+sys_getpagesize entry is present in entry.S file to support
+for old user interface. So we need to add an uapi entry too.
 
 Add __NR_old_getpagesize in order to not break old user space
 as it is reserved for backwards compatibility with old __NR_

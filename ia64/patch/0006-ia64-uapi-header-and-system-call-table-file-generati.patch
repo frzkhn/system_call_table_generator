@@ -1,7 +1,7 @@
-From 2772d926c4e572968d993e7b89cedf95e3082829 Mon Sep 17 00:00:00 2001
+From 1f51949cb379dbceb8b23cb78a48fe3106f8277a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 15:48:38 +0530
-Subject: [PATCH v2 6/7] ia64: uapi header and system call table file
+Date: Wed, 10 Oct 2018 11:29:13 +0530
+Subject: [PATCH v3 6/7] ia64: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -22,9 +22,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/ia64/Makefile                  |   3 +
  arch/ia64/include/asm/Kbuild        |   1 +
  arch/ia64/include/uapi/asm/Kbuild   |   1 +
- arch/ia64/include/uapi/asm/unistd.h | 337 +-----------------------------------
- arch/ia64/kernel/syscall_table.S    | 330 +----------------------------------
- 5 files changed, 11 insertions(+), 661 deletions(-)
+ arch/ia64/include/uapi/asm/unistd.h | 332 +-----------------------------------
+ arch/ia64/kernel/syscall_table.S    | 331 +----------------------------------
+ 5 files changed, 9 insertions(+), 659 deletions(-)
 
 diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
 index 45f5980..320d86f 100644
@@ -59,20 +59,13 @@ index 3982e67..5c30543 100644
  generic-y += shmbuf.h
 +generic-y += unistd_64.h
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index ee6d6bd..c210b5c 100644
+index bd2575f..286349b 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -8,342 +8,11 @@
- #ifndef _UAPI_ASM_IA64_UNISTD_H
- #define _UAPI_ASM_IA64_UNISTD_H
+@@ -13,336 +13,6 @@
+ #define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
  
--
- #include <asm/break.h>
- 
--#define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
-+#define __BREAK_SYSCALL	 __IA64_BREAK_SYSCALL
-  
--#define __NR_Linux      1024
+ #define __NR_Linux      1024
 -#define __NR_ni_syscall	(__NR_Linux + 0)
 -#define __NR_exit	(__NR_Linux + 1)
 -#define __NR_read	(__NR_Linux + 2)
@@ -404,17 +397,15 @@ index ee6d6bd..c210b5c 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			326
 -#endif
-+#define __NR_Linux       1024
 +#include <asm/unistd_64.h>
  
  #endif /* _UAPI_ASM_IA64_UNISTD_H */
 diff --git a/arch/ia64/kernel/syscall_table.S b/arch/ia64/kernel/syscall_table.S
-index 56b5149..b66941b 100644
+index f69ee5f..7344a5f 100644
 --- a/arch/ia64/kernel/syscall_table.S
 +++ b/arch/ia64/kernel/syscall_table.S
-@@ -2,335 +2,11 @@
- 
- #include <asm/unistd.h>
+@@ -1,334 +1,9 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
  
 +#define __SYSCALL(nr, entry, nargs) data8 entry
  	.rodata
@@ -748,8 +739,8 @@ index 56b5149..b66941b 100644
 -	data8 sys_preadv2
 -	data8 sys_pwritev2
 -
+-	.org sys_call_table + 8*NR_syscalls	// guard against failures to increase NR_syscalls
 +#include <asm/syscall_table.h>
- 	.org sys_call_table + 8*NR_syscalls	// guard against failures to increase NR_syscalls
 +#undef __SYSCALL
 -- 
 1.9.1

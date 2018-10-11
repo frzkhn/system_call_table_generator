@@ -1,7 +1,7 @@
-From 4e4ae07b4f8c5dba9e7870525022dc9ccc52fdad Mon Sep 17 00:00:00 2001
+From 3252843b3c62950739d544ecfa973a5c8de5bb7f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 27 Sep 2018 15:37:04 +0530
-Subject: [PATCH v2 3/7] ia64: add an offset for system call number
+Subject: [PATCH v3 3/7] ia64: add an offset for system call number
 
 The system call number in IA64 architecture starts with 1024. But
 most of the other architecute starts with 0. In order to come up
@@ -15,19 +15,23 @@ number from 0 instead of 1024.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/ia64/include/uapi/asm/unistd.h | 659 ++++++++++++++++++------------------
- 1 file changed, 330 insertions(+), 329 deletions(-)
+ arch/ia64/include/uapi/asm/unistd.h | 658 ++++++++++++++++++------------------
+ 1 file changed, 329 insertions(+), 329 deletions(-)
 
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index 4186dc2..ee6d6bd 100644
+index 4186dc2..bd2575f 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -11,335 +11,336 @@
+@@ -8,338 +8,338 @@
+ #ifndef _UAPI_ASM_IA64_UNISTD_H
+ #define _UAPI_ASM_IA64_UNISTD_H
  
+-
  #include <asm/break.h>
  
 -#define __BREAK_SYSCALL			__IA64_BREAK_SYSCALL
--
++#define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
+ 
 -#define __NR_ni_syscall			1024
 -#define __NR_exit			1025
 -#define __NR_read			1026
@@ -355,8 +359,6 @@ index 4186dc2..ee6d6bd 100644
 -#define __NR_copy_file_range		1347
 -#define __NR_preadv2			1348
 -#define __NR_pwritev2			1349
-+#define __BREAK_SYSCALL	__IA64_BREAK_SYSCALL
-+ 
 +#define __NR_Linux      1024
 +#define __NR_ni_syscall	(__NR_Linux + 0)
 +#define __NR_exit	(__NR_Linux + 1)

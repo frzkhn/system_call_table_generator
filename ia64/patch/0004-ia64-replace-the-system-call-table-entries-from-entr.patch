@@ -1,7 +1,7 @@
-From 670629e32e90968612a55c533fa6bc69428a0b7c Mon Sep 17 00:00:00 2001
+From 0ea63aa5724c6f6eb5cc457cb69565d8be7e209d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 25 Sep 2018 14:42:46 +0530
-Subject: [PATCH v2 4/7] ia64: replace the system call table entries from
+Subject: [PATCH v3 4/7] ia64: replace the system call table entries from
  entry.S
 
 In IA64, system call table entries are the part of entry.S file.
@@ -17,8 +17,8 @@ system call table generation using the script.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/ia64/kernel/entry.S         | 333 +-------------------------------------
- arch/ia64/kernel/syscall_table.S | 336 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 337 insertions(+), 332 deletions(-)
+ arch/ia64/kernel/syscall_table.S | 334 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 335 insertions(+), 332 deletions(-)
  create mode 100644 arch/ia64/kernel/syscall_table.S
 
 diff --git a/arch/ia64/kernel/entry.S b/arch/ia64/kernel/entry.S
@@ -364,13 +364,11 @@ index 68362b3..249b2e9 100644
 +#include "syscall_table.S"
 diff --git a/arch/ia64/kernel/syscall_table.S b/arch/ia64/kernel/syscall_table.S
 new file mode 100644
-index 0000000..56b5149
+index 0000000..f69ee5f
 --- /dev/null
 +++ b/arch/ia64/kernel/syscall_table.S
-@@ -0,0 +1,336 @@
+@@ -0,0 +1,334 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include <asm/unistd.h>
 +
 +	.rodata
 +	.align 8

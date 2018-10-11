@@ -1,7 +1,7 @@
-From 54fd9649cc2adb30a14820d6a1f82cc23137f7f7 Mon Sep 17 00:00:00 2001
+From 2cafebac0b20b258966d959dc5d87671856dda0a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Sep 2018 14:48:38 +0530
-Subject: [PATCH v2 2/7] ia64: replace NR_syscalls macro from asm/unistd.h
+Subject: [PATCH v3 2/7] ia64: replace NR_syscalls macro from asm/unistd.h
 
 NR_syscalls macro holds the number of system call exist in IA64
 architecture. This macro is currently the part of asm/unistd.h
