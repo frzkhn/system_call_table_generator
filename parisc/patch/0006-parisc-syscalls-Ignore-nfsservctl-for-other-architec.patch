@@ -1,7 +1,7 @@
-From 514f3c5fca5770d83846833f6905ec0a96863cf5 Mon Sep 17 00:00:00 2001
+From 15a97600a617749a4772d53c1de56ff27cb78b12 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 8 Oct 2018 09:36:47 +0530
-Subject: [PATCH v3 6/6] parisc: syscalls: Ignore nfsservctl for other
+Subject: [PATCH v4 6/6] parisc: syscalls: Ignore nfsservctl for other
  architectures
 
 This adds an exception to the syscall table checking script.

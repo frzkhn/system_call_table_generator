@@ -1,20 +1,18 @@
-From 514f3c5fca5770d83846833f6905ec0a96863cf5 Mon Sep 17 00:00:00 2001
+From 15a97600a617749a4772d53c1de56ff27cb78b12 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 8 Oct 2018 10:22:42 +0530
-Subject: [PATCH v3 0/6] System call table generation support
+Date: Fri, 12 Oct 2018 14:57:14 +0530
+Subject: [PATCH v4 0/6] parisc: system call table generation support
 
-The purpose of this patch series is:
-1. We can easily add/modify/delete system call by changing entry 
-in syscall.tbl file. No need to manually edit many files.
-
-2. It is easy to unify the system call implementation across all 
+The purpose of this patch series is, we can easily add/modify/delete
+system call table support by changing entry in syscall.tbl file 
+instead of manually changing many files. The other goal is to unify 
+the system call table generation support implementation across all 
 the architectures. 
 
-The system call tables are in different format in all architecture 
-and it will be difficult to manually add or modify the system calls
+The system call tables are in different format in all architecture. It
+will be difficult to manually add, modify or delete the system calls
 in the respective files manually. To make it easy by keeping a script 
-and which'll generate the header file and syscall table file so this 
-change will unify them across all architectures.
+and which'll generate uapi header file and syscall table file.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -37,13 +35,10 @@ the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-Added an ignore entry for nfsservctl in script/checksyscalls.sh.
-Wired up rseq system call.
-
 Finally, this is the ground work for solving the Y2038 issue. We 
-need to add/change two dozen of system calls to solve Y2038 issue. 
-So this patch series will help to easily modify from existing 
-system call to Y2038 compatible system calls.
+need to add two dozen of system calls to solve Y2038 issue. So this
+patch series will help to add new system calls easily by adding new
+entry in the syscall.tbl.
 
 Firoz Khan (6):
   parisc: move __IGNORE* entries to non uapi header
@@ -58,19 +53,15 @@ Firoz Khan (6):
  arch/parisc/include/asm/unistd.h          |   8 +
  arch/parisc/include/uapi/asm/Kbuild       |   2 +
  arch/parisc/include/uapi/asm/unistd.h     | 382 +------------------------
- arch/parisc/kernel/syscall.S              |  12 +-
+ arch/parisc/kernel/syscall.S              |  10 +-
  arch/parisc/kernel/syscall_table.S        | 459 ------------------------------
- arch/parisc/kernel/syscall_table_32.S     |  13 +
- arch/parisc/kernel/syscall_table_64.S     |  20 ++
  arch/parisc/kernel/syscalls/Makefile      |  55 ++++
- arch/parisc/kernel/syscalls/syscall.tbl   | 353 +++++++++++++++++++++++
+ arch/parisc/kernel/syscalls/syscall.tbl   | 371 ++++++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscallhdr.sh |  35 +++
- arch/parisc/kernel/syscalls/syscalltbl.sh |  41 +++
+ arch/parisc/kernel/syscalls/syscalltbl.sh |  46 +++
  scripts/checksyscalls.sh                  |   1 +
- 14 files changed, 545 insertions(+), 843 deletions(-)
+ 12 files changed, 540 insertions(+), 836 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
- create mode 100644 arch/parisc/kernel/syscall_table_32.S
- create mode 100644 arch/parisc/kernel/syscall_table_64.S
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh

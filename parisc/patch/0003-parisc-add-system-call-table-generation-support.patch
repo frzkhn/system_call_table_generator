@@ -1,7 +1,7 @@
-From e45ae6542138762af141a23b4c3a719f3fd84cc5 Mon Sep 17 00:00:00 2001
+From eed46655bc5d5443a4f8dcf340422ff598e2794c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:22:50 +0530
-Subject: [PATCH v3 3/6] parisc: add system call table generation support
+Subject: [PATCH v4 3/6] parisc: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -42,10 +42,10 @@ solution.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/parisc/kernel/syscalls/Makefile      |  55 +++++
- arch/parisc/kernel/syscalls/syscall.tbl   | 352 ++++++++++++++++++++++++++++++
+ arch/parisc/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscallhdr.sh |  35 +++
- arch/parisc/kernel/syscalls/syscalltbl.sh |  41 ++++
- 4 files changed, 483 insertions(+)
+ arch/parisc/kernel/syscalls/syscalltbl.sh |  46 ++++
+ 4 files changed, 505 insertions(+)
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
@@ -53,7 +53,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..e4c9c63
+index 0000000..a0af5a3
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/Makefile
 @@ -0,0 +1,55 @@
@@ -97,7 +97,7 @@ index 0000000..e4c9c63
 +$(kapi)/syscall_table_64.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
-+systbl_abi_syscall_table_c32 := common,64
++systbl_abi_syscall_table_c32 := common,compat,32
 +$(kapi)/syscall_table_c32.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
@@ -114,10 +114,10 @@ index 0000000..e4c9c63
 +	@:
 diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..4e85293
+index 0000000..7c9f268
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscall.tbl
-@@ -0,0 +1,352 @@
+@@ -0,0 +1,369 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for parisc
@@ -229,15 +229,16 @@ index 0000000..4e85293
 +99      common  statfs                          sys_statfs                      compat_sys_statfs
 +100     common  fstatfs                         sys_fstatfs                     compat_sys_fstatfs
 +101     common  stat64                          sys_stat64
++# 102 was socketcall
 +103     common  syslog                          sys_syslog
 +104     common  setitimer                       sys_setitimer                   compat_sys_setitimer
 +105     common  getitimer                       sys_getitimer                   compat_sys_getitimer
 +106     common  capget                          sys_capget
 +107     common  capset                          sys_capset
 +108     32      pread64                         parisc_pread64
-+108     64      pread64                         sys_pread64                     parisc_pread64
++108     64      pread64                         sys_pread64
 +109     32      pwrite64                        parisc_pwrite64
-+109     64      pwrite64                        sys_pwrite64                    parisc_pwrite64
++109     64      pwrite64                        sys_pwrite64
 +110     common  getcwd                          sys_getcwd
 +111     common  vhangup                         sys_vhangup
 +112     common  fstat64                         sys_fstat64
@@ -255,15 +256,18 @@ index 0000000..4e85293
 +124     common  adjtimex                        sys_adjtimex                    compat_sys_adjtimex
 +125     common  mprotect                        sys_mprotect
 +126     common  sigprocmask                     sys_sigprocmask                 compat_sys_sigprocmask
++# 127 was create_module
 +128     common  init_module                     sys_init_module
 +129     common  delete_module                   sys_delete_module
++# 130 was get_kernel_syms
 +131     common  quotactl                        sys_quotactl
 +132     common  getpgid                         sys_getpgid
 +133     common  fchdir                          sys_fchdir
 +134     common  bdflush                         sys_bdflush
 +135     common  sysfs                           sys_sysfs
 +136     32      personality                     parisc_personality
-+136     64      personality                     sys_personality                 parisc_personality
++136     64      personality                     sys_personality
++# 137 was afs_syscall
 +138     common  setfsuid                        sys_setfsuid
 +139     common  setfsgid                        sys_setfsgid
 +140     common  _llseek                         sys_llseek
@@ -293,11 +297,13 @@ index 0000000..4e85293
 +164     common  setresuid                       sys_setresuid
 +165     common  getresuid                       sys_getresuid
 +166     common  sigaltstack                     sys_sigaltstack                 compat_sys_sigaltstack
++# 167 was query_module
 +168     common  poll                            sys_poll
++# 169 was nfsservctl
 +170     common  setresgid                       sys_setresgid
 +171     common  getresgid                       sys_getresgid
 +172     common  prctl                           sys_prctl
-+173     common  rt_sigreturn                    sys_rt_sigreturn
++173     common  rt_sigreturn                    sys_rt_sigreturn_wrapper
 +174     common  rt_sigaction                    sys_rt_sigaction                compat_sys_rt_sigaction
 +175     common  rt_sigprocmask                  sys_rt_sigprocmask              compat_sys_rt_sigprocmask
 +176     common  rt_sigpending                   sys_rt_sigpending               compat_sys_rt_sigpending
@@ -320,26 +326,35 @@ index 0000000..4e85293
 +193     common  shmdt                           sys_shmdt
 +194     common  shmget                          sys_shmget
 +195     common  shmctl                          sys_shmctl                      compat_sys_shmctl
++# 196 was getpmsg
++# 197 was putpmsg
 +198     common  lstat64                         sys_lstat64
 +199     32      truncate64                      parisc_truncate64
-+199     64      truncate64                      sys_truncate64                  parisc_truncate64
++199     64      truncate64                      sys_truncate64
 +200     32      ftruncate64                     parisc_ftruncate64
-+200     64      ftruncate64                     sys_ftruncate64                 parisc_ftruncate64
++200     64      ftruncate64                     sys_ftruncate64
 +201     common  getdents64                      sys_getdents64
 +202     common  fcntl64                         sys_fcntl64                     compat_sys_fcntl64
++# 203 was attrctl
++# 204 was acl_get
++# 205 was acl_set
 +206     common  gettid                          sys_gettid
 +207     32      readahead                       parisc_readahead
-+207     64      readahead                       sys_readahead                   parisc_readahead
++207     64      readahead                       sys_readahead
 +208     common  tkill                           sys_tkill
 +209     common  sendfile64                      sys_sendfile64                  compat_sys_sendfile64
 +210     common  futex                           sys_futex                       compat_sys_futex
 +211     common  sched_setaffinity               sys_sched_setaffinity           compat_sys_sched_setaffinity
 +212     common  sched_getaffinity               sys_sched_getaffinity           compat_sys_sched_getaffinity
++# 213 was set_thread_area
++# 214 was get_thread_area
 +215     common  io_setup                        sys_io_setup                    compat_sys_io_setup
 +216     common  io_destroy                      sys_io_destroy
 +217     common  io_getevents                    sys_io_getevents                compat_sys_io_getevents
 +218     common  io_submit                       sys_io_submit                   compat_sys_io_submit
 +219     common  io_cancel                       sys_io_cancel
++# 220 was alloc_hugepages
++# 221 was free_hugepages
 +222     common  exit_group                      sys_exit_group
 +223     common  lookup_dcookie                  sys_lookup_dcookie              compat_sys_lookup_dcookie
 +224     common  epoll_create                    sys_epoll_create
@@ -355,7 +370,7 @@ index 0000000..4e85293
 +234     common  mq_getsetattr                   sys_mq_getsetattr               compat_sys_mq_getsetattr
 +235     common  waitid                          sys_waitid                      compat_sys_waitid
 +236     32      fadvise64_64                    parisc_fadvise64_64
-+236     64      fadvise64_64                    sys_fadvise64_64                parisc_fadvise64_64
++236     64      fadvise64_64                    sys_fadvise64_64
 +237     common  set_tid_address                 sys_set_tid_address
 +238     common  setxattr                        sys_setxattr
 +239     common  lsetxattr                       sys_lsetxattr
@@ -382,6 +397,7 @@ index 0000000..4e85293
 +260     common  mbind                           sys_mbind                       compat_sys_mbind
 +261     common  get_mempolicy                   sys_get_mempolicy               compat_sys_get_mempolicy
 +262     common  set_mempolicy                   sys_set_mempolicy               compat_sys_set_mempolicy
++# 263 was vserver
 +264     common  add_key                         sys_add_key
 +265     common  request_key                     sys_request_key
 +266     common  keyctl                          sys_keyctl                      compat_sys_keyctl
@@ -411,7 +427,7 @@ index 0000000..4e85293
 +290     common  get_robust_list                 sys_get_robust_list             compat_sys_get_robust_list
 +291     common  splice                          sys_splice
 +292     32      sync_file_range                 parisc_sync_file_range
-+292     64      sync_file_range                 sys_sync_file_range             parisc_sync_file_range
++292     64      sync_file_range                 sys_sync_file_range
 +293     common  tee                             sys_tee
 +294     common  vmsplice                        sys_vmsplice                    compat_sys_vmsplice
 +295     common  move_pages                      sys_move_pages                  compat_sys_move_pages
@@ -422,9 +438,10 @@ index 0000000..4e85293
 +300     common  kexec_load                      sys_kexec_load                  compat_sys_kexec_load
 +301     common  utimensat                       sys_utimensat                   compat_sys_utimensat
 +302     common  signalfd                        sys_signalfd                    compat_sys_signalfd
++# 303 was timerfd
 +304     common  eventfd                         sys_eventfd
 +305     32      fallocate                       parisc_fallocate
-+305     64      fallocate                       sys_fallocate                   parisc_fallocate
++305     64      fallocate                       sys_fallocate
 +306     common  timerfd_create                  sys_timerfd_create
 +307     common  timerfd_settime                 sys_timerfd_settime             compat_sys_timerfd_settime
 +308     common  timerfd_gettime                 sys_timerfd_gettime             compat_sys_timerfd_gettime
@@ -514,10 +531,10 @@ index 0000000..607d4ca
 +) > "$out"
 diff --git a/arch/parisc/kernel/syscalls/syscalltbl.sh b/arch/parisc/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..82b0416
+index 0000000..04abde7
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscalltbl.sh
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,46 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -528,14 +545,19 @@ index 0000000..82b0416
 +
 +emit() {
 +    nxt="$1"
-+    nr="$2"
++    if [ -z "$offset" ]; then
++	nr="$2"
++    else
++	nr="$2"
++	nr=$((nr+offset))
++    fi
 +    entry="$3"
 +
 +    while [ $nxt -lt $nr ]; do
 +	echo "__SYSCALL($nxt, sys_ni_syscall, )"
 +        let nxt=nxt+1
 +    done
-+    echo "__SYSCALL($nr, $entry, )"
++    echo "__SYSCALL($nxt, $entry, )"
 +}
 +
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -545,17 +567,17 @@ index 0000000..82b0416
 +	nxt=$offset
 +    fi
 +
++    my_abi="$(cut -d'|' -f2 <<< $my_abis)"
 +    while read nr abi name entry compat ; do
-+	if [ ${out: -5} = "c32.h" ]; then
++	if [ $my_abi = "compat" ]; then
 +	    if [ -z "$compat" ]; then
 +		emit $nxt $nr $entry
 +	    else
 +		emit $nxt $nr $compat
 +	    fi
-+	elif [ ${out: -4} = "64.h" -o  ${out: -4} = "32.h" ]; then
++	else
 +	    emit $nxt $nr $entry
 +	fi
-+	nxt=$nr
 +        let nxt=nxt+1
 +    done
 +) > "$out"
