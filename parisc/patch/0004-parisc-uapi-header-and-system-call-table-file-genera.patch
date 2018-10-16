@@ -1,7 +1,7 @@
-From 8d2fb69ffbdc0438371138a90d43a8eb87217192 Mon Sep 17 00:00:00 2001
+From f3e3351ac4375ecf23ea4757cdb1f5c83ab27131 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 11 Oct 2018 14:22:48 +0530
-Subject: [PATCH v4 4/6] parisc: uapi header and system call table file
+Subject: [PATCH v5 4/5] parisc: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate

@@ -1,20 +1,19 @@
-From 8ed12404114efff7ce5913399e40cf61be0186bf Mon Sep 17 00:00:00 2001
+From 0ef6c66563646c1a3dfa4650b59a45e073d9a68a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:04:16 +0530
-Subject: [PATCH v4 1/6] parisc: move __IGNORE* entries to non uapi header
+Subject: [PATCH v5 1/5] parisc: move __IGNORE* entries to non uapi header
 
 All the __IGNORE* entries are resides in the uapi header
-file move to non uapi header asm/unistd.h. Basically it
-is not used by any user space applications.
+file move to non uapi header asm/unistd.h as it is not
+used by any user space applications.
 
 It is correct to keep __IGNORE* entry in non uapi header
 asm/unistd.h while uapi/asm/unistd.h must hold information
 only useful for user space applications.
 
 One of the patch in this patch series will generate uapi
-headers that should present in the uapi header file. And
-some of the information which directly used by the user
-space application also need to be present in uapi file.
+header file. The information which directly used by the
+user space application must be present in uapi file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
