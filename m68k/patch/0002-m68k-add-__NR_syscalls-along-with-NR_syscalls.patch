@@ -1,0 +1,70 @@
+From ea7b97b2937636e934a4c015a4a77a34eeabea27 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Thu, 20 Sep 2018 14:13:57 +0530
+Subject: [PATCH v4 2/5] m68k: add __NR_syscalls along with NR_syscalls
+
+NR_syscalls macro holds the number of system call exist
+in m68k architecture. We have to change the value of NR-
+_syscalls, if we add or delete a system call.
+
+One of the patch in this patch series has a script which
+will generate a uapi header based on syscall.tbl file.
+The syscall.tbl file contains the number of system call
+information. So we have two option to update NR_syscalls
+value.
+
+1. Update NR_syscalls in asm/unistd.h manually by counting
+   the no.of system calls. No need to update NR_syscalls
+   until we either add a new system call or delete existing
+   system call.
+
+2. We can keep this feature it above mentioned script, that
+   will count the number of syscalls and keep it in a gener-
+   ated file. In this case we don't need to explicitly up-
+   date NR_syscalls in asm/unistd.h file.
+
+The 2nd option will be the recommended one. For that, I added
+the __NR_syscalls macro in uapi/asm/unistd.h along with NR_-
+syscalls asm/unistd.h. The macro __NR_syscalls also added for
+making the name convention same across all architecture. While
+__NR_syscalls isn't strictly part of the uapi, having it as
+part of the generated header to simplifies the implementation.
+We also need to enclose this macro with #ifdef __KERNEL__ to
+avoid side effects.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/m68k/include/asm/unistd.h      | 3 +--
+ arch/m68k/include/uapi/asm/unistd.h | 4 ++++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/arch/m68k/include/asm/unistd.h b/arch/m68k/include/asm/unistd.h
+index 30d0d3f..5072e94 100644
+--- a/arch/m68k/include/asm/unistd.h
++++ b/arch/m68k/include/asm/unistd.h
+@@ -4,8 +4,7 @@
+ 
+ #include <uapi/asm/unistd.h>
+ 
+-
+-#define NR_syscalls		380
++#define NR_syscalls __NR_syscalls
+ 
+ #define __ARCH_WANT_OLD_READDIR
+ #define __ARCH_WANT_OLD_STAT
+diff --git a/arch/m68k/include/uapi/asm/unistd.h b/arch/m68k/include/uapi/asm/unistd.h
+index de3054f..ba4176aa 100644
+--- a/arch/m68k/include/uapi/asm/unistd.h
++++ b/arch/m68k/include/uapi/asm/unistd.h
+@@ -387,4 +387,8 @@
+ #define __NR_pwritev2		378
+ #define __NR_statx		379
+ 
++#ifdef __KERNEL__
++#define __NR_syscalls		380
++#endif
++
+ #endif /* _UAPI_ASM_M68K_UNISTD_H_ */
+-- 
+1.9.1
+

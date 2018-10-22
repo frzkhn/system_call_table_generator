@@ -1,0 +1,37 @@
+From a62326412e95f18e14167a441512a69d1b26857e Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Mon, 22 Oct 2018 17:07:11 +0530
+Subject: [PATCH v4 5/5] m68k: wire up system calls
+
+wire up seccomp, pkey_mprotect, pkey_alloc, pkey_free, statx,
+io_pgetevents and rseq system calls
+
+This require an architecture specific implementation as it not
+present now.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/m68k/kernel/syscalls/syscall.tbl | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/m68k/kernel/syscalls/syscall.tbl b/arch/m68k/kernel/syscalls/syscall.tbl
+index 59d3f06..1a068e7 100644
+--- a/arch/m68k/kernel/syscalls/syscall.tbl
++++ b/arch/m68k/kernel/syscalls/syscall.tbl
+@@ -387,3 +387,13 @@
+ 377	common	preadv2				sys_preadv2
+ 378	common	pwritev2			sys_pwritev2
+ 379	common	statx				sys_statx
++# seccomp requires an architecture specific implementation
++380	common	seccomp				sys_seccomp
++# pkey_* requires an architecture specific implementation
++381	common	pkey_mprotect			sys_pkey_mprotect
++382	common	pkey_alloc			sys_pkey_alloc
++383	common	pkey_free			sys_pkey_free
++# io_pgetevents requires an architecture specific implementation
++384	common	io_pgetevents			sys_io_pgetevents
++# rseq requires an architecture specific implementation
++385	common	rseq				sys_rseq
+-- 
+1.9.1
+

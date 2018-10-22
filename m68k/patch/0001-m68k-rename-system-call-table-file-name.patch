@@ -1,23 +1,24 @@
-From 85cd040f659f39e5e6076e9d76a3f376435bac04 Mon Sep 17 00:00:00 2001
+From ec2605216c5d218220be24cbbcf02f1873957de1 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 29 Jul 2018 11:52:54 +0530
-Subject: [PATCH v3 1/5] m68k: rename system call table file name
+Subject: [PATCH v4 1/5] m68k: rename system call table file name
 
-The system call table entries are present in syscalltable.S. One of
-the patch in this patch series will auto-generate the system call
-table entries using the system call table generation script and
-which'll replace the existig table file.
+The system call table entries are present in syscalltable.S.
+One of the patch in this patch series will auto-generate the
+system call table entries using the system call table gener-
+ation script and which will replace the existig table file.
 
-In order to come up with a common naming convention across all
-architecture, we need to change the file name to syscall_table.S.
-This change will unify the implementation across all architecture.
+In order to come up with a common naming convention across
+all architecture, we need to change the file name to syscall-
+_table.S. This change will unify the implementation across
+all architecture.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/m68k/kernel/Makefile                            | 2 +-
- arch/m68k/kernel/{syscalltable.S => syscall_table.S} | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename arch/m68k/kernel/{syscalltable.S => syscall_table.S} (100%)
+ arch/m68k/kernel/{syscalltable.S => syscall_table.S} | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+ rename arch/m68k/kernel/{syscalltable.S => syscall_table.S} (99%)
 
 diff --git a/arch/m68k/kernel/Makefile b/arch/m68k/kernel/Makefile
 index dbac7f8..5f40ce6 100644
@@ -33,9 +34,21 @@ index dbac7f8..5f40ce6 100644
  obj-$(CONFIG_MMU_MOTOROLA) += ints.o vectors.o
  obj-$(CONFIG_MMU_SUN3) += ints.o vectors.o
 diff --git a/arch/m68k/kernel/syscalltable.S b/arch/m68k/kernel/syscall_table.S
-similarity index 100%
+similarity index 99%
 rename from arch/m68k/kernel/syscalltable.S
 rename to arch/m68k/kernel/syscall_table.S
+index 2c8402e..6145bc0 100644
+--- a/arch/m68k/kernel/syscalltable.S
++++ b/arch/m68k/kernel/syscall_table.S
+@@ -6,7 +6,7 @@
+  *
+  *  Copyright (C) 1998  D. Jeff Dionne <jeff@lineo.ca>,
+  *                      Kenneth Albanowski <kjahds@kjahds.com>,
+- *  Copyright (C) 2000  Lineo Inc. (www.lineo.com) 
++ *  Copyright (C) 2000  Lineo Inc. (www.lineo.com)
+  *  Copyright (C) 1991, 1992  Linus Torvalds
+  *
+  *  Linux/m68k support by Hamish Macdonald
 -- 
 1.9.1
 

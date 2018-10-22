@@ -1,20 +1,18 @@
-From d7a54c47a29b7fbe1c317cbf14e3bf23a26c6b37 Mon Sep 17 00:00:00 2001
+From a62326412e95f18e14167a441512a69d1b26857e Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 1 Oct 2018 10:00:55 +0530
-Subject: [PATCH v3 0/5] System call table generation support
+Date: Mon, 22 Oct 2018 17:20:33 +0530
+Subject: [PATCH v4 0/5] m68k: system call table generation support
 
-The purpose of this patch series is:
-1. We can easily add/modify/delete system call by changing entry 
-in syscall.tbl file. No need to manually edit many files.
-
-2. It is easy to unify the system call implementation across all 
+The purpose of this patch series is, we can easily add/modify/delete
+system call table support by changing entry in syscall.tbl file 
+instead of manually changing many files. The other goal is to unify 
+the system call table generation support implementation across all 
 the architectures. 
 
-The system call tables are in different format in all architecture 
-and it will be difficult to manually add or modify the system calls
+The system call tables are in different format in all architecture. It
+will be difficult to manually add, modify or delete the system calls
 in the respective files manually. To make it easy by keeping a script 
-and which'll generate the header file and syscall table file so this 
-change will unify them across all architectures.
+and which'll generate uapi header file and syscall table file.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -26,42 +24,41 @@ Adding a new table entry consisting of:
         - ABI.
         - System call name.
         - Entry point name.
-        - Compat entry name, if required.
 
 ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
-I have done the same support for work for alpha, ia64, sparc, mips, 
-parisc, powerpc, sh, sparc, and xtensa. But I started sending 
+I have done the same support for work for alpha, microblaze, sparc,
+parisc, mips, powerpc, sh, sparc, and xtensa. But I started sending 
 the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
 Finally, this is the ground work for solving the Y2038 issue. We 
-need to add/change two dozen of system calls to solve Y2038 issue. 
-So this patch series will help to easily modify from existing 
-system call to Y2038 compatible system calls.
+need to add two dozen of system calls to solve Y2038 issue. So this
+patch series will help to add new system calls easily by adding new
+entry in the syscall.tbl.
 
 Firoz Khan (5):
   m68k: rename system call table file name
-  m68k: replace NR_syscalls macro from asm/unistd.h
+  m68k: add __NR_syscalls along with NR_syscalls
   m68k: add system call table generation support
   m68k: uapi header and system call table file generation
-  m68k: add __IGNORE* entries in asm/unistd.h
+  m68k: wire up system calls
 
  arch/m68k/Makefile                      |   3 +
  arch/m68k/include/asm/Kbuild            |   1 +
- arch/m68k/include/asm/unistd.h          |  10 +-
+ arch/m68k/include/asm/unistd.h          |   3 +-
  arch/m68k/include/uapi/asm/Kbuild       |   1 +
  arch/m68k/include/uapi/asm/unistd.h     | 385 +-----------------------------
  arch/m68k/kernel/Makefile               |   2 +-
- arch/m68k/kernel/syscall_table.S        |  14 ++
+ arch/m68k/kernel/syscall_table.S        |  26 +++
  arch/m68k/kernel/syscalls/Makefile      |  38 +++
- arch/m68k/kernel/syscalls/syscall.tbl   | 369 +++++++++++++++++++++++++++++
- arch/m68k/kernel/syscalls/syscallhdr.sh |  35 +++
- arch/m68k/kernel/syscalls/syscalltbl.sh |  34 +++
+ arch/m68k/kernel/syscalls/syscall.tbl   | 399 +++++++++++++++++++++++++++++++
+ arch/m68k/kernel/syscalls/syscallhdr.sh |  34 +++
+ arch/m68k/kernel/syscalls/syscalltbl.sh |  32 +++
  arch/m68k/kernel/syscalltable.S         | 403 --------------------------------
- 12 files changed, 505 insertions(+), 790 deletions(-)
+ 12 files changed, 537 insertions(+), 790 deletions(-)
  create mode 100644 arch/m68k/kernel/syscall_table.S
  create mode 100644 arch/m68k/kernel/syscalls/Makefile
  create mode 100644 arch/m68k/kernel/syscalls/syscall.tbl

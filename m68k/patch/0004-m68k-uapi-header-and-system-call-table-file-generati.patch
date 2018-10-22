@@ -1,7 +1,7 @@
-From e42b24318b36b7086dea2e092531c5c1f1abc87f Mon Sep 17 00:00:00 2001
+From e9440b49948316853f26575b2b1699e9981ba597 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 20 Sep 2018 14:54:21 +0530
-Subject: [PATCH v3 4/5] m68k: uapi header and system call table file
+Date: Mon, 22 Oct 2018 16:51:37 +0530
+Subject: [PATCH v4 4/5] m68k: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -23,9 +23,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/m68k/Makefile                  |   3 +
  arch/m68k/include/asm/Kbuild        |   1 +
  arch/m68k/include/uapi/asm/Kbuild   |   1 +
- arch/m68k/include/uapi/asm/unistd.h | 389 +----------------------------------
- arch/m68k/kernel/syscall_table.S    | 399 +-----------------------------------
- 5 files changed, 11 insertions(+), 782 deletions(-)
+ arch/m68k/include/uapi/asm/unistd.h | 389 +-----------------------------------
+ arch/m68k/kernel/syscall_table.S    | 387 +----------------------------------
+ 5 files changed, 11 insertions(+), 770 deletions(-)
 
 diff --git a/arch/m68k/Makefile b/arch/m68k/Makefile
 index 997c9f2..f00ca53 100644
@@ -41,7 +41,7 @@ index 997c9f2..f00ca53 100644
  install:
  	sh $(srctree)/arch/m68k/install.sh $(KERNELRELEASE) vmlinux.gz System.map "$(INSTALL_PATH)"
 diff --git a/arch/m68k/include/asm/Kbuild b/arch/m68k/include/asm/Kbuild
-index a4b8d33..68501411 100644
+index a4b8d33..147f89c 100644
 --- a/arch/m68k/include/asm/Kbuild
 +++ b/arch/m68k/include/asm/Kbuild
 @@ -24,3 +24,4 @@ generic-y += topology.h
@@ -49,9 +49,8 @@ index a4b8d33..68501411 100644
  generic-y += word-at-a-time.h
  generic-y += xor.h
 +generic-y += syscall_table.h
-\ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/Kbuild b/arch/m68k/include/uapi/asm/Kbuild
-index c2e26a4..6d600e9 100644
+index c2e26a4..89776ec 100644
 --- a/arch/m68k/include/uapi/asm/Kbuild
 +++ b/arch/m68k/include/uapi/asm/Kbuild
 @@ -21,3 +21,4 @@ generic-y += statfs.h
@@ -59,7 +58,6 @@ index c2e26a4..6d600e9 100644
  generic-y += termios.h
  generic-y += types.h
 +generic-y += unistd_32.h
-\ No newline at end of file
 diff --git a/arch/m68k/include/uapi/asm/unistd.h b/arch/m68k/include/uapi/asm/unistd.h
 index ba4176aa..cdbd090 100644
 --- a/arch/m68k/include/uapi/asm/unistd.h
@@ -460,24 +458,10 @@ index ba4176aa..cdbd090 100644
  
  #endif /* _UAPI_ASM_M68K_UNISTD_H_ */
 diff --git a/arch/m68k/kernel/syscall_table.S b/arch/m68k/kernel/syscall_table.S
-index 2c8402e..56e9d03 100644
+index 6145bc0..9e44ec7 100644
 --- a/arch/m68k/kernel/syscall_table.S
 +++ b/arch/m68k/kernel/syscall_table.S
-@@ -1,403 +1,14 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--/*
-- *  Copyright (C) 2002, Greg Ungerer (gerg@snapgear.com)
-- *
-- *  Based on older entry.S files, the following copyrights apply:
-- *
-- *  Copyright (C) 1998  D. Jeff Dionne <jeff@lineo.ca>,
-- *                      Kenneth Albanowski <kjahds@kjahds.com>,
-- *  Copyright (C) 2000  Lineo Inc. (www.lineo.com) 
-- *  Copyright (C) 1991, 1992  Linus Torvalds
-- *
-- *  Linux/m68k support by Hamish Macdonald
-- */
- 
+@@ -15,389 +15,12 @@
  #include <linux/linkage.h>
  
  #ifndef CONFIG_MMU
