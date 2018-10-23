@@ -1,7 +1,7 @@
-From 1f51949cb379dbceb8b23cb78a48fe3106f8277a Mon Sep 17 00:00:00 2001
+From 79f80e757993e6ae16b45e4a311c10ee786b2197 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 10 Oct 2018 11:29:13 +0530
-Subject: [PATCH v3 6/7] ia64: uapi header and system call table file
+Date: Tue, 23 Oct 2018 15:15:45 +0530
+Subject: [PATCH v4 5/5] ia64: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -10,12 +10,12 @@ changes which will invokes the script.
 
 This patch will generate unistd_64.h and syscall_table.h
 files by the syscall table generation script invoked by
-arch/ia64/Makefile and the generated files against the
+arch/m68k/Makefile and the generated files against the
 removed files will be identical.
 
-The generated uapi header file will be included in
-uapi/asm/unistd.h and generated system call table support
-file will be included by ia64/kernel/syscall_table.S file.
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table support file
+will be included by kernel/entry.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -23,7 +23,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/ia64/include/asm/Kbuild        |   1 +
  arch/ia64/include/uapi/asm/Kbuild   |   1 +
  arch/ia64/include/uapi/asm/unistd.h | 332 +-----------------------------------
- arch/ia64/kernel/syscall_table.S    | 331 +----------------------------------
+ arch/ia64/kernel/entry.S            | 331 +----------------------------------
  5 files changed, 9 insertions(+), 659 deletions(-)
 
 diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
@@ -400,12 +400,13 @@ index bd2575f..286349b 100644
 +#include <asm/unistd_64.h>
  
  #endif /* _UAPI_ASM_IA64_UNISTD_H */
-diff --git a/arch/ia64/kernel/syscall_table.S b/arch/ia64/kernel/syscall_table.S
-index f69ee5f..7344a5f 100644
---- a/arch/ia64/kernel/syscall_table.S
-+++ b/arch/ia64/kernel/syscall_table.S
-@@ -1,334 +1,9 @@
- /* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/arch/ia64/kernel/entry.S b/arch/ia64/kernel/entry.S
+index 68362b3..a9992be 100644
+--- a/arch/ia64/kernel/entry.S
++++ b/arch/ia64/kernel/entry.S
+@@ -1426,335 +1426,10 @@ END(ftrace_stub)
+ 
+ #endif /* CONFIG_FUNCTION_TRACER */
  
 +#define __SYSCALL(nr, entry, nargs) data8 entry
  	.rodata
