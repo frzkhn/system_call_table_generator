@@ -1,7 +1,7 @@
-From e9440b49948316853f26575b2b1699e9981ba597 Mon Sep 17 00:00:00 2001
+From cc55b88d659a9fd32ccdd61e0ebf1cf3c8edf62f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 22 Oct 2018 16:51:37 +0530
-Subject: [PATCH v4 4/5] m68k: uapi header and system call table file
+Subject: [PATCH v4 4/4] m68k: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate

@@ -1,7 +1,7 @@
 From ec2605216c5d218220be24cbbcf02f1873957de1 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 29 Jul 2018 11:52:54 +0530
-Subject: [PATCH v4 1/5] m68k: rename system call table file name
+Subject: [PATCH v4 1/4] m68k: rename system call table file name
 
 The system call table entries are present in syscalltable.S.
 One of the patch in this patch series will auto-generate the

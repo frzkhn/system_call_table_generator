@@ -1,7 +1,7 @@
 From ea7b97b2937636e934a4c015a4a77a34eeabea27 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 20 Sep 2018 14:13:57 +0530
-Subject: [PATCH v4 2/5] m68k: add __NR_syscalls along with NR_syscalls
+Subject: [PATCH v4 2/4] m68k: add __NR_syscalls along with NR_syscalls
 
 NR_syscalls macro holds the number of system call exist
 in m68k architecture. We have to change the value of NR-

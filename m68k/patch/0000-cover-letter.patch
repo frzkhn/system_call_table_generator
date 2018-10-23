@@ -1,7 +1,7 @@
-From a62326412e95f18e14167a441512a69d1b26857e Mon Sep 17 00:00:00 2001
+From cc55b88d659a9fd32ccdd61e0ebf1cf3c8edf62f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 22 Oct 2018 17:20:33 +0530
-Subject: [PATCH v4 0/5] m68k: system call table generation support
+Date: Tue, 23 Oct 2018 10:34:44 +0530
+Subject: [PATCH v4 0/4] m68k: system call table generation support
 
 The purpose of this patch series is, we can easily add/modify/delete
 system call table support by changing entry in syscall.tbl file 
@@ -39,12 +39,11 @@ need to add two dozen of system calls to solve Y2038 issue. So this
 patch series will help to add new system calls easily by adding new
 entry in the syscall.tbl.
 
-Firoz Khan (5):
+Firoz Khan (4):
   m68k: rename system call table file name
   m68k: add __NR_syscalls along with NR_syscalls
   m68k: add system call table generation support
   m68k: uapi header and system call table file generation
-  m68k: wire up system calls
 
  arch/m68k/Makefile                      |   3 +
  arch/m68k/include/asm/Kbuild            |   1 +
@@ -54,11 +53,11 @@ Firoz Khan (5):
  arch/m68k/kernel/Makefile               |   2 +-
  arch/m68k/kernel/syscall_table.S        |  26 +++
  arch/m68k/kernel/syscalls/Makefile      |  38 +++
- arch/m68k/kernel/syscalls/syscall.tbl   | 399 +++++++++++++++++++++++++++++++
+ arch/m68k/kernel/syscalls/syscall.tbl   | 389 ++++++++++++++++++++++++++++++
  arch/m68k/kernel/syscalls/syscallhdr.sh |  34 +++
  arch/m68k/kernel/syscalls/syscalltbl.sh |  32 +++
  arch/m68k/kernel/syscalltable.S         | 403 --------------------------------
- 12 files changed, 537 insertions(+), 790 deletions(-)
+ 12 files changed, 527 insertions(+), 790 deletions(-)
  create mode 100644 arch/m68k/kernel/syscall_table.S
  create mode 100644 arch/m68k/kernel/syscalls/Makefile
  create mode 100644 arch/m68k/kernel/syscalls/syscall.tbl
