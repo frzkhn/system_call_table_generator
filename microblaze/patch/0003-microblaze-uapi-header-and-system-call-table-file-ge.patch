@@ -1,7 +1,7 @@
-From a059407f777222f018abb9def6e21fba27ac939a Mon Sep 17 00:00:00 2001
+From 6f189462f9c0c136fb3732434332b24c75c9fab5 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Sep 2018 11:52:19 +0530
-Subject: [PATCH v2 3/3] microblaze: uapi header and system call table file
+Subject: [PATCH v3 3/3] microblaze: uapi header and system call table file
  generation
 
 System call table generation script must be run to generate
@@ -41,7 +41,7 @@ index 4f3ab57..cda5e03 100644
  	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
  
 diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
-index 569ba9e..d64f5e7 100644
+index 569ba9e..96faf91 100644
 --- a/arch/microblaze/include/asm/Kbuild
 +++ b/arch/microblaze/include/asm/Kbuild
 @@ -31,3 +31,4 @@ generic-y += trace_clock.h
@@ -49,9 +49,8 @@ index 569ba9e..d64f5e7 100644
  generic-y += word-at-a-time.h
  generic-y += xor.h
 +generic-y += syscall_table.h
-\ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/Kbuild b/arch/microblaze/include/uapi/asm/Kbuild
-index 2c6a6bf..3a40659 100644
+index 2c6a6bf..cda864f 100644
 --- a/arch/microblaze/include/uapi/asm/Kbuild
 +++ b/arch/microblaze/include/uapi/asm/Kbuild
 @@ -28,3 +28,4 @@ generic-y += termbits.h
@@ -59,7 +58,6 @@ index 2c6a6bf..3a40659 100644
  generic-y += types.h
  generic-y += ucontext.h
 +generic-y += unistd_32.h
-\ No newline at end of file
 diff --git a/arch/microblaze/include/uapi/asm/unistd.h b/arch/microblaze/include/uapi/asm/unistd.h
 index ed9c6f5..3f2d7cb 100644
 --- a/arch/microblaze/include/uapi/asm/unistd.h

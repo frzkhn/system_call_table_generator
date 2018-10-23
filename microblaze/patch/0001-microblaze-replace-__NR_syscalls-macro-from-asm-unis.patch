@@ -1,28 +1,28 @@
-From fb629511bcf0221e9c97c6d0a65a1d243c10ef57 Mon Sep 17 00:00:00 2001
+From fc4af24f4ab671da63c47c65cdc84365b6d8d626 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 27 Jul 2018 15:21:03 +0530
-Subject: [PATCH v2 1/3] microblaze: replace __NR_syscalls macro from
+Subject: [PATCH v3 1/3] microblaze: replace __NR_syscalls macro from
  asm/unistd.h
 
-__NR_syscalls macro holds the number of system call exist in this
-architecture. This macro is currently the part of asm/unistd.h file.
-We have change the value of __NR_syscalls, if we add or delete a
-system call.
+__NR_syscalls macro holds the number of system call exist
+in microblaze architecture. We have to change the value of
+__NR_syscalls, if we add or delete a system call.
 
-One of the patch in this patch series has a script which will
-generate a uapi header based on syscall.tbl file. The syscall.tbl
-file contains the number of system call information. So we have
-two option to update __NR_syscalls value.
+One of the patch in this patch series has a script which
+will generate a uapi header based on syscall.tbl file.
+The syscall.tbl file contains the number of system call
+information. So we have two option to update __NR_syscalls
+value.
 
-1. Update __NR_syscalls in asm/unistd.h manually by counting the
-   no.of system calls. No need to update __NR_syscalls until
-   we either add a new system call or delete an existing system
-   call.
+1. Update __NR_syscalls in asm/unistd.h manually by counting
+   the no.of system calls. No need to update __NR_syscalls
+   until we either add a new system call or delete existing
+   system call.
 
-2. We can keep this feature it above mentioned script, that'll
-   count the number of syscalls and keep it in a generated file.
-   In this case we don't need to explicitly update __NR_syscalls
-   in asm/unistd.h file.
+2. We can keep this feature it above mentioned script, that
+   will count the number of syscalls and keep it in a gener-
+   ated file. In this case we don't need to explicitly up-
+   date __NR_syscalls in asm/unistd.h file.
 
 The 2nd option will be the recommended one. For that, I moved the
 __NR_syscalls macro from asm/unistd.h to uapi/asm/unistd.h. While
