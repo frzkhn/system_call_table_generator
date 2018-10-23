@@ -27,7 +27,7 @@ Adding a new table entry consisting of:
 	- Entry point name.
 
 syscallhdr.sh and syscalltbl.sh will generate uapi header-
-unistd.h and syscall_table.h files respectively. File
+unistd_32.h and syscall_table.h files respectively. File
 syscall_table.h is included by syscall_table.S - the real
 system call table. Both .sh files will parse the content
 syscall.tbl to generate the header and table files.

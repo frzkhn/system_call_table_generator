@@ -15,8 +15,7 @@ removed files will be identical.
 
 The generated uapi header file will be included in
 uapi/asm/unistd.h and generated system call table support
-file will be included by arch/m68k/kernel/syscall_table.S
-file.
+file will be included by kernel/syscall_table.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
