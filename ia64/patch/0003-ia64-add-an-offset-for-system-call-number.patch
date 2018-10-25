@@ -1,9 +1,9 @@
-From 5d49b888870fe7628903579ab2cbec23eb05dd37 Mon Sep 17 00:00:00 2001
+From 38b7030b0d94db8720a0e652dad4321c4c1afbb4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 27 Sep 2018 15:37:04 +0530
 Subject: [PATCH v4 3/5] ia64: add an offset for system call number
 
-The system call number in IA64 architecture starts with 1024.
+The system call number in ia64 architecture starts with 1024.
 But most of the other architecute starts with 0. In order to
 come up with a common implementation to generate uapi header
 we need to add an offset - __NR_Linux with a value 1024.

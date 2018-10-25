@@ -1,20 +1,19 @@
-From 79f80e757993e6ae16b45e4a311c10ee786b2197 Mon Sep 17 00:00:00 2001
+From 2d3dc6ea7075184ba813e4577f1c220c0814eb55 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 23 Oct 2018 15:15:45 +0530
-Subject: [PATCH v4 5/5] ia64: uapi header and system call table file
- generation
+Subject: [PATCH v4 5/5] ia64: generate uapi header and system call table files
 
-System call table generation script must be run to generate
-unistd_64.h and syscall_table.h files. This patch will have
-changes which will invokes the script.
+System call table generation script must be run to gener-
+ate unistd_64.h and syscall_table.h files. This patch will
+have changes which will invokes the script.
 
 This patch will generate unistd_64.h and syscall_table.h
 files by the syscall table generation script invoked by
-arch/m68k/Makefile and the generated files against the
-removed files will be identical.
+ia64/Makefile and the generated files against the removed
+files must be identical.
 
 The generated uapi header file will be included in uapi/-
-asm/unistd.h and generated system call table support file
+asm/unistd.h and generated system call table header file
 will be included by kernel/entry.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>

@@ -1,6 +1,6 @@
-From 79f80e757993e6ae16b45e4a311c10ee786b2197 Mon Sep 17 00:00:00 2001
+From 2d3dc6ea7075184ba813e4577f1c220c0814eb55 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 23 Oct 2018 16:57:20 +0530
+Date: Thu, 25 Oct 2018 14:31:47 +0530
 Subject: [PATCH v4 0/5] ia64: system call table generation support
 
 The purpose of this patch series is, we can easily add/modify/delete
@@ -9,10 +9,11 @@ instead of manually changing many files. The other goal is to unify
 the system call table generation support implementation across all 
 the architectures. 
 
-The system call tables are in different format in all architecture. It
-will be difficult to manually add, modify or delete the system calls
-in the respective files manually. To make it easy by keeping a script 
-and which'll generate uapi header file and syscall table file.
+The system call tables are in different format in all architecture. 
+It will be difficult to manually add, modify or delete the system 
+calls in the respective files manually. To make it easy by keeping
+a script and which'll generate uapi header file and syscall table 
+file.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -28,23 +29,22 @@ Adding a new table entry consisting of:
 ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
-I have done the same support for work for alpha, ia64, microblaze, 
-sparc, parisc, mips, powerpc, sh, sparc, and xtensa. But I started
-sending the patch for one architecuture for review. Below mentioned 
-git repository contains more details.
+I have done the same support for work for alpha, m68k, microblaze,
+mips, parisc, powerpc, sh, sparc, and xtensa. Below mentioned git
+repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-Finally, this is the ground work for solving the Y2038 issue. We 
-need to add two dozen of system calls to solve Y2038 issue. So this
-patch series will help to add new system calls easily by adding new
-entry in the syscall.tbl.
+Finally, this is the ground work to solve the Y2038 issue. We need 
+to add two dozen of system calls to solve Y2038 issue. So this patch
+series will help to add new system calls easily by adding new entry 
+in the syscall.tbl.
 
 Firoz Khan (5):
-  ia64: add __NR_old_getpagesize in uapi/asm/unistd.h
+  ia64: add __NR_old_getpagesize in uapi header file
   ia64: add __NR_syscalls along with NR_syscalls
   ia64: add an offset for system call number
   ia64: add system call table generation support
-  ia64: uapi header and system call table file generation
+  ia64: generate uapi header and system call table files
 
  arch/ia64/Makefile                      |   3 +
  arch/ia64/include/asm/Kbuild            |   1 +
@@ -54,9 +54,9 @@ Firoz Khan (5):
  arch/ia64/kernel/entry.S                | 331 +------------------------------
  arch/ia64/kernel/syscalls/Makefile      |  40 ++++
  arch/ia64/kernel/syscalls/syscall.tbl   | 337 ++++++++++++++++++++++++++++++++
- arch/ia64/kernel/syscalls/syscallhdr.sh |  34 ++++
+ arch/ia64/kernel/syscalls/syscallhdr.sh |  36 ++++
  arch/ia64/kernel/syscalls/syscalltbl.sh |  32 +++
- 10 files changed, 455 insertions(+), 660 deletions(-)
+ 10 files changed, 457 insertions(+), 660 deletions(-)
  create mode 100644 arch/ia64/kernel/syscalls/Makefile
  create mode 100644 arch/ia64/kernel/syscalls/syscall.tbl
  create mode 100644 arch/ia64/kernel/syscalls/syscallhdr.sh
