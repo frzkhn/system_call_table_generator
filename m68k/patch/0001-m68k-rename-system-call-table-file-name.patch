@@ -1,17 +1,17 @@
-From ec2605216c5d218220be24cbbcf02f1873957de1 Mon Sep 17 00:00:00 2001
+From 9a674c09ed2f90fbda703a9590cd949434740334 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 29 Jul 2018 11:52:54 +0530
 Subject: [PATCH v4 1/4] m68k: rename system call table file name
 
 The system call table entries are present in syscalltable.S.
-One of the patch in this patch series will auto-generate the
-system call table entries using the system call table gener-
-ation script and which will replace the existig table file.
+One of the patch in this patch series will generate the sys-
+tem call table entries using the system call table generation
+script and which will replace the existig table file.
 
 In order to come up with a common naming convention across
 all architecture, we need to change the file name to syscall-
-_table.S. This change will unify the implementation across
-all architecture.
+_table.S. This change will unify the system call table gener-
+tion implementation across all architecture.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---

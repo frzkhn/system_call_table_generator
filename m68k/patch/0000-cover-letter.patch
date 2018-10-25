@@ -1,6 +1,6 @@
-From cc55b88d659a9fd32ccdd61e0ebf1cf3c8edf62f Mon Sep 17 00:00:00 2001
+From c111d91a026ce2f5e13114618aefe82c245950d2 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 23 Oct 2018 10:34:44 +0530
+Date: Thu, 25 Oct 2018 10:34:40 +0530
 Subject: [PATCH v4 0/4] m68k: system call table generation support
 
 The purpose of this patch series is, we can easily add/modify/delete
@@ -9,10 +9,11 @@ instead of manually changing many files. The other goal is to unify
 the system call table generation support implementation across all 
 the architectures. 
 
-The system call tables are in different format in all architecture. It
-will be difficult to manually add, modify or delete the system calls
-in the respective files manually. To make it easy by keeping a script 
-and which'll generate uapi header file and syscall table file.
+The system call tables are in different format in all architecture. 
+It will be difficult to manually add, modify or delete the system 
+calls in the respective files manually. To make it easy by keeping
+a script and which'll generate uapi header file and syscall table 
+file.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -34,16 +35,16 @@ the patch for one architecuture for review. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-Finally, this is the ground work for solving the Y2038 issue. We 
-need to add two dozen of system calls to solve Y2038 issue. So this
-patch series will help to add new system calls easily by adding new
-entry in the syscall.tbl.
+Finally, this is the ground work to solve the Y2038 issue. We need 
+to add two dozen of system calls to solve Y2038 issue. So this patch
+series will help to add new system calls easily by adding new entry 
+in the syscall.tbl.
 
 Firoz Khan (4):
   m68k: rename system call table file name
   m68k: add __NR_syscalls along with NR_syscalls
   m68k: add system call table generation support
-  m68k: uapi header and system call table file generation
+  m68k: generate uapi header and syscall table header files
 
  arch/m68k/Makefile                      |   3 +
  arch/m68k/include/asm/Kbuild            |   1 +
@@ -54,10 +55,10 @@ Firoz Khan (4):
  arch/m68k/kernel/syscall_table.S        |  26 +++
  arch/m68k/kernel/syscalls/Makefile      |  38 +++
  arch/m68k/kernel/syscalls/syscall.tbl   | 389 ++++++++++++++++++++++++++++++
- arch/m68k/kernel/syscalls/syscallhdr.sh |  34 +++
+ arch/m68k/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/m68k/kernel/syscalls/syscalltbl.sh |  32 +++
  arch/m68k/kernel/syscalltable.S         | 403 --------------------------------
- 12 files changed, 527 insertions(+), 790 deletions(-)
+ 12 files changed, 529 insertions(+), 790 deletions(-)
  create mode 100644 arch/m68k/kernel/syscall_table.S
  create mode 100644 arch/m68k/kernel/syscalls/Makefile
  create mode 100644 arch/m68k/kernel/syscalls/syscall.tbl
