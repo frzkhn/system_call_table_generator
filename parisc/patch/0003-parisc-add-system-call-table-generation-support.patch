@@ -1,40 +1,42 @@
-From e4f76dda7f656cbb5ae016e73d33ad1c3cd42630 Mon Sep 17 00:00:00 2001
+From 11435ec8ad4b832a65e744f0af4a9a44801eafa4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:22:50 +0530
-Subject: [PATCH v5 3/5] parisc: add system call table generation support
+Subject: [PATCH v6 3/5] parisc: add system call table generation support
 
 The system call tables are in different format in all
-architecture and it will be difficult to manually add or
-modify the system calls in the respective files. To make
-it easy by keeping a script and which willll generate the
-uapi header and syscall table file. This change will also
-help to unify the implementation across all architectures.
+architecture and it will be difficult to manually add,
+modify or delete the syscall table entries in the res-
+pective files. To make it easy by keeping a script and
+which will generate the uapi header and syscall table
+file. This change will also help to unify the implemen-
+tation across all architectures.
 
 The system call table generation script is added in
-syscalls directory which contain the script to generate
-both uapi header file and system call table files.
-The syscall.tbl file will be the input for the scripts.
+kernel/syscalls directory which contain the scripts to
+generate both uapi header file and system call table
+files. The syscall.tbl will be input for the scripts.
 
 syscall.tbl contains the list of available system calls
-along with system call number and corresponding entry point.
-Add a new system call in this architecture will be possible
-by adding new entry in the syscall.tbl file.
+along with system call number and corresponding entry
+point. Add a new system call in this architecture will
+be possible by adding new entry in the syscall.tbl file.
 
 Adding a new table entry consisting of:
-        - System call number.
-        - ABI.
-        - System call name.
-        - Entry point name.
+  	- System call number.
+	- ABI.
+	- System call name.
+	- Entry point name.
 	- Compat entry name, if required.
 
-syscallhdr.sh and syscalltbl.sh will generate uapi header-
+syscallhdr.sh and syscalltbl.sh will generate uapi header
 unistd_32/64.h and syscall_table_32/64/c32.h files respect-
-ively. File syscall_table_32/64/c32.h is included by sys-
-call.S - the real system call table. Both .sh files will
-parse the content syscall.tbl to generate the header and
-table files.
+ively. Both .sh files will parse the content syscall.tbl
+to generate the header and table files. unistd_32/64.h will
+be included by uapi/asm/unistd.h and syscall_table_32/64/-
+c32.h is included by kernel/syscall.S - the real system
+call table.
 
-ARM, s390 and x86 architecuture does have the similar support.
+ARM, s390 and x86 architecuture does have similar support.
 I leverage their implementation to come up with a generic
 solution.
 
@@ -42,9 +44,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/parisc/kernel/syscalls/Makefile      |  57 +++++
  arch/parisc/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh |  34 +++
+ arch/parisc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh |  36 +++
- 4 files changed, 496 insertions(+)
+ 4 files changed, 498 insertions(+)
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
@@ -52,7 +54,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..1701ab0
+index 0000000..0e26cae
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/Makefile
 @@ -0,0 +1,57 @@
@@ -60,7 +62,7 @@ index 0000000..1701ab0
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 +
-+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') \
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') 	\
 +	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
 +
 +syscall := $(srctree)/$(src)/syscall.tbl
@@ -68,15 +70,15 @@ index 0000000..1701ab0
 +systbl := $(srctree)/$(src)/syscalltbl.sh
 +
 +quiet_cmd_syshdr = SYSHDR  $@
-+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  \
-+		   '$(syshdr_abis_$(basetarget))'         \
-+		   '$(syshdr_pfx_$(basetarget))'          \
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  	\
++		   '$(syshdr_abis_$(basetarget))'         	\
++		   '$(syshdr_pfx_$(basetarget))'          	\
 +		   '$(syshdr_offset_$(basetarget))'
 +
 +quiet_cmd_systbl = SYSTBL  $@
-+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  \
-+		   '$(systbl_abis_$(basetarget))'         \
-+		   '$(systbl_abi_$(basetarget))'          \
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  	\
++		   '$(systbl_abis_$(basetarget))'         	\
++		   '$(systbl_abi_$(basetarget))'          	\
 +		   '$(systbl_offset_$(basetarget))'
 +
 +syshdr_abis_unistd_32 := common,32
@@ -103,8 +105,8 @@ index 0000000..1701ab0
 +	$(call if_changed,systbl)
 +
 +uapisyshdr-y		+= unistd_32.h unistd_64.h
-+kapisyshdr-y		+= syscall_table_32.h     \
-+			   syscall_table_64.h     \
++kapisyshdr-y		+= syscall_table_32.h     	\
++			   syscall_table_64.h     	\
 +			   syscall_table_c32.h
 +
 +targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
@@ -490,10 +492,10 @@ index 0000000..9bbd2f9
 +350	common	io_pgetevents		sys_io_pgetevents		compat_sys_io_pgetevents
 diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..1bd164f
+index 0000000..50242b7
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,36 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -507,30 +509,32 @@ index 0000000..1bd164f
 +	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 +	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-+	echo "#ifndef ${fileguard}"
-+	echo "#define ${fileguard}"
-+	echo ""
++	printf "#ifndef %s\n" "${fileguard}"
++	printf "#define %s\n" "${fileguard}"
++	printf "\n"
 +
 +	nxt=0
 +	while read nr abi name entry compat ; do
 +		if [ -z "$offset" ]; then
-+			echo -e "#define __NR_${prefix}${name}\t$nr"
++			printf "#define __NR_%s%s\t%s\n" \
++				"${prefix}" "${name}" "${nr}"
 +		else
-+			echo -e "#define __NR_${prefix}${name}\t($offset + $nr)"
++			printf "#define __NR_%s%s\t(%s + %s)\n" \
++				"${prefix}" "${name}" "${offset}" "${nr}"
 +		fi
 +		nxt=$((nr+1))
 +	done
 +
-+	echo ""
-+	echo "#ifdef __KERNEL__"
-+	echo -e "#define __NR_syscalls\t$nxt"
-+	echo "#endif"
-+	echo ""
-+	echo "#endif /* ${fileguard} */"
++	printf "\n"
++	printf "#ifdef __KERNEL__\n"
++	printf "#define __NR_syscalls\t%s\n" "${nxt}"
++	printf "#endif\n"
++	printf "\n"
++	printf "#endif /* %s */" "${fileguard}"
 +) > "$out"
 diff --git a/arch/parisc/kernel/syscalls/syscalltbl.sh b/arch/parisc/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..1880051
+index 0000000..45b5bae
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/syscalltbl.sh
 @@ -0,0 +1,36 @@
@@ -544,15 +548,15 @@ index 0000000..1880051
 +offset="$5"
 +
 +emit() {
-+	nxt="$1"
-+	nr="$2"
-+	entry="$3"
++	t_nxt="$1"
++	t_nr="$2"
++	t_entry="$3"
 +
-+	while [ $nxt -lt $nr ]; do
-+		echo "__SYSCALL($nxt, sys_ni_syscall, )"
-+		nxt=$((nxt+1))
++	while [ $t_nxt -lt $t_nr ]; do
++		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		t_nxt=$((t_nxt+1))
 +	done
-+	echo "__SYSCALL($nxt, $entry, )"
++	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
 +}
 +
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -567,7 +571,7 @@ index 0000000..1880051
 +		else
 +			emit $((nxt+offset)) $((nr+offset)) $entry
 +		fi
-+		nxt=$((nxt+1))
++		nxt=$((nr+1))
 +	done
 +) > "$out"
 -- 

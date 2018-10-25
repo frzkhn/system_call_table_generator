@@ -1,7 +1,7 @@
-From 0ef6c66563646c1a3dfa4650b59a45e073d9a68a Mon Sep 17 00:00:00 2001
+From 500c096a72cf392c23e4e5adfab1655a9068c023 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:04:16 +0530
-Subject: [PATCH v5 1/5] parisc: move __IGNORE* entries to non uapi header
+Subject: [PATCH v6 1/5] parisc: move __IGNORE* entries to non uapi header
 
 All the __IGNORE* entries are resides in the uapi header
 file move to non uapi header asm/unistd.h as it is not

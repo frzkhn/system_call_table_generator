@@ -1,21 +1,21 @@
-From f3e3351ac4375ecf23ea4757cdb1f5c83ab27131 Mon Sep 17 00:00:00 2001
+From afe702f85e77a71272813573ea482b484cd44c68 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 11 Oct 2018 14:22:48 +0530
-Subject: [PATCH v5 4/5] parisc: uapi header and system call table file
- generation
+Subject: [PATCH v6 4/5] parisc: generate uapi header and system call table
+ files
 
-System call table generation script must be run to generate
-unistd_32/64.h and syscall_table_32/64/c32.h files. This patch
-will have changes which will invokes the script.
+System call table generation script must be run to gener-
+ate unistd_32/64.h and syscall_table_32/64/c32.h files.
+This patch will have changes which will invokes the script.
 
-This patch will generate unistd_32/64.h and syscall_table_
-32/64/c32.h files by the syscall table generation script
-invoked by arch/parisc/Makefile and the generated files against
-the removed files will be identical.
+This patch will generate unistd_32/64.h and syscall_table-
+_32/64/c32.h files by the syscall table generation script
+invoked by parisc/Makefile and the generated files against
+the removed files must be identical.
 
-The generated uapi header file will be included in uapi/asm/
-unistd_32/64.h and generated system call table support file will
-be included by kernel/syscall.S file.
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/syscall.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -23,9 +23,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/parisc/include/asm/Kbuild        |   3 +
  arch/parisc/include/uapi/asm/Kbuild   |   2 +
  arch/parisc/include/uapi/asm/unistd.h | 373 +--------------------------
- arch/parisc/kernel/syscall.S          |  10 +-
+ arch/parisc/kernel/syscall.S          |  11 +-
  arch/parisc/kernel/syscall_table.S    | 459 ----------------------------------
- 6 files changed, 22 insertions(+), 829 deletions(-)
+ 6 files changed, 23 insertions(+), 829 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
 
 diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
@@ -450,10 +450,10 @@ index f10d065..518c1d6 100644
  
  #endif /* _UAPI_ASM_PARISC_UNISTD_H_ */
 diff --git a/arch/parisc/kernel/syscall.S b/arch/parisc/kernel/syscall.S
-index f453997..f899d43 100644
+index f453997..5af0176 100644
 --- a/arch/parisc/kernel/syscall.S
 +++ b/arch/parisc/kernel/syscall.S
-@@ -923,17 +923,21 @@ ENTRY(lws_table)
+@@ -923,19 +923,24 @@ ENTRY(lws_table)
  END(lws_table)
  	/* End of lws table */
  
@@ -477,7 +477,10 @@ index f453997..f899d43 100644
 +#include <asm/syscall_table_64.h>    /* 64-bit native syscalls */
  END(sys_call_table64)
  #endif
++#undef __SYSCALL
  
+ 	/*
+ 		All light-weight-syscall atomic operations 
 diff --git a/arch/parisc/kernel/syscall_table.S b/arch/parisc/kernel/syscall_table.S
 deleted file mode 100644
 index fe3f2a4..0000000

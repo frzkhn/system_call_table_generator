@@ -1,7 +1,7 @@
-From d257f62b121342956a4270f4330bce71ab9f5af0 Mon Sep 17 00:00:00 2001
+From 90d89d672359eabd03b9ee3a609573968f503bf4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 16 Oct 2018 12:03:22 +0530
-Subject: [PATCH v5 0/5] parisc: system call table generation support
+Date: Thu, 25 Oct 2018 19:04:52 +0530
+Subject: [PATCH v6 0/5] parisc: system call table generation support
 
 The purpose of this patch series is, we can easily add/modify/delete
 system call table support by changing entry in syscall.tbl file 
@@ -9,10 +9,11 @@ instead of manually changing many files. The other goal is to unify
 the system call table generation support implementation across all 
 the architectures. 
 
-The system call tables are in different format in all architecture. It
-will be difficult to manually add, modify or delete the system calls
-in the respective files manually. To make it easy by keeping a script 
-and which'll generate uapi header file and syscall table file.
+The system call tables are in different format in all architecture. 
+It will be difficult to manually add, modify or delete the system 
+calls in the respective files manually. To make it easy by keeping
+a script and which'll generate uapi header file and syscall table 
+file.
 
 syscall.tbl contains the list of available system calls along with 
 system call number and corresponding entry point. Add a new system 
@@ -24,27 +25,26 @@ Adding a new table entry consisting of:
         - ABI.
         - System call name.
         - Entry point name.
-        - Compat entry name, if required.
+	- Compat entry name, if required.
 
 ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
-I have done the same support for work for alpha, microblaze, sparc,
-m68k, mips, powerpc, sh, sparc, and xtensa. But I started sending 
-the patch for one architecuture for review. Below mentioned git
+I have done the same support for work for alpha, ia64, m68k, micro-
+blaze, mips, powerpc, sh, sparc, and xtensa. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
-Finally, this is the ground work for solving the Y2038 issue. We 
-need to add two dozen of system calls to solve Y2038 issue. So this
-patch series will help to add new system calls easily by adding new
-entry in the syscall.tbl.
+Finally, this is the ground work to solve the Y2038 issue. We need 
+to add two dozen of system calls to solve Y2038 issue. So this patch
+series will help to add new system calls easily by adding new entry 
+in the syscall.tbl.
 
 Firoz Khan (5):
   parisc: move __IGNORE* entries to non uapi header
   parisc: add __NR_syscalls along with __NR_Linux_syscalls
   parisc: add system call table generation support
-  parisc: uapi header and system call table file generation
+  parisc: generate uapi header and system call table files
   parisc: syscalls: ignore nfsservctl for other architectures
 
  arch/parisc/Makefile                      |   4 +
@@ -52,14 +52,14 @@ Firoz Khan (5):
  arch/parisc/include/asm/unistd.h          |   8 +
  arch/parisc/include/uapi/asm/Kbuild       |   2 +
  arch/parisc/include/uapi/asm/unistd.h     | 382 +------------------------
- arch/parisc/kernel/syscall.S              |  10 +-
+ arch/parisc/kernel/syscall.S              |  11 +-
  arch/parisc/kernel/syscall_table.S        | 459 ------------------------------
  arch/parisc/kernel/syscalls/Makefile      |  57 ++++
  arch/parisc/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++
- arch/parisc/kernel/syscalls/syscallhdr.sh |  34 +++
+ arch/parisc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh |  36 +++
  scripts/checksyscalls.sh                  |   1 +
- 12 files changed, 529 insertions(+), 836 deletions(-)
+ 12 files changed, 532 insertions(+), 836 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
