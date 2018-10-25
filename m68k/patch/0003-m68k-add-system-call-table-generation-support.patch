@@ -5,11 +5,11 @@ Subject: [PATCH v4 3/4] m68k: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
-modify or delete the system calls in the respective
-files. To make it easy by keeping a script and which
-will generate the uapi header and syscall table file.
-This change will also help to unify the implementation
-across all architectures.
+modify or delete the syscall table entries in the res-
+pective files. To make it easy by keeping a script and
+which will generate the uapi header and syscall table 
+file. This change will also help to unify the implemen-
+tation across all architectures.
 
 The system call table generation script is added in
 kernel/syscalls directory which contain the scripts to

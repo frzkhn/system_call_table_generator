@@ -29,9 +29,8 @@ Adding a new table entry consisting of:
 ARM, s390 and x86 architecuture does exist the similar support. I 
 leverage their implementation to come up with a generic solution.
 
-I have done the same support for work for alpha, microblaze, sparc,
-parisc, mips, powerpc, sh, sparc, and xtensa. But I started sending 
-the patch for one architecuture for review. Below mentioned git
+I have done the same support for work for alpha, ia64, microblaze,
+mips, parisc, powerpc, sh, sparc, and xtensa. Below mentioned git
 repository contains more details.
 Git repo:- https://github.com/frzkhn/system_call_table_generator/
 
