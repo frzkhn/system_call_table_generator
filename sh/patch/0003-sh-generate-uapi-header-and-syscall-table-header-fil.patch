@@ -1,35 +1,32 @@
-From 8f9534459ce41e789ad42e765f14af4a6d913f53 Mon Sep 17 00:00:00 2001
+From fc911ca39c1e2532e864d36749f56f6370f7491b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 1 Aug 2018 15:30:32 +0530
-Subject: [PATCH 3/3] sh: uapi header and system call table file generation
+Date: Mon, 29 Oct 2018 12:02:32 +0530
+Subject: [PATCH v2 3/3] sh: generate uapi header and syscall table header
+ files
 
-System call table generation script must be run to generate
-unistd_64.h and syscall_table.h files. This patch will have
-changes which will invokes the script.
+System call table generation script must be run to gener-
+ate unistd_32.h and syscall_table.h files. This patch will
+have changes which will invokes the script.
 
-This patch will generate unistd_64.h and syscall_table.h
+This patch will generate unistd_32.h and syscall_table.h
 files by the syscall table generation script invoked by
-arch/ia64/Makefile and the generated files against the
-removed files will be identical.
+sh/Makefile and the generated files against the removed
+files must be identical.
 
-The generated uapi header file will be included in
-uapi/asm/unistd.h and generated system call table support
-file will be included by ia64/kernel/syscall_table.S file.
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/syscall_32.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/sh/Makefile                |   3 +
- arch/sh/include/asm/Kbuild      |   2 +
- arch/sh/include/uapi/asm/Kbuild |   2 +
- arch/sh/kernel/Makefile         |   2 +-
- arch/sh/kernel/syscall.S        |   9 +
- arch/sh/kernel/syscalls_32.S    | 402 ----------------------------------------
- 6 files changed, 17 insertions(+), 403 deletions(-)
- create mode 100644 arch/sh/kernel/syscall.S
- delete mode 100644 arch/sh/kernel/syscalls_32.S
+ arch/sh/include/asm/Kbuild      |   1 +
+ arch/sh/include/uapi/asm/Kbuild |   1 +
+ arch/sh/kernel/syscalls_32.S    | 387 +---------------------------------------
+ 4 files changed, 8 insertions(+), 384 deletions(-)
 
 diff --git a/arch/sh/Makefile b/arch/sh/Makefile
-index 65300193..19ca795 100644
+index c521ade..4009bef 100644
 --- a/arch/sh/Makefile
 +++ b/arch/sh/Makefile
 @@ -228,6 +228,9 @@ archclean:
@@ -43,79 +40,34 @@ index 65300193..19ca795 100644
  	@echo '  zImage 	           - Compressed kernel image'
  	@echo '  romImage	           - Compressed ROM image, if supported'
 diff --git a/arch/sh/include/asm/Kbuild b/arch/sh/include/asm/Kbuild
-index 46dd82a..a907c57 100644
+index 6a5609a..5c3a36d 100644
 --- a/arch/sh/include/asm/Kbuild
 +++ b/arch/sh/include/asm/Kbuild
-@@ -18,3 +18,5 @@ generic-y += serial.h
+@@ -19,3 +19,4 @@ generic-y += serial.h
  generic-y += sizes.h
  generic-y += trace_clock.h
  generic-y += xor.h
-+
-+generated-y += syscall_table.h
-\ No newline at end of file
++generic-y += syscall_table.h
 diff --git a/arch/sh/include/uapi/asm/Kbuild b/arch/sh/include/uapi/asm/Kbuild
-index ba4d39c..443b746 100644
+index ba4d39c..f7b2130 100644
 --- a/arch/sh/include/uapi/asm/Kbuild
 +++ b/arch/sh/include/uapi/asm/Kbuild
-@@ -21,3 +21,5 @@ generic-y += statfs.h
+@@ -21,3 +21,4 @@ generic-y += statfs.h
  generic-y += termbits.h
  generic-y += termios.h
  generic-y += ucontext.h
-+
-+generated-y += unistd_32.h
-\ No newline at end of file
-diff --git a/arch/sh/kernel/Makefile b/arch/sh/kernel/Makefile
-index dc80041..a042981 100644
---- a/arch/sh/kernel/Makefile
-+++ b/arch/sh/kernel/Makefile
-@@ -18,7 +18,7 @@ obj-y	:= debugtraps.o dma-nommu.o dumpstack.o 		\
- 	   process_$(BITS).o ptrace.o ptrace_$(BITS).o			\
- 	   reboot.o return_address.o					\
- 	   setup.o signal_$(BITS).o sys_sh.o 				\
--	   syscalls_$(BITS).o time.o topology.o traps.o			\
-+	   syscall.o time.o topology.o traps.o			\
- 	   traps_$(BITS).o unwinder.o
- 
- ifndef CONFIG_GENERIC_IOMAP
-diff --git a/arch/sh/kernel/syscall.S b/arch/sh/kernel/syscall.S
-new file mode 100644
-index 0000000..317a2a9
---- /dev/null
-+++ b/arch/sh/kernel/syscall.S
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/sys.h>
-+#include <linux/linkage.h>
-+
-+#define __SYSCALL(nr, entry, nargs) .long entry
-+
-+.data
-+ENTRY(sys_call_table)
-+#include <asm/syscall_table.h>
++generic-y += unistd_32.h
 diff --git a/arch/sh/kernel/syscalls_32.S b/arch/sh/kernel/syscalls_32.S
-deleted file mode 100644
-index 254bc22..0000000
+index 254bc22..54978e0 100644
 --- a/arch/sh/kernel/syscalls_32.S
-+++ /dev/null
-@@ -1,402 +0,0 @@
--/*
-- * arch/sh/kernel/syscalls.S
-- *
-- * System call table for SuperH
-- *
-- *  Copyright (C) 1999, 2000, 2002  Niibe Yutaka
-- *  Copyright (C) 2003  Paul Mundt
-- *
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- */
--#include <linux/sys.h>
--#include <linux/linkage.h>
--
--	.data
--ENTRY(sys_call_table)
++++ b/arch/sh/kernel/syscalls_32.S
+@@ -14,389 +14,8 @@
+ #include <linux/sys.h>
+ #include <linux/linkage.h>
+ 
++#define __SYSCALL(nr, entry, nargs) .long entry
+ 	.data
+ ENTRY(sys_call_table)
 -	.long sys_restart_syscall	/* 0  -  old "setup()" system call*/
 -	.long sys_exit
 -	.long sys_fork
@@ -500,6 +452,8 @@ index 254bc22..0000000
 -	.long sys_copy_file_range	/* 380 */
 -	.long sys_preadv2
 -	.long sys_pwritev2
++#include <asm/syscall_table.h>
++#undef __SYSCALL
 -- 
 1.9.1
 
