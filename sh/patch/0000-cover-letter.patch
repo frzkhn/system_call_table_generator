@@ -45,7 +45,6 @@ issue. We need to add two dozen of system calls to solve
 Y2038 issue. So this patch series will help to add new 
 system calls easily by adding new entry in the syscall.tbl.
 
-
 Changes since v1:
  - modified and optimized the syscall table generation 
    scripts.
