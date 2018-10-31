@@ -20,8 +20,8 @@ syscall table file.
 syscall.tbl contains the list of available system 
 calls along with system call number and correspond-
 ing entry point. Add a new system call in this arch-
-itecture will be possible by adding new entry in the
-syscall.tbl file.
+itecture will be possible by adding new entry in 
+the syscall.tbl file.
 
 Adding a new table entry consisting of:
         - System call number.
@@ -46,11 +46,10 @@ Y2038 issue. So this patch series will help to add new
 system calls easily by adding new entry in the syscall.tbl.
 
 Changes since v1:
- - modified and optimized the syscall table generation 
+ - optimized/updated the syscall table generation 
    scripts.
  - fixed all mixed indentation issues in syscall.tbl.
- - added comments in syscall.tbl.
- - change log are updated.
+ - added "comments" in syscall.tbl.
 
 Firoz Khan (3):
   sh: add __NR_syscalls along with NR_syscalls
