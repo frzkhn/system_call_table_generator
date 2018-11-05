@@ -1,7 +1,7 @@
-From 8244eeba71f89442811faeedd3fe4eb6ddcca76c Mon Sep 17 00:00:00 2001
+From de595cdd8b8fffe17244a3c4362ee8844fb5fd5d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 31 Oct 2018 11:24:12 +0530
-Subject: [PATCH v2 0/4] sparc: system call table generation support
+Date: Mon, 5 Nov 2018 10:14:07 +0530
+Subject: [PATCH v3 0/4] sparc: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -47,6 +47,10 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in the
 syscall.tbl.
 
+Changes since v2:
+ - added io_pgetevents entry in the syscall.tbl.
+ - updated the compat system call table.
+
 Changes since v1:
  - optimized/updated the syscall table generation 
    scripts.
@@ -63,14 +67,14 @@ Firoz Khan (4):
  arch/sparc/include/asm/Kbuild            |   4 +-
  arch/sparc/include/asm/unistd.h          |  18 ++
  arch/sparc/include/uapi/asm/Kbuild       |   2 +
- arch/sparc/include/uapi/asm/unistd.h     | 425 +------------------------------
+ arch/sparc/include/uapi/asm/unistd.h     | 426 +------------------------------
  arch/sparc/kernel/syscalls/Makefile      |  55 ++++
- arch/sparc/kernel/syscalls/syscall.tbl   | 408 +++++++++++++++++++++++++++++
+ arch/sparc/kernel/syscalls/syscall.tbl   | 409 +++++++++++++++++++++++++++++
  arch/sparc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/sparc/kernel/syscalls/syscalltbl.sh |  36 +++
  arch/sparc/kernel/systbls_32.S           |  81 +-----
  arch/sparc/kernel/systbls_64.S           | 157 +-----------
- 11 files changed, 571 insertions(+), 654 deletions(-)
+ 11 files changed, 572 insertions(+), 655 deletions(-)
  create mode 100644 arch/sparc/kernel/syscalls/Makefile
  create mode 100644 arch/sparc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/sparc/kernel/syscalls/syscallhdr.sh

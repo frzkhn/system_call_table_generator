@@ -1,7 +1,7 @@
-From fe764c66082a1a158f789753a11d27ade128ba94 Mon Sep 17 00:00:00 2001
+From 3d1091cdfc9c97d4e9a39efbe322a0e516f09057 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 30 Oct 2018 10:08:54 +0530
-Subject: [PATCH v2 2/4] sparc: add __NR_syscalls along with NR_syscalls
+Date: Mon, 5 Nov 2018 09:30:04 +0530
+Subject: [PATCH v3 2/4] sparc: add __NR_syscalls along with NR_syscalls
 
 NR_syscalls macro holds the number of system call exist
 in sparc architecture. We have to change the value of NR-
@@ -39,7 +39,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/arch/sparc/include/asm/unistd.h b/arch/sparc/include/asm/unistd.h
-index 6dfd752..171a6e5 100644
+index 73d2454..5194d86 100644
 --- a/arch/sparc/include/asm/unistd.h
 +++ b/arch/sparc/include/asm/unistd.h
 @@ -17,6 +17,8 @@
@@ -52,16 +52,16 @@ index 6dfd752..171a6e5 100644
  #else
  #define __NR_time		231 /* Linux sparc32                               */
 diff --git a/arch/sparc/include/uapi/asm/unistd.h b/arch/sparc/include/uapi/asm/unistd.h
-index 6e59037..e11d86c 100644
+index d37a136..4ae11c4 100644
 --- a/arch/sparc/include/uapi/asm/unistd.h
 +++ b/arch/sparc/include/uapi/asm/unistd.h
-@@ -428,7 +428,9 @@
- #define __NR_pwritev2		359
+@@ -429,7 +429,9 @@
  #define __NR_statx		360
+ #define __NR_io_pgetevents	361
  
--#define NR_syscalls		361
+-#define NR_syscalls		362
 +#ifdef __KERNEL__
-+#define __NR_syscalls		361
++#define __NR_syscalls		362
 +#endif
  
  /* Bitmask values returned from kern_features system call.  */

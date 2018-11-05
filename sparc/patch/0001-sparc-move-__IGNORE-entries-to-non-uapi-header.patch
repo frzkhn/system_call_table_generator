@@ -1,7 +1,7 @@
-From 15caf0625990b32b97bff3dd868f2ce9660321c8 Mon Sep 17 00:00:00 2001
+From 49510abd07ab9ece0583ac7e25fd889daacb8009 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 30 Oct 2018 10:03:59 +0530
-Subject: [PATCH v2 1/4] sparc: move __IGNORE* entries to non uapi header
+Subject: [PATCH v3 1/4] sparc: move __IGNORE* entries to non uapi header
 
 All the __IGNORE* entries are resides in the uapi header
 file move to non uapi header asm/unistd.h as it is not
@@ -22,10 +22,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/arch/sparc/include/asm/unistd.h b/arch/sparc/include/asm/unistd.h
-index b2a6a95..6dfd752 100644
+index 00f87db..73d2454 100644
 --- a/arch/sparc/include/asm/unistd.h
 +++ b/arch/sparc/include/asm/unistd.h
-@@ -45,4 +45,20 @@
+@@ -46,4 +46,20 @@
  #define __ARCH_WANT_COMPAT_SYS_SENDFILE
  #endif
  
@@ -47,10 +47,10 @@ index b2a6a95..6dfd752 100644
 +
  #endif /* _SPARC_UNISTD_H */
 diff --git a/arch/sparc/include/uapi/asm/unistd.h b/arch/sparc/include/uapi/asm/unistd.h
-index 09acf0d..6e59037 100644
+index 45b4bf1..d37a136 100644
 --- a/arch/sparc/include/uapi/asm/unistd.h
 +++ b/arch/sparc/include/uapi/asm/unistd.h
-@@ -433,20 +433,4 @@
+@@ -434,20 +434,4 @@
  /* Bitmask values returned from kern_features system call.  */
  #define KERN_FEATURE_MIXED_MODE_STACK	0x00000001
  

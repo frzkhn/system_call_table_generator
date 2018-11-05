@@ -1,7 +1,7 @@
-From 8244eeba71f89442811faeedd3fe4eb6ddcca76c Mon Sep 17 00:00:00 2001
+From de595cdd8b8fffe17244a3c4362ee8844fb5fd5d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 30 Oct 2018 15:31:37 +0530
-Subject: [PATCH v2 4/4] sparc: generate uapi header and system call table
+Date: Mon, 5 Nov 2018 09:54:20 +0530
+Subject: [PATCH v3 4/4] sparc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -22,10 +22,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/sparc/Makefile                  |   3 +
  arch/sparc/include/asm/Kbuild        |   4 +-
  arch/sparc/include/uapi/asm/Kbuild   |   2 +
- arch/sparc/include/uapi/asm/unistd.h | 411 +----------------------------------
+ arch/sparc/include/uapi/asm/unistd.h | 412 +----------------------------------
  arch/sparc/kernel/systbls_32.S       |  81 +------
  arch/sparc/kernel/systbls_64.S       | 157 +------------
- 6 files changed, 18 insertions(+), 640 deletions(-)
+ 6 files changed, 18 insertions(+), 641 deletions(-)
 
 diff --git a/arch/sparc/Makefile b/arch/sparc/Makefile
 index 048a033..4a09195 100644
@@ -70,10 +70,10 @@ index 4680ba2..a8e187d 100644
 +generic-y += unistd_32.h
 +generic-y += unistd_64.h
 diff --git a/arch/sparc/include/uapi/asm/unistd.h b/arch/sparc/include/uapi/asm/unistd.h
-index e11d86c..7f5d773 100644
+index 4ae11c4..7f5d773 100644
 --- a/arch/sparc/include/uapi/asm/unistd.h
 +++ b/arch/sparc/include/uapi/asm/unistd.h
-@@ -21,415 +21,10 @@
+@@ -21,416 +21,10 @@
  #endif
  #endif
  
@@ -485,15 +485,16 @@ index e11d86c..7f5d773 100644
 -#define __NR_preadv2		358
 -#define __NR_pwritev2		359
 -#define __NR_statx		360
+-#define __NR_io_pgetevents	361
 -
 -#ifdef __KERNEL__
--#define __NR_syscalls		361
+-#define __NR_syscalls		362
 +#include <asm/unistd_32.h>
  #endif
  
  /* Bitmask values returned from kern_features system call.  */
 diff --git a/arch/sparc/kernel/systbls_32.S b/arch/sparc/kernel/systbls_32.S
-index 12bee14..ab9e4d5 100644
+index 621a363..ab9e4d5 100644
 --- a/arch/sparc/kernel/systbls_32.S
 +++ b/arch/sparc/kernel/systbls_32.S
 @@ -9,85 +9,10 @@
@@ -582,11 +583,11 @@ index 12bee14..ab9e4d5 100644
 -/*345*/	.long sys_renameat2, sys_seccomp, sys_getrandom, sys_memfd_create, sys_bpf
 -/*350*/	.long sys_execveat, sys_membarrier, sys_userfaultfd, sys_bind, sys_listen
 -/*355*/	.long sys_setsockopt, sys_mlock2, sys_copy_file_range, sys_preadv2, sys_pwritev2
--/*360*/	.long sys_statx
+-/*360*/	.long sys_statx, sys_io_pgetevents
 +#include <asm/syscall_table_32.h>	/* 32-bit native syscalls */
 +#undef __SYSCALL
 diff --git a/arch/sparc/kernel/systbls_64.S b/arch/sparc/kernel/systbls_64.S
-index 387ef99..a27394b 100644
+index ff9389a..a27394b 100644
 --- a/arch/sparc/kernel/systbls_64.S
 +++ b/arch/sparc/kernel/systbls_64.S
 @@ -10,167 +10,18 @@
@@ -631,9 +632,9 @@ index 387ef99..a27394b 100644
 -	.word sys_recvfrom, sys_setreuid16, sys_setregid16, sys_rename, compat_sys_truncate
 -/*130*/	.word compat_sys_ftruncate, sys_flock, compat_sys_lstat64, sys_sendto, sys_shutdown
 -	.word sys_socketpair, sys_mkdir, sys_rmdir, compat_sys_utimes, compat_sys_stat64
--/*140*/	.word sys_sendfile64, sys_nis_syscall, compat_sys_futex, sys_gettid, compat_sys_getrlimit
+-/*140*/	.word sys_sendfile64, sys_getpeername, compat_sys_futex, sys_gettid, compat_sys_getrlimit
 -	.word compat_sys_setrlimit, sys_pivot_root, sys_prctl, sys_pciconfig_read, sys_pciconfig_write
--/*150*/	.word sys_nis_syscall, sys_inotify_init, sys_inotify_add_watch, sys_poll, sys_getdents64
+-/*150*/	.word sys_getsockname, sys_inotify_init, sys_inotify_add_watch, sys_poll, sys_getdents64
 -	.word compat_sys_fcntl64, sys_inotify_rm_watch, compat_sys_statfs, compat_sys_fstatfs, sys_oldumount
 -/*160*/	.word compat_sys_sched_setaffinity, compat_sys_sched_getaffinity, sys_getdomainname, sys_setdomainname, sys_nis_syscall
 -	.word sys_quotactl, sys_set_tid_address, compat_sys_mount, compat_sys_ustat, sys_setxattr
@@ -675,7 +676,7 @@ index 387ef99..a27394b 100644
 -	.word sys_renameat2, sys_seccomp, sys_getrandom, sys_memfd_create, sys_bpf
 -/*350*/	.word sys32_execveat, sys_membarrier, sys_userfaultfd, sys_bind, sys_listen
 -	.word compat_sys_setsockopt, sys_mlock2, sys_copy_file_range, compat_sys_preadv2, compat_sys_pwritev2
--/*360*/	.word sys_statx
+-/*360*/	.word sys_statx, compat_sys_io_pgetevents
 -
 +#include <asm/syscall_table_c32.h>	/* Compat syscalls */
  #endif /* CONFIG_COMPAT */
@@ -758,7 +759,7 @@ index 387ef99..a27394b 100644
 -	.word sys_renameat2, sys_seccomp, sys_getrandom, sys_memfd_create, sys_bpf
 -/*350*/	.word sys64_execveat, sys_membarrier, sys_userfaultfd, sys_bind, sys_listen
 -	.word sys_setsockopt, sys_mlock2, sys_copy_file_range, sys_preadv2, sys_pwritev2
--/*360*/	.word sys_statx
+-/*360*/	.word sys_statx, sys_io_pgetevents
 +#include <asm/syscall_table_64.h>	/* 64-bit native syscalls */
 +#undef __SYSCALL
 -- 

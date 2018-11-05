@@ -1,7 +1,7 @@
-From 5c56d8dd6c03add5b126706276f06c970b61a573 Mon Sep 17 00:00:00 2001
+From 8b0259c09007b187a970b749d0d67d36216b7851 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 3 Sep 2018 21:06:56 +0530
-Subject: [PATCH v2 3/4] sparc: add system call table generation support
+Subject: [PATCH v3 3/4] sparc: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -43,10 +43,10 @@ solution.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/sparc/kernel/syscalls/Makefile      |  55 +++++
- arch/sparc/kernel/syscalls/syscall.tbl   | 408 +++++++++++++++++++++++++++++++
+ arch/sparc/kernel/syscalls/syscall.tbl   | 409 +++++++++++++++++++++++++++++++
  arch/sparc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/sparc/kernel/syscalls/syscalltbl.sh |  36 +++
- 4 files changed, 535 insertions(+)
+ 4 files changed, 536 insertions(+)
  create mode 100644 arch/sparc/kernel/syscalls/Makefile
  create mode 100644 arch/sparc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/sparc/kernel/syscalls/syscallhdr.sh
@@ -115,10 +115,10 @@ index 0000000..11196bf
 +	@:
 diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..e63e6d6
+index 0000000..c8c77c0
 --- /dev/null
 +++ b/arch/sparc/kernel/syscalls/syscall.tbl
-@@ -0,0 +1,408 @@
+@@ -0,0 +1,409 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for sparc
@@ -292,7 +292,7 @@ index 0000000..e63e6d6
 +138	common	utimes			sys_utimes			compat_sys_utimes
 +139	common	stat64			sys_stat64			compat_sys_stat64
 +140	common	sendfile64		sys_sendfile64
-+141	common	getpeername		sys_getpeername			sys_nis_syscall
++141	common	getpeername		sys_getpeername
 +142	common	futex			sys_futex			compat_sys_futex
 +143	common	gettid			sys_gettid
 +144	common	getrlimit		sys_getrlimit			compat_sys_getrlimit
@@ -301,7 +301,7 @@ index 0000000..e63e6d6
 +147	common	prctl			sys_prctl
 +148	common	pciconfig_read		sys_pciconfig_read
 +149	common	pciconfig_write		sys_pciconfig_write
-+150	common	getsockname		sys_getsockname			sys_nis_syscall
++150	common	getsockname		sys_getsockname
 +151	common	inotify_init		sys_inotify_init
 +152	common	inotify_add_watch	sys_inotify_add_watch
 +153	common	poll			sys_poll
@@ -527,6 +527,7 @@ index 0000000..e63e6d6
 +358	common	preadv2			sys_preadv2			compat_sys_preadv2
 +359	common	pwritev2		sys_pwritev2			compat_sys_pwritev2
 +360	common	statx			sys_statx
++361	common	io_pgetevents		sys_io_pgetevents		compat_sys_io_pgetevents
 diff --git a/arch/sparc/kernel/syscalls/syscallhdr.sh b/arch/sparc/kernel/syscalls/syscallhdr.sh
 new file mode 100644
 index 0000000..626b574
