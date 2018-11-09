@@ -1,24 +1,26 @@
-From f644dbc35185132118b2040fa9d3d747b70ac881 Mon Sep 17 00:00:00 2001
+From 7c7644f5ae5ccd00d069c41f191c3e01b3efa584 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 14 Sep 2018 11:44:03 +0530
-Subject: [PATCH 0/3] System call table generation support
+Date: Fri, 9 Nov 2018 10:56:25 +0530
+Subject: [PATCH v2 0/5] mips: system call table generation support
 
-The purpose of this patch series is:
-1. We can easily add/modify/delete system call by changing entry 
-in syscall.tbl file. No need to manually edit many files.
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the 
+system call table generation support implementation 
+across all the architectures. 
 
-2. It is easy to unify the system call implementation across all 
-the architectures. 
+The system call tables are in different format in 
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a 
+script and which'll generate uapi header file and 
+syscall table file.
 
-The system call tables are in different format in all architecture 
-and it will be difficult to manually add or modify the system calls
-in the respective files manually. To make it easy by keeping a script 
-and which'll generate the header file and syscall table file so this 
-change will unify them across all architectures.
-
-syscall.tbl contains the list of available system calls along with 
-system call number and corresponding entry point. Add a new system 
-call in this architecture will be possible by adding new entry in 
+syscall.tbl contains the list of available system 
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in 
 the syscall.tbl file.
 
 Adding a new table entry consisting of:
@@ -26,66 +28,59 @@ Adding a new table entry consisting of:
         - ABI.
         - System call name.
         - Entry point name.
-        - Compat entry name, if required.
+	- Compat entry name, if required.
 
-ARM, s390 and x86 architecuture does exist the similar support. I 
-leverage their implementation to come up with a generic solution.
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to 
+come up with a generic solution.
 
-I have done the same support for work for alpha, m68k, microblaze, 
-ia64, powerpc, parisc, sh, sparc, and xtensa. But I started sending 
-the patch for one architecuture for review. Below mentioned git
-repository contains more details.
-Git repo:- https://github.com/frzkhn/system_call_table_generator/
+I have done the same support for work for alpha, 
+ia64, m68k, microblaze, parisc, powerpc, sh, sparc, 
+and xtensa. Below mentioned git repository contains
+more details about the workflow.
 
-Finally, this is the ground work for solving the Y2038 issue. We 
-need to add/change two dozen of system calls to solve Y2038 issue. 
-So this patch series will help to easily modify from existing 
-system call to Y2038 compatible system calls.
+ https://github.com/frzkhn/system_call_table_generator/
 
-I started working system call table generation on 4.17-rc1. I used 
-marcin's script - https://github.com/hrw/syscalls-table to generate 
-the syscall.tbl file. And this will be the input to the system call 
-table generation script. But there are couple system call got add 
-in the latest rc release. If run Marcin's script on latest release,
-It will generate a new syscall.tbl. But I still use the old file - 
-syscall.tbl and once all review got over I'll update syscall.tbl 
-alone w.r.to the tip of the kernel. The impact of this thing, few 
-of the system call won't work. 
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to 
+solve Y2038 issue. So this patch series will help to
+add new system calls easily by adding new entry in the
+syscall.tbl.
 
-Firoz Khan (3):
-  mips: Add __NR_syscalls macro in uapi/asm/unistd.h
-  mips: Add system call table generation support
-  mips: uapi header and system call table file generation
+Changes since v1:
+ - optimized/updated the syscall table generation 
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall_*.tbl.
+
+Firoz Khan (5):
+  mips: add __NR_syscalls along with __NR_Linux_syscalls
+  mips: add +1 to __NR_syscalls in uapi header
+  mips: remove syscall table entries
+  mips: add system call table generation support
+  mips: generate uapi header and system call table files
 
  arch/mips/Makefile                        |    3 +
  arch/mips/include/asm/Kbuild              |    4 +
+ arch/mips/include/asm/unistd.h            |   24 +-
  arch/mips/include/uapi/asm/Kbuild         |    3 +
- arch/mips/include/uapi/asm/unistd.h       | 1053 +----------------------------
- arch/mips/kernel/scall32-o32.S            |  385 +----------
- arch/mips/kernel/scall64-64.S             |  334 +--------
- arch/mips/kernel/scall64-n32.S            |  337 +--------
- arch/mips/kernel/scall64-o32.S            |  374 +---------
- arch/mips/kernel/syscall_table_32_o32.S   |    8 +
- arch/mips/kernel/syscall_table_64_64.S    |    9 +
- arch/mips/kernel/syscall_table_64_n32.S   |    8 +
- arch/mips/kernel/syscall_table_64_o32.S   |    9 +
- arch/mips/kernel/syscalls/Makefile        |   62 ++
- arch/mips/kernel/syscalls/README.md       |   16 +
- arch/mips/kernel/syscalls/syscall_32.tbl  |  375 ++++++++++
- arch/mips/kernel/syscalls/syscall_64.tbl  |  335 +++++++++
- arch/mips/kernel/syscalls/syscall_n32.tbl |  339 ++++++++++
- arch/mips/kernel/syscalls/syscallhdr.sh   |   37 +
- arch/mips/kernel/syscalls/syscalltbl.sh   |   44 ++
- 19 files changed, 1268 insertions(+), 2467 deletions(-)
- create mode 100644 arch/mips/kernel/syscall_table_32_o32.S
- create mode 100644 arch/mips/kernel/syscall_table_64_64.S
- create mode 100644 arch/mips/kernel/syscall_table_64_n32.S
- create mode 100644 arch/mips/kernel/syscall_table_64_o32.S
+ arch/mips/include/uapi/asm/unistd.h       | 1074 +----------------------------
+ arch/mips/kernel/ftrace.c                 |    6 +-
+ arch/mips/kernel/scall32-o32.S            |  395 +----------
+ arch/mips/kernel/scall64-64.S             |  335 +--------
+ arch/mips/kernel/scall64-n32.S            |  341 +--------
+ arch/mips/kernel/scall64-o32.S            |  379 +---------
+ arch/mips/kernel/syscalls/Makefile        |   71 ++
+ arch/mips/kernel/syscalls/syscall_64.tbl  |  338 +++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl |  342 +++++++++
+ arch/mips/kernel/syscalls/syscall_o32.tbl |  378 ++++++++++
+ arch/mips/kernel/syscalls/syscallhdr.sh   |   36 +
+ arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
+ 16 files changed, 1267 insertions(+), 2498 deletions(-)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
- create mode 100644 arch/mips/kernel/syscalls/README.md
- create mode 100644 arch/mips/kernel/syscalls/syscall_32.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_64.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
+ create mode 100644 arch/mips/kernel/syscalls/syscall_o32.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscallhdr.sh
  create mode 100644 arch/mips/kernel/syscalls/syscalltbl.sh
 
