@@ -1,68 +1,73 @@
-From e9d1d9c281fcd87bea86047d94bb570bcdd963e0 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Sun, 21 Oct 2018 09:13:53 +0530
-Subject: [PATCH 3/3] powerpc: uapi header and system call table file
- generation
+From fede6713a411292be03fb9d0d69374e8b15391b3 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Fri, 9 Nov 2018 16:51:01 +0530
+Subject: [PATCH v2 4/4] powerpc: generate uapi header and system call table
+ files
 
-System call table generation script must be run to generate
-unistd_32/64.h and syscall_table_32/64/c32.h files. This patch
-will have changes which will invokes the script.
+System call table generation script must be run to gener-
+ate unistd_32/64.h and syscall_table_32/64/c32/spu.h files.
+This patch will have changes which will invokes the script.
 
-This patch will generate unistd_32/64.h and syscall_table_
-32/64/c32.h files by the syscall table generation script
-invoked by arch/powerpc/Makefile and the generated files against
-the removed files will be identical.
+This patch will generate unistd_32/64.h and syscall_table-
+_32/64/c32/spu.h files by the syscall table generation
+script invoked by parisc/Makefile and the generated files
+against the removed files must be identical.
 
-The generated uapi header files will be included in uapi/asm/
-unistd.h and generated system call table files will be included
-by kernel/systbl.S file.
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/systbl.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/powerpc/Makefile                  |   3 +
- arch/powerpc/include/asm/Kbuild        |   3 +
- arch/powerpc/include/uapi/asm/Kbuild   |   2 +
- arch/powerpc/include/uapi/asm/unistd.h | 394 +--------------------------------
- arch/powerpc/kernel/systbl.S           |  37 ++--
- 5 files changed, 25 insertions(+), 414 deletions(-)
+ arch/powerpc/Makefile                       |   3 +
+ arch/powerpc/include/asm/Kbuild             |   4 +
+ arch/powerpc/include/uapi/asm/Kbuild        |   2 +
+ arch/powerpc/include/uapi/asm/unistd.h      | 392 +---------------------------
+ arch/powerpc/kernel/systbl.S                |  36 +--
+ arch/powerpc/platforms/cell/spu_callbacks.c |  18 +-
+ 6 files changed, 27 insertions(+), 428 deletions(-)
 
 diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index 11a1acb..90614c9 100644
+index 8a2ce14..34897191 100644
 --- a/arch/powerpc/Makefile
 +++ b/arch/powerpc/Makefile
-@@ -400,6 +400,9 @@ archclean:
+@@ -402,6 +402,9 @@ archclean:
  
  archprepare: checkbin
  
 +archheaders:
 +	$(Q)$(MAKE) $(build)=arch/powerpc/kernel/syscalls all
 +
- # Use the file '.tmp_gas_check' for binutils tests, as gas won't output
- # to stdout and these checks are run even on install targets.
- TOUT	:= .tmp_gas_check
+ ifdef CONFIG_STACKPROTECTOR
+ prepare: stack_protector_prepare
+ 
 diff --git a/arch/powerpc/include/asm/Kbuild b/arch/powerpc/include/asm/Kbuild
-index 3196d22..55924f3 100644
+index 3196d22..77ff7fb 100644
 --- a/arch/powerpc/include/asm/Kbuild
 +++ b/arch/powerpc/include/asm/Kbuild
-@@ -8,3 +8,6 @@ generic-y += preempt.h
- generic-y += rwsem.h
- generic-y += vtime.h
- generic-y += msi.h
+@@ -1,3 +1,7 @@
 +generated-y += syscall_table_32.h
 +generated-y += syscall_table_64.h
 +generated-y += syscall_table_c32.h
++generated-y += syscall_table_spu.h
+ generic-y += div64.h
+ generic-y += export.h
+ generic-y += irq_regs.h
 diff --git a/arch/powerpc/include/uapi/asm/Kbuild b/arch/powerpc/include/uapi/asm/Kbuild
-index 1a6ed59..44a3450 100644
+index a658091..61398cc 100644
 --- a/arch/powerpc/include/uapi/asm/Kbuild
 +++ b/arch/powerpc/include/uapi/asm/Kbuild
-@@ -7,3 +7,5 @@ generic-y += poll.h
- generic-y += resource.h
- generic-y += sockios.h
- generic-y += statfs.h
+@@ -1,6 +1,8 @@
+ # UAPI Header export list
+ include include/uapi/asm-generic/Kbuild.asm
+ 
 +generated-y += unistd_32.h
 +generated-y += unistd_64.h
+ generic-y += bpf_perf_event.h
+ generic-y += param.h
+ generic-y += poll.h
 diff --git a/arch/powerpc/include/uapi/asm/unistd.h b/arch/powerpc/include/uapi/asm/unistd.h
-index 8b7fcd4..9084a0c 100644
+index 8b7fcd4..b51b335 100644
 --- a/arch/powerpc/include/uapi/asm/unistd.h
 +++ b/arch/powerpc/include/uapi/asm/unistd.h
 @@ -10,398 +10,10 @@
@@ -368,9 +373,8 @@ index 8b7fcd4..9084a0c 100644
 -#define __NR_mknodat		288
 -#define __NR_fchownat		289
 -#define __NR_futimesat		290
--#ifdef __powerpc64__
+ #ifdef __powerpc64__
 -#define __NR_newfstatat		291
-+#ifdef CONFIG_PPC64
 +#include <asm/unistd_64.h>
  #else
 -#define __NR_fstatat64		291
@@ -468,7 +472,7 @@ index 8b7fcd4..9084a0c 100644
  
  #endif /* _UAPI_ASM_POWERPC_UNISTD_H_ */
 diff --git a/arch/powerpc/kernel/systbl.S b/arch/powerpc/kernel/systbl.S
-index 919a327..a0f46d6 100644
+index 9ff1913..d756348 100644
 --- a/arch/powerpc/kernel/systbl.S
 +++ b/arch/powerpc/kernel/systbl.S
 @@ -16,28 +16,6 @@
@@ -500,14 +504,14 @@ index 919a327..a0f46d6 100644
  .section .rodata,"a"
  
  #ifdef CONFIG_PPC64
-@@ -47,4 +25,17 @@
+@@ -47,5 +25,17 @@
  .globl sys_call_table
  sys_call_table:
  
--#include <asm/systbl.h>
 +#if defined CONFIG_PPC64 && defined(CONFIG_COMPAT)
 +#define __SYSCALL(nr, entry, nargs) .8byte entry
-+#define compat_sys_sigsuspend sys_sigsuspend
+ #define compat_sys_sigsuspend	sys_sigsuspend
+-#include <asm/systbl.h>
 +#include <asm/syscall_table_c32.h>
 +#undef __SYSCALL
 +#elif defined CONFIG_PPC64 && !defined(CONFIG_COMPAT)
@@ -519,6 +523,36 @@ index 919a327..a0f46d6 100644
 +#include <asm/syscall_table_32.h>
 +#undef __SYSCALL
 +#endif
+diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
+index 7517a43..bd2545f 100644
+--- a/arch/powerpc/platforms/cell/spu_callbacks.c
++++ b/arch/powerpc/platforms/cell/spu_callbacks.c
+@@ -33,22 +33,10 @@
+  *	mbind, mq_open, ipc, ...
+  */
+ 
++#define __SYSCALL(nr, entry, nargs) entry,
+ static void *spu_syscall_table[] = {
+-#define SYSCALL(func)		sys_ni_syscall,
+-#define COMPAT_SYS(func)	sys_ni_syscall,
+-#define PPC_SYS(func)		sys_ni_syscall,
+-#define OLDSYS(func)		sys_ni_syscall,
+-#define SYS32ONLY(func)		sys_ni_syscall,
+-#define PPC64ONLY(func)		sys_ni_syscall,
+-#define SYSX(f, f3264, f32)	sys_ni_syscall,
+-
+-#define SYSCALL_SPU(func)	sys_##func,
+-#define COMPAT_SYS_SPU(func)	sys_##func,
+-#define COMPAT_SPU_NEW(func)	sys_##func,
+-#define SYSX_SPU(f, f3264, f32)	f,
+-
+-#define compat_sys_sigsuspend	sys_sigsuspend
+-#include <asm/systbl.h>
++#include <asm/syscall_table_spu.h>
++#undef __SYSCALL
+ };
+ 
+ long spu_sys_callback(struct spu_syscall_block *s)
 -- 
 1.9.1
 
