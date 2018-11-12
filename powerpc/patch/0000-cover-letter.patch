@@ -1,24 +1,26 @@
-From e2d592a9b1f0228d1db92c92cadd7c3ad2834e7e Mon Sep 17 00:00:00 2001
+From 7f242a93b99d1398d37b382a2649e0ccbd67c798 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 12 Sep 2018 11:25:07 +0530
-Subject: [PATCH 0/3] System call table generation support
+Date: Mon, 12 Nov 2018 12:12:24 +0530
+Subject: [PATCH v2 0/4] powerpc: system call table generation support
 
-The purpose of this patch series is:
-1. We can easily add/modify/delete system call by changing entry 
-in syscall.tbl file. No need to manually edit many files.
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the 
+system call table generation support implementation 
+across all the architectures. 
 
-2. It is easy to unify the system call implementation across all 
-the architectures. 
+The system call tables are in different format in 
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a 
+script and which'll generate uapi header file and 
+syscall table file.
 
-The system call tables are in different format in all architecture 
-and it will be difficult to manually add or modify the system calls
-in the respective files manually. To make it easy by keeping a script 
-and which'll generate the header file and syscall table file so this 
-change will unify them across all architectures.
-
-syscall.tbl contains the list of available system calls along with 
-system call number and corresponding entry point. Add a new system 
-call in this architecture will be possible by adding new entry in 
+syscall.tbl contains the list of available system 
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in 
 the syscall.tbl file.
 
 Adding a new table entry consisting of:
@@ -26,60 +28,59 @@ Adding a new table entry consisting of:
         - ABI.
         - System call name.
         - Entry point name.
-        - Compat entry name, if required.
+	- Compat entry name.
+	- spu entry name, if required.
 
-ARM, s390 and x86 architecuture does exist the similar support. I 
-leverage their implementation to come up with a generic solution.
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to 
+come up with a generic solution.
 
-I have done the same support for work for alpha, m68k, microblaze, 
-ia64, mips, parisc, sh, sparc, and xtensa. But I started sending 
-the patch for one architecuture for review. Below mentioned git
-repository contains more details.
-Git repo:- https://github.com/frzkhn/system_call_table_generator/
+I have done the same support for work for alpha, 
+ia64, m68k, microblaze, mips, parisc, sh, sparc, 
+and xtensa. Below mentioned git repository contains
+more details about the workflow.
 
-Finally, this is the ground work for solving the Y2038 issue. We 
-need to add/change two dozen of system calls to solve Y2038 issue. 
-So this patch series will help to easily modify from existing 
-system call to Y2038 compatible system calls.
+ https://github.com/frzkhn/system_call_table_generator/
 
-I started working system call table generation on 4.17-rc1. I used 
-marcin's script - https://github.com/hrw/syscalls-table to generate 
-the syscall.tbl file. And this will be the input to the system call 
-table generation script. But there are couple system call got add 
-in the latest rc release. If run Marcin's script on latest release,
-It will generate a new syscall.tbl. But I still use the old file - 
-syscall.tbl and once all review got over I'll update syscall.tbl 
-alone w.r.to the tip of the kernel. The impact of this thing, few 
-of the system call won't work. 
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to 
+solve Y2038 issue. So this patch series will help to
+add new system calls easily by adding new entry in the
+syscall.tbl.
 
-Firoz Khan (3):
-  powerpc: Replace NR_syscalls macro from asm/unistd.h
-  powerpc: Add system call table generation support
-  powerpc: uapi header and system call table file generation
+Changes since v1:
+ - optimized/updated the syscall table generation 
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall_*.tbl.
+
+Firoz Khan (4):
+  powerpc: add __NR_syscalls along with NR_syscalls
+  powerpc: move macro definition from asm/systbl.h
+  powerpc: add system call table generation support
+  powerpc: generate uapi header and system call table files
 
  arch/powerpc/Makefile                       |   3 +
- arch/powerpc/include/asm/Kbuild             |   3 +
+ arch/powerpc/include/asm/Kbuild             |   4 +
+ arch/powerpc/include/asm/systbl.h           | 396 ---------------------------
  arch/powerpc/include/asm/unistd.h           |   3 +-
  arch/powerpc/include/uapi/asm/Kbuild        |   2 +
- arch/powerpc/include/uapi/asm/unistd.h      | 391 +---------------------------
- arch/powerpc/kernel/Makefile                |   3 +-
- arch/powerpc/kernel/syscall_table_32.S      |   9 +
- arch/powerpc/kernel/syscall_table_64.S      |  17 ++
- arch/powerpc/kernel/syscalls/Makefile       |  51 ++++
- arch/powerpc/kernel/syscalls/syscall_32.tbl | 378 +++++++++++++++++++++++++++
- arch/powerpc/kernel/syscalls/syscall_64.tbl | 372 ++++++++++++++++++++++++++
- arch/powerpc/kernel/syscalls/syscallhdr.sh  |  37 +++
- arch/powerpc/kernel/syscalls/syscalltbl.sh  |  38 +++
- arch/powerpc/kernel/systbl.S                |  50 ----
- 14 files changed, 916 insertions(+), 441 deletions(-)
- create mode 100644 arch/powerpc/kernel/syscall_table_32.S
- create mode 100644 arch/powerpc/kernel/syscall_table_64.S
+ arch/powerpc/include/uapi/asm/unistd.h      | 389 +-------------------------
+ arch/powerpc/kernel/Makefile                |  10 -
+ arch/powerpc/kernel/syscalls/Makefile       |  61 +++++
+ arch/powerpc/kernel/syscalls/syscall.tbl    | 408 ++++++++++++++++++++++++++++
+ arch/powerpc/kernel/syscalls/syscallhdr.sh  |  36 +++
+ arch/powerpc/kernel/syscalls/syscalltbl.sh  |  41 +++
+ arch/powerpc/kernel/systbl.S                |  37 +--
+ arch/powerpc/kernel/systbl_chk.c            |  60 ----
+ arch/powerpc/platforms/cell/spu_callbacks.c |  17 +-
+ 14 files changed, 575 insertions(+), 892 deletions(-)
+ delete mode 100644 arch/powerpc/include/asm/systbl.h
  create mode 100644 arch/powerpc/kernel/syscalls/Makefile
- create mode 100644 arch/powerpc/kernel/syscalls/syscall_32.tbl
- create mode 100644 arch/powerpc/kernel/syscalls/syscall_64.tbl
+ create mode 100644 arch/powerpc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/powerpc/kernel/syscalls/syscallhdr.sh
  create mode 100644 arch/powerpc/kernel/syscalls/syscalltbl.sh
- delete mode 100644 arch/powerpc/kernel/systbl.S
+ delete mode 100644 arch/powerpc/kernel/systbl_chk.c
 
 -- 
 1.9.1
