@@ -1,10 +1,10 @@
-From b5acf7f4e29af5c6a9c37265263939d0375c44ef Mon Sep 17 00:00:00 2001
+From 564f097f3fe083f04c762b0e17fb4a3dd4fe93b4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 27 Jul 2018 15:21:03 +0530
-Subject: [PATCH v3 1/3] microblaze: move __NR_syscalls macro from asm/unistd.h
+Subject: [PATCH v4 1/3] microblaze: move __NR_syscalls macro from asm/unistd.h
 
-__NR_syscalls macro holds the number of system call exist
-in microblaze architecture. We have to change the value of
+__NR_syscalls holds the number of system call exist in
+microblaze architecture. We have to change the value of
 __NR_syscalls, if we add or delete a system call.
 
 One of the patch in this patch series has a script which
@@ -37,7 +37,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/arch/microblaze/include/asm/unistd.h b/arch/microblaze/include/asm/unistd.h
-index a62d094..e19550f 100644
+index f42c40f..9b7c2c4 100644
 --- a/arch/microblaze/include/asm/unistd.h
 +++ b/arch/microblaze/include/asm/unistd.h
 @@ -38,6 +38,4 @@
@@ -48,7 +48,7 @@ index a62d094..e19550f 100644
 -
  #endif /* _ASM_MICROBLAZE_UNISTD_H */
 diff --git a/arch/microblaze/include/uapi/asm/unistd.h b/arch/microblaze/include/uapi/asm/unistd.h
-index 7a9f16a..ed9c6f5 100644
+index 7a9f16a..1c3f867 100644
 --- a/arch/microblaze/include/uapi/asm/unistd.h
 +++ b/arch/microblaze/include/uapi/asm/unistd.h
 @@ -418,4 +418,8 @@
@@ -56,7 +56,7 @@ index 7a9f16a..ed9c6f5 100644
  #define __NR_rseq		400
  
 +#ifdef __KERNEL__
-+#define __NR_syscalls         401
++#define __NR_syscalls		401
 +#endif
 +
  #endif /* _UAPI_ASM_MICROBLAZE_UNISTD_H */

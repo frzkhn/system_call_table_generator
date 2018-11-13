@@ -1,13 +1,13 @@
-From df075dcfa08bd991c2cf5635d8cd9172a77488ff Mon Sep 17 00:00:00 2001
+From 833de85ff28ad057498b048494562693ca4d82c5 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 27 Jul 2018 11:51:50 +0530
-Subject: [PATCH v3 2/3] microblaze: add system call table generation support
+Subject: [PATCH v4 2/3] microblaze: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
 modify or delete the syscall table entries in the res-
 pective files. To make it easy by keeping a script and
-which will generate the uapi header and syscall table 
+which will generate the uapi header and syscall table
 file. This change will also help to unify the implemen-
 tation across all architectures.
 
