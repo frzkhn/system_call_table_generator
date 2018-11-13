@@ -1,7 +1,7 @@
-From 38b7030b0d94db8720a0e652dad4321c4c1afbb4 Mon Sep 17 00:00:00 2001
+From ac7e26a709b1ed2b99d15011091291b7dfbbc801 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 27 Sep 2018 15:37:04 +0530
-Subject: [PATCH v4 3/5] ia64: add an offset for system call number
+Date: Tue, 13 Nov 2018 11:55:07 +0530
+Subject: [PATCH v5 3/5] ia64: add an offset for system call number
 
 The system call number in ia64 architecture starts with 1024.
 But most of the other architecute starts with 0. In order to
@@ -15,18 +15,15 @@ we can start the number from 0 instead of 1024.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/ia64/include/uapi/asm/unistd.h | 658 ++++++++++++++++++------------------
- 1 file changed, 329 insertions(+), 329 deletions(-)
+ arch/ia64/include/uapi/asm/unistd.h | 645 ++++++++++++++++++------------------
+ 1 file changed, 323 insertions(+), 322 deletions(-)
 
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index 4186dc2..bd2575f 100644
+index 388ab4e..ac51593 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
-@@ -8,338 +8,338 @@
- #ifndef _UAPI_ASM_IA64_UNISTD_H
- #define _UAPI_ASM_IA64_UNISTD_H
+@@ -11,338 +11,339 @@
  
--
  #include <asm/break.h>
  
 -#define __BREAK_SYSCALL			__IA64_BREAK_SYSCALL
@@ -125,13 +122,110 @@ index 4186dc2..bd2575f 100644
 -#define __NR_shmat			1114
 -#define __NR_shmdt			1115
 -#define __NR_shmctl			1116
--/* also known as klogctl() in GNU libc: */
++#define __NR_Linux      1024
++#define __NR_ni_syscall	(__NR_Linux + 0)
++#define __NR_exit	(__NR_Linux + 1)
++#define __NR_read	(__NR_Linux + 2)
++#define __NR_write	(__NR_Linux + 3)
++#define __NR_open	(__NR_Linux + 4)
++#define __NR_close	(__NR_Linux + 5)
++#define __NR_creat	(__NR_Linux + 6)
++#define __NR_link	(__NR_Linux + 7)
++#define __NR_unlink	(__NR_Linux + 8)
++#define __NR_execve	(__NR_Linux + 9)
++#define __NR_chdir	(__NR_Linux + 10)
++#define __NR_fchdir	(__NR_Linux + 11)
++#define __NR_utimes	(__NR_Linux + 12)
++#define __NR_mknod	(__NR_Linux + 13)
++#define __NR_chmod	(__NR_Linux + 14)
++#define __NR_chown	(__NR_Linux + 15)
++#define __NR_lseek	(__NR_Linux + 16)
++#define __NR_getpid	(__NR_Linux + 17)
++#define __NR_getppid	(__NR_Linux + 18)
++#define __NR_mount	(__NR_Linux + 19)
++#define __NR_umount	(__NR_Linux + 20)
++#define __NR_setuid	(__NR_Linux + 21)
++#define __NR_getuid	(__NR_Linux + 22)
++#define __NR_geteuid	(__NR_Linux + 23)
++#define __NR_ptrace	(__NR_Linux + 24)
++#define __NR_access	(__NR_Linux + 25)
++#define __NR_sync	(__NR_Linux + 26)
++#define __NR_fsync	(__NR_Linux + 27)
++#define __NR_fdatasync	(__NR_Linux + 28)
++#define __NR_kill	(__NR_Linux + 29)
++#define __NR_rename	(__NR_Linux + 30)
++#define __NR_mkdir	(__NR_Linux + 31)
++#define __NR_rmdir	(__NR_Linux + 32)
++#define __NR_dup	(__NR_Linux + 33)
++#define __NR_pipe	(__NR_Linux + 34)
++#define __NR_times	(__NR_Linux + 35)
++#define __NR_brk	(__NR_Linux + 36)
++#define __NR_setgid	(__NR_Linux + 37)
++#define __NR_getgid	(__NR_Linux + 38)
++#define __NR_getegid	(__NR_Linux + 39)
++#define __NR_acct	(__NR_Linux + 40)
++#define __NR_ioctl	(__NR_Linux + 41)
++#define __NR_fcntl	(__NR_Linux + 42)
++#define __NR_umask	(__NR_Linux + 43)
++#define __NR_chroot	(__NR_Linux + 44)
++#define __NR_ustat	(__NR_Linux + 45)
++#define __NR_dup2	(__NR_Linux + 46)
++#define __NR_setreuid	(__NR_Linux + 47)
++#define __NR_setregid	(__NR_Linux + 48)
++#define __NR_getresuid	(__NR_Linux + 49)
++#define __NR_setresuid	(__NR_Linux + 50)
++#define __NR_getresgid	(__NR_Linux + 51)
++#define __NR_setresgid	(__NR_Linux + 52)
++#define __NR_getgroups	(__NR_Linux + 53)
++#define __NR_setgroups	(__NR_Linux + 54)
++#define __NR_getpgid	(__NR_Linux + 55)
++#define __NR_setpgid	(__NR_Linux + 56)
++#define __NR_setsid	(__NR_Linux + 57)
++#define __NR_getsid	(__NR_Linux + 58)
++#define __NR_sethostname	(__NR_Linux + 59)
++#define __NR_setrlimit	(__NR_Linux + 60)
++#define __NR_getrlimit	(__NR_Linux + 61)
++#define __NR_getrusage	(__NR_Linux + 62)
++#define __NR_gettimeofday	(__NR_Linux + 63)
++#define __NR_settimeofday	(__NR_Linux + 64)
++#define __NR_select	(__NR_Linux + 65)
++#define __NR_poll	(__NR_Linux + 66)
++#define __NR_symlink	(__NR_Linux + 67)
++#define __NR_readlink	(__NR_Linux + 68)
++#define __NR_uselib	(__NR_Linux + 69)
++#define __NR_swapon	(__NR_Linux + 70)
++#define __NR_swapoff	(__NR_Linux + 71)
++#define __NR_reboot	(__NR_Linux + 72)
++#define __NR_truncate	(__NR_Linux + 73)
++#define __NR_ftruncate	(__NR_Linux + 74)
++#define __NR_fchmod	(__NR_Linux + 75)
++#define __NR_fchown	(__NR_Linux + 76)
++#define __NR_getpriority	(__NR_Linux + 77)
++#define __NR_setpriority	(__NR_Linux + 78)
++#define __NR_statfs	(__NR_Linux + 79)
++#define __NR_fstatfs	(__NR_Linux + 80)
++#define __NR_gettid	(__NR_Linux + 81)
++#define __NR_semget	(__NR_Linux + 82)
++#define __NR_semop	(__NR_Linux + 83)
++#define __NR_semctl	(__NR_Linux + 84)
++#define __NR_msgget	(__NR_Linux + 85)
++#define __NR_msgsnd	(__NR_Linux + 86)
++#define __NR_msgrcv	(__NR_Linux + 87)
++#define __NR_msgctl	(__NR_Linux + 88)
++#define __NR_shmget	(__NR_Linux + 89)
++#define __NR_shmat	(__NR_Linux + 90)
++#define __NR_shmdt	(__NR_Linux + 91)
++#define __NR_shmctl	(__NR_Linux + 92)
+ /* also known as klogctl() in GNU libc: */
 -#define __NR_syslog			1117
 -#define __NR_setitimer			1118
 -#define __NR_getitimer			1119
--/* 1120 was __NR_old_stat */
--/* 1121 was __NR_old_lstat */
--/* 1122 was __NR_old_fstat */
++#define __NR_syslog	(__NR_Linux + 93)
++#define __NR_setitimer	(__NR_Linux + 94)
++#define __NR_getitimer	(__NR_Linux + 95)
+ /* 1120 was __NR_old_stat */
+ /* 1121 was __NR_old_lstat */
+ /* 1122 was __NR_old_fstat */
 -#define __NR_vhangup			1123
 -#define __NR_lchown			1124
 -#define __NR_remap_file_pages		1125
@@ -141,11 +235,22 @@ index 4186dc2..bd2575f 100644
 -#define __NR_setdomainname		1129
 -#define __NR_uname			1130
 -#define __NR_adjtimex			1131
--/* 1132 was __NR_create_module */
++#define __NR_vhangup	(__NR_Linux + 99)
++#define __NR_lchown	(__NR_Linux + 100)
++#define __NR_remap_file_pages	(__NR_Linux + 101)
++#define __NR_wait4	(__NR_Linux + 102)
++#define __NR_sysinfo	(__NR_Linux + 103)
++#define __NR_clone	(__NR_Linux + 104)
++#define __NR_setdomainname	(__NR_Linux + 105)
++#define __NR_uname	(__NR_Linux + 106)
++#define __NR_adjtimex	(__NR_Linux + 107)
+ /* 1132 was __NR_create_module */
 -#define __NR_init_module		1133
 -#define __NR_delete_module		1134
--/* 1135 was __NR_get_kernel_syms */
--/* 1136 was __NR_query_module */
++#define __NR_init_module	(__NR_Linux + 109)
++#define __NR_delete_module	(__NR_Linux + 110)
+ /* 1135 was __NR_get_kernel_syms */
+ /* 1136 was __NR_query_module */
 -#define __NR_quotactl			1137
 -#define __NR_bdflush			1138
 -#define __NR_sysfs			1139
@@ -180,7 +285,7 @@ index 4186dc2..bd2575f 100644
 -#define __NR_nanosleep			1168
 -#define __NR_nfsservctl			1169
 -#define __NR_prctl			1170
--#define __NR_old_getpagesize            1171
+-#define __NR_old_getpagesize		1171
 -#define __NR_mmap2			1172
 -#define __NR_pciconfig_read		1173
 -#define __NR_pciconfig_write		1174
@@ -359,121 +464,6 @@ index 4186dc2..bd2575f 100644
 -#define __NR_copy_file_range		1347
 -#define __NR_preadv2			1348
 -#define __NR_pwritev2			1349
-+#define __NR_Linux      1024
-+#define __NR_ni_syscall	(__NR_Linux + 0)
-+#define __NR_exit	(__NR_Linux + 1)
-+#define __NR_read	(__NR_Linux + 2)
-+#define __NR_write	(__NR_Linux + 3)
-+#define __NR_open	(__NR_Linux + 4)
-+#define __NR_close	(__NR_Linux + 5)
-+#define __NR_creat	(__NR_Linux + 6)
-+#define __NR_link	(__NR_Linux + 7)
-+#define __NR_unlink	(__NR_Linux + 8)
-+#define __NR_execve	(__NR_Linux + 9)
-+#define __NR_chdir	(__NR_Linux + 10)
-+#define __NR_fchdir	(__NR_Linux + 11)
-+#define __NR_utimes	(__NR_Linux + 12)
-+#define __NR_mknod	(__NR_Linux + 13)
-+#define __NR_chmod	(__NR_Linux + 14)
-+#define __NR_chown	(__NR_Linux + 15)
-+#define __NR_lseek	(__NR_Linux + 16)
-+#define __NR_getpid	(__NR_Linux + 17)
-+#define __NR_getppid	(__NR_Linux + 18)
-+#define __NR_mount	(__NR_Linux + 19)
-+#define __NR_umount	(__NR_Linux + 20)
-+#define __NR_setuid	(__NR_Linux + 21)
-+#define __NR_getuid	(__NR_Linux + 22)
-+#define __NR_geteuid	(__NR_Linux + 23)
-+#define __NR_ptrace	(__NR_Linux + 24)
-+#define __NR_access	(__NR_Linux + 25)
-+#define __NR_sync	(__NR_Linux + 26)
-+#define __NR_fsync	(__NR_Linux + 27)
-+#define __NR_fdatasync	(__NR_Linux + 28)
-+#define __NR_kill	(__NR_Linux + 29)
-+#define __NR_rename	(__NR_Linux + 30)
-+#define __NR_mkdir	(__NR_Linux + 31)
-+#define __NR_rmdir	(__NR_Linux + 32)
-+#define __NR_dup	(__NR_Linux + 33)
-+#define __NR_pipe	(__NR_Linux + 34)
-+#define __NR_times	(__NR_Linux + 35)
-+#define __NR_brk	(__NR_Linux + 36)
-+#define __NR_setgid	(__NR_Linux + 37)
-+#define __NR_getgid	(__NR_Linux + 38)
-+#define __NR_getegid	(__NR_Linux + 39)
-+#define __NR_acct	(__NR_Linux + 40)
-+#define __NR_ioctl	(__NR_Linux + 41)
-+#define __NR_fcntl	(__NR_Linux + 42)
-+#define __NR_umask	(__NR_Linux + 43)
-+#define __NR_chroot	(__NR_Linux + 44)
-+#define __NR_ustat	(__NR_Linux + 45)
-+#define __NR_dup2	(__NR_Linux + 46)
-+#define __NR_setreuid	(__NR_Linux + 47)
-+#define __NR_setregid	(__NR_Linux + 48)
-+#define __NR_getresuid	(__NR_Linux + 49)
-+#define __NR_setresuid	(__NR_Linux + 50)
-+#define __NR_getresgid	(__NR_Linux + 51)
-+#define __NR_setresgid	(__NR_Linux + 52)
-+#define __NR_getgroups	(__NR_Linux + 53)
-+#define __NR_setgroups	(__NR_Linux + 54)
-+#define __NR_getpgid	(__NR_Linux + 55)
-+#define __NR_setpgid	(__NR_Linux + 56)
-+#define __NR_setsid	(__NR_Linux + 57)
-+#define __NR_getsid	(__NR_Linux + 58)
-+#define __NR_sethostname	(__NR_Linux + 59)
-+#define __NR_setrlimit	(__NR_Linux + 60)
-+#define __NR_getrlimit	(__NR_Linux + 61)
-+#define __NR_getrusage	(__NR_Linux + 62)
-+#define __NR_gettimeofday	(__NR_Linux + 63)
-+#define __NR_settimeofday	(__NR_Linux + 64)
-+#define __NR_select	(__NR_Linux + 65)
-+#define __NR_poll	(__NR_Linux + 66)
-+#define __NR_symlink	(__NR_Linux + 67)
-+#define __NR_readlink	(__NR_Linux + 68)
-+#define __NR_uselib	(__NR_Linux + 69)
-+#define __NR_swapon	(__NR_Linux + 70)
-+#define __NR_swapoff	(__NR_Linux + 71)
-+#define __NR_reboot	(__NR_Linux + 72)
-+#define __NR_truncate	(__NR_Linux + 73)
-+#define __NR_ftruncate	(__NR_Linux + 74)
-+#define __NR_fchmod	(__NR_Linux + 75)
-+#define __NR_fchown	(__NR_Linux + 76)
-+#define __NR_getpriority	(__NR_Linux + 77)
-+#define __NR_setpriority	(__NR_Linux + 78)
-+#define __NR_statfs	(__NR_Linux + 79)
-+#define __NR_fstatfs	(__NR_Linux + 80)
-+#define __NR_gettid	(__NR_Linux + 81)
-+#define __NR_semget	(__NR_Linux + 82)
-+#define __NR_semop	(__NR_Linux + 83)
-+#define __NR_semctl	(__NR_Linux + 84)
-+#define __NR_msgget	(__NR_Linux + 85)
-+#define __NR_msgsnd	(__NR_Linux + 86)
-+#define __NR_msgrcv	(__NR_Linux + 87)
-+#define __NR_msgctl	(__NR_Linux + 88)
-+#define __NR_shmget	(__NR_Linux + 89)
-+#define __NR_shmat	(__NR_Linux + 90)
-+#define __NR_shmdt	(__NR_Linux + 91)
-+#define __NR_shmctl	(__NR_Linux + 92)
-+ /* also known as klogctl() in GNU libc: */
-+#define __NR_syslog	(__NR_Linux + 93)
-+#define __NR_setitimer	(__NR_Linux + 94)
-+#define __NR_getitimer	(__NR_Linux + 95)
-+ /* 1120 was __NR_old_stat */
-+ /* 1121 was __NR_old_lstat */
-+ /* 1122 was __NR_old_fstat */
-+#define __NR_vhangup	(__NR_Linux + 99)
-+#define __NR_lchown	(__NR_Linux + 100)
-+#define __NR_remap_file_pages	(__NR_Linux + 101)
-+#define __NR_wait4	(__NR_Linux + 102)
-+#define __NR_sysinfo	(__NR_Linux + 103)
-+#define __NR_clone	(__NR_Linux + 104)
-+#define __NR_setdomainname	(__NR_Linux + 105)
-+#define __NR_uname	(__NR_Linux + 106)
-+#define __NR_adjtimex	(__NR_Linux + 107)
-+ /* 1132 was __NR_create_module */
-+#define __NR_init_module	(__NR_Linux + 109)
-+#define __NR_delete_module	(__NR_Linux + 110)
-+ /* 1135 was __NR_get_kernel_syms */
-+ /* 1136 was __NR_query_module */
 +#define __NR_quotactl	(__NR_Linux + 113)
 +#define __NR_bdflush	(__NR_Linux + 114)
 +#define __NR_sysfs	(__NR_Linux + 115)
@@ -689,7 +679,11 @@ index 4186dc2..bd2575f 100644
 +#define __NR_pwritev2	(__NR_Linux + 325)
  
  #ifdef __KERNEL__
- #define __NR_syscalls			326
+-#define __NR_syscalls			326
++#define __NR_syscalls	326
+ #endif
+ 
+ #endif /* _UAPI_ASM_IA64_UNISTD_H */
 -- 
 1.9.1
 

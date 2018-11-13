@@ -1,24 +1,27 @@
-From 2d3dc6ea7075184ba813e4577f1c220c0814eb55 Mon Sep 17 00:00:00 2001
+From 4a1b666bd2b8b24ff7565aca0fe15b5fe70bb7e6 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 25 Oct 2018 14:31:47 +0530
-Subject: [PATCH v4 0/5] ia64: system call table generation support
+Date: Tue, 13 Nov 2018 12:14:31 +0530
+Subject: [PATCH v5 0/5] ia64: system call table generation support
 
-The purpose of this patch series is, we can easily add/modify/delete
-system call table support by changing entry in syscall.tbl file 
-instead of manually changing many files. The other goal is to unify 
-the system call table generation support implementation across all 
-the architectures. 
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the
+system call table generation support implementation
+across all the architectures.
 
-The system call tables are in different format in all architecture. 
-It will be difficult to manually add, modify or delete the system 
-calls in the respective files manually. To make it easy by keeping
-a script and which'll generate uapi header file and syscall table 
-file.
+The system call tables are in different format in
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a
+script and which'll generate uapi header file and
+syscall table file.
 
-syscall.tbl contains the list of available system calls along with 
-system call number and corresponding entry point. Add a new system 
-call in this architecture will be possible by adding new entry in 
-the syscall.tbl file.
+syscall.tbl contains the list of available system
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in the
+syscall.tbl file.
 
 Adding a new table entry consisting of:
         - System call number.
@@ -26,18 +29,40 @@ Adding a new table entry consisting of:
         - System call name.
         - Entry point name.
 
-ARM, s390 and x86 architecuture does exist the similar support. I 
-leverage their implementation to come up with a generic solution.
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to
+come up with a generic solution.
 
-I have done the same support for work for alpha, m68k, microblaze,
-mips, parisc, powerpc, sh, sparc, and xtensa. Below mentioned git
-repository contains more details.
-Git repo:- https://github.com/frzkhn/system_call_table_generator/
+I have done the same support for work for alpha, m68k,
+microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
+Below mentioned git repository contains more details
+about the workflow.
 
-Finally, this is the ground work to solve the Y2038 issue. We need 
-to add two dozen of system calls to solve Y2038 issue. So this patch
-series will help to add new system calls easily by adding new entry 
-in the syscall.tbl.
+https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to
+solve Y2038 issue. So this patch series will help to
+add new system calls easily by adding new entry in
+the syscall.tbl.
+
+changes since v4:
+ - changed from generic-y to generated-y in Kbuild.
+
+changes since v3:
+ - optimized/updated the syscall table generation
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall.tbl.
+ - removed __IGNORE entries which was added in v2
+   to suppress the warning.
+
+changes since v2:
+ - fixed the offset logic in the script.
+ - added missing new line.
+
+changes since v1:
+ - enclosed __NR_sycalls macro with __KERNEL__.
 
 Firoz Khan (5):
   ia64: add __NR_old_getpagesize in uapi header file
@@ -56,7 +81,7 @@ Firoz Khan (5):
  arch/ia64/kernel/syscalls/syscall.tbl   | 337 ++++++++++++++++++++++++++++++++
  arch/ia64/kernel/syscalls/syscallhdr.sh |  36 ++++
  arch/ia64/kernel/syscalls/syscalltbl.sh |  32 +++
- 10 files changed, 457 insertions(+), 660 deletions(-)
+ 10 files changed, 458 insertions(+), 659 deletions(-)
  create mode 100644 arch/ia64/kernel/syscalls/Makefile
  create mode 100644 arch/ia64/kernel/syscalls/syscall.tbl
  create mode 100644 arch/ia64/kernel/syscalls/syscallhdr.sh

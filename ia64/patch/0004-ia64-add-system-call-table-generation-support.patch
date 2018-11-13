@@ -1,7 +1,7 @@
-From 44a9f386a8c4b94f088ca7de96b640b2c29e82bc Mon Sep 17 00:00:00 2001
+From be20c50c1ed4c2b04e5238dc252c399b58c3ee6f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 17 Jul 2018 13:39:05 +0530
-Subject: [PATCH v4 4/5] ia64: add system call table generation support
+Subject: [PATCH v5 4/5] ia64: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -98,7 +98,7 @@ index 0000000..813a58c
 +	@:
 diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..ef0792f
+index 0000000..b22203b
 --- /dev/null
 +++ b/arch/ia64/kernel/syscalls/syscall.tbl
 @@ -0,0 +1,337 @@
@@ -209,9 +209,9 @@ index 0000000..ef0792f
 +93	common	syslog				sys_syslog
 +94	common	setitimer			sys_setitimer
 +95	common	getitimer			sys_getitimer
-+# 1120 was __NR_old_stat
-+# 1121 was __NR_old_lstat
-+# 1122 was __NR_old_fstat
++# 1120 was old_stat
++# 1121 was old_lstat
++# 1122 was old_fstat
 +99	common	vhangup				sys_vhangup
 +100	common	lchown				sys_lchown
 +101	common	remap_file_pages		sys_remap_file_pages
@@ -221,11 +221,11 @@ index 0000000..ef0792f
 +105	common	setdomainname			sys_setdomainname
 +106	common	uname				sys_newuname
 +107	common	adjtimex			sys_adjtimex
-+# 1132 was __NR_create_module
++# 1132 was create_module
 +109	common	init_module			sys_init_module
 +110	common	delete_module			sys_delete_module
-+# 1135 was __NR_get_kernel_syms
-+# 1136 was __NR_query_module
++# 1135 was get_kernel_syms
++# 1136 was query_module
 +113	common	quotactl			sys_quotactl
 +114	common	bdflush				sys_bdflush
 +115	common	sysfs				sys_sysfs

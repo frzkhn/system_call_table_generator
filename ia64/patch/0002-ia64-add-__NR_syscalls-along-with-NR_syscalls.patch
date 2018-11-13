@@ -1,7 +1,7 @@
-From 96065c9e1240d64b1e282c89729c72f2e80f0ff7 Mon Sep 17 00:00:00 2001
+From 1c2d162d9a2d1ead2e9f63b6264eeac598145129 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Sep 2018 14:48:38 +0530
-Subject: [PATCH v4 2/5] ia64: add __NR_syscalls along with NR_syscalls
+Subject: [PATCH v5 2/5] ia64: add __NR_syscalls along with NR_syscalls
 
 NR_syscalls macro holds the number of system call exist
 in ia64 architecture. We have to change the value of NR-
@@ -39,7 +39,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/arch/ia64/include/asm/unistd.h b/arch/ia64/include/asm/unistd.h
-index ffb705d..397b143 100644
+index 49e34db..0b08ebd 100644
 --- a/arch/ia64/include/asm/unistd.h
 +++ b/arch/ia64/include/asm/unistd.h
 @@ -10,9 +10,7 @@
@@ -54,7 +54,7 @@ index ffb705d..397b143 100644
  /*
   * The following defines stop scripts/checksyscalls.sh from complaining about
 diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
-index 4d590c9..4186dc2 100644
+index 94b835c..388ab4e 100644
 --- a/arch/ia64/include/uapi/asm/unistd.h
 +++ b/arch/ia64/include/uapi/asm/unistd.h
 @@ -341,4 +341,8 @@
