@@ -34,7 +34,7 @@ ilar support. I leverage their implementation to
 come up with a generic solution.
 
 I have done the same support for work for alpha, ia64,
-m68k, microblaze, mips, parisc, powerpc, sh and sparc.
+microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
 Below mentioned git repository contains more details 
 about the workflow.
 
