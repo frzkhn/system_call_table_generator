@@ -1,7 +1,7 @@
-From 47c2e74560620b3720c17098d150d33b54663193 Mon Sep 17 00:00:00 2001
+From 7b903ced7604637bf7626a807da41cca79c09887 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 28 Jun 2018 10:25:14 +0530
-Subject: [PATCH v2 1/5] alpha: move __IGNORE* entries to non uapi header
+Subject: [PATCH v3 1/5] alpha: move __IGNORE* entries to non uapi header
 
 All the __IGNORE* entries are resides in the uapi header
 file move to non uapi header asm/unistd.h as it is not
@@ -22,10 +22,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 21 insertions(+), 21 deletions(-)
 
 diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index d6e29a1..cbd04d3 100644
+index 9ff37aa..4f0ceb3 100644
 --- a/arch/alpha/include/asm/unistd.h
 +++ b/arch/alpha/include/asm/unistd.h
-@@ -17,4 +17,25 @@
+@@ -19,4 +19,25 @@
  #define __ARCH_WANT_SYS_VFORK
  #define __ARCH_WANT_SYS_CLONE
  

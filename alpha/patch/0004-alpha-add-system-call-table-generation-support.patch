@@ -1,7 +1,7 @@
-From ea07c2960e5125ae68cb4cc53e4b07eb5672200b Mon Sep 17 00:00:00 2001
+From 719ad1fab9b427574711be1620f69be45bb270a2 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 3 Jul 2018 10:53:51 +0530
-Subject: [PATCH v2 4/5] alpha: add system call table generation support
+Subject: [PATCH v3 4/5] alpha: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -43,8 +43,8 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/alpha/kernel/syscalls/Makefile      |  38 +++
  arch/alpha/kernel/syscalls/syscall.tbl   | 453 +++++++++++++++++++++++++++++++
  arch/alpha/kernel/syscalls/syscallhdr.sh |  36 +++
- arch/alpha/kernel/syscalls/syscalltbl.sh |  36 +++
- 4 files changed, 563 insertions(+)
+ arch/alpha/kernel/syscalls/syscalltbl.sh |  32 +++
+ 4 files changed, 559 insertions(+)
  create mode 100644 arch/alpha/kernel/syscalls/Makefile
  create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
  create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
@@ -96,7 +96,7 @@ index 0000000..659faef
 +	@:
 diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..b3e17c6
+index 0000000..7b56a53
 --- /dev/null
 +++ b/arch/alpha/kernel/syscalls/syscall.tbl
 @@ -0,0 +1,453 @@
@@ -109,91 +109,91 @@ index 0000000..b3e17c6
 +#
 +# The <abi> is always "common" for this file
 +#
-+0	common	osf_syscall			alpha_ni_syscall
++0	common	osf_syscall			alpha_syscall_zero
 +1	common	exit				sys_exit
 +2	common	fork				alpha_fork
 +3	common	read				sys_read
 +4	common	write				sys_write
-+5	common	osf_old_open			alpha_ni_syscall
++5	common	osf_old_open			sys_ni_syscall
 +6	common	close				sys_close
 +7	common	osf_wait4			sys_osf_wait4
-+8	common	osf_old_creat			alpha_ni_syscall
++8	common	osf_old_creat			sys_ni_syscall
 +9	common	link				sys_link
 +10	common	unlink				sys_unlink
-+11	common	osf_execve			alpha_ni_syscall
++11	common	osf_execve			sys_ni_syscall
 +12	common	chdir				sys_chdir
 +13	common	fchdir				sys_fchdir
 +14	common	mknod				sys_mknod
 +15	common	chmod				sys_chmod
 +16	common	chown				sys_chown
 +17	common	brk				sys_osf_brk
-+18	common	osf_getfsstat			alpha_ni_syscall
++18	common	osf_getfsstat			sys_ni_syscall
 +19	common	lseek				sys_lseek
 +20	common	getxpid				sys_getxpid
 +21	common	osf_mount			sys_osf_mount
 +22	common	umount				sys_umount
 +23	common	setuid				sys_setuid
 +24	common	getxuid				sys_getxuid
-+25	common	exec_with_loader		alpha_ni_syscall
++25	common	exec_with_loader		sys_ni_syscall
 +26	common	ptrace				sys_ptrace
-+27	common	osf_nrecvmsg			alpha_ni_syscall
-+28	common	osf_nsendmsg			alpha_ni_syscall
-+29	common	osf_nrecvfrom			alpha_ni_syscall
-+30	common	osf_naccept			alpha_ni_syscall
-+31	common	osf_ngetpeername		alpha_ni_syscall
-+32	common	osf_ngetsockname		alpha_ni_syscall
++27	common	osf_nrecvmsg			sys_ni_syscall
++28	common	osf_nsendmsg			sys_ni_syscall
++29	common	osf_nrecvfrom			sys_ni_syscall
++30	common	osf_naccept			sys_ni_syscall
++31	common	osf_ngetpeername		sys_ni_syscall
++32	common	osf_ngetsockname		sys_ni_syscall
 +33	common	access				sys_access
-+34	common	osf_chflags			alpha_ni_syscall
-+35	common	osf_fchflags			alpha_ni_syscall
++34	common	osf_chflags			sys_ni_syscall
++35	common	osf_fchflags			sys_ni_syscall
 +36	common	sync				sys_sync
 +37	common	kill				sys_kill
-+38	common	osf_old_stat			alpha_ni_syscall
++38	common	osf_old_stat			sys_ni_syscall
 +39	common	setpgid				sys_setpgid
-+40	common	osf_old_lstat			alpha_ni_syscall
++40	common	osf_old_lstat			sys_ni_syscall
 +41	common	dup				sys_dup
 +42	common	pipe				sys_alpha_pipe
 +43	common	osf_set_program_attributes	sys_osf_set_program_attributes
-+44	common	osf_profil			alpha_ni_syscall
++44	common	osf_profil			sys_ni_syscall
 +45	common	open				sys_open
-+46	common	osf_old_sigaction		alpha_ni_syscall
++46	common	osf_old_sigaction		sys_ni_syscall
 +47	common	getxgid				sys_getxgid
 +48	common	osf_sigprocmask			sys_osf_sigprocmask
-+49	common	osf_getlogin			alpha_ni_syscall
-+50	common	osf_setlogin			alpha_ni_syscall
++49	common	osf_getlogin			sys_ni_syscall
++50	common	osf_setlogin			sys_ni_syscall
 +51	common	acct				sys_acct
 +52	common	sigpending			sys_sigpending
 +54	common	ioctl				sys_ioctl
-+55	common	osf_reboot			alpha_ni_syscall
-+56	common	osf_revoke			alpha_ni_syscall
++55	common	osf_reboot			sys_ni_syscall
++56	common	osf_revoke			sys_ni_syscall
 +57	common	symlink				sys_symlink
 +58	common	readlink			sys_readlink
 +59	common	execve				sys_execve
 +60	common	umask				sys_umask
 +61	common	chroot				sys_chroot
-+62	common	osf_old_fstat			alpha_ni_syscall
++62	common	osf_old_fstat			sys_ni_syscall
 +63	common	getpgrp				sys_getpgrp
 +64	common	getpagesize			sys_getpagesize
-+65	common	osf_mremap			alpha_ni_syscall
++65	common	osf_mremap			sys_ni_syscall
 +66	common	vfork				alpha_vfork
 +67	common	stat				sys_newstat
 +68	common	lstat				sys_newlstat
-+69	common	osf_sbrk			alpha_ni_syscall
-+70	common	osf_sstk			alpha_ni_syscall
++69	common	osf_sbrk			sys_ni_syscall
++70	common	osf_sstk			sys_ni_syscall
 +71	common	mmap				sys_osf_mmap
-+72	common	osf_old_vadvise			alpha_ni_syscall
++72	common	osf_old_vadvise			sys_ni_syscall
 +73	common	munmap				sys_munmap
 +74	common	mprotect			sys_mprotect
 +75	common	madvise				sys_madvise
 +76	common	vhangup				sys_vhangup
-+77	common	osf_kmodcall			alpha_ni_syscall
-+78	common	osf_mincore			alpha_ni_syscall
++77	common	osf_kmodcall			sys_ni_syscall
++78	common	osf_mincore			sys_ni_syscall
 +79	common	getgroups			sys_getgroups
 +80	common	setgroups			sys_setgroups
-+81	common	osf_old_getpgrp			alpha_ni_syscall
++81	common	osf_old_getpgrp			sys_ni_syscall
 +82	common	setpgrp				sys_setpgid
 +83	common	osf_setitimer			sys_osf_setitimer
-+84	common	osf_old_wait			alpha_ni_syscall
-+85	common	osf_table			alpha_ni_syscall
++84	common	osf_old_wait			sys_ni_syscall
++85	common	osf_table			sys_ni_syscall
 +86	common	osf_getitimer			sys_osf_getitimer
 +87	common	gethostname			sys_gethostname
 +88	common	sethostname			sys_sethostname
@@ -215,15 +215,15 @@ index 0000000..b3e17c6
 +104	common	bind				sys_bind
 +105	common	setsockopt			sys_setsockopt
 +106	common	listen				sys_listen
-+107	common	osf_plock			alpha_ni_syscall
-+108	common	osf_old_sigvec			alpha_ni_syscall
-+109	common	osf_old_sigblock		alpha_ni_syscall
-+110	common	osf_old_sigsetmask		alpha_ni_syscall
++107	common	osf_plock			sys_ni_syscall
++108	common	osf_old_sigvec			sys_ni_syscall
++109	common	osf_old_sigblock		sys_ni_syscall
++110	common	osf_old_sigsetmask		sys_ni_syscall
 +111	common	sigsuspend			sys_sigsuspend
 +112	common	osf_sigstack			sys_osf_sigstack
 +113	common	recvmsg				sys_recvmsg
 +114	common	sendmsg				sys_sendmsg
-+115	common	osf_old_vtrace			alpha_ni_syscall
++115	common	osf_old_vtrace			sys_ni_syscall
 +116	common	osf_gettimeofday		sys_osf_gettimeofday
 +117	common	osf_getrusage			sys_osf_getrusage
 +118	common	getsockopt			sys_getsockopt
@@ -246,35 +246,35 @@ index 0000000..b3e17c6
 +136	common	mkdir				sys_mkdir
 +137	common	rmdir				sys_rmdir
 +138	common	osf_utimes			sys_osf_utimes
-+139	common	osf_old_sigreturn		alpha_ni_syscall
-+140	common	osf_adjtime			alpha_ni_syscall
++139	common	osf_old_sigreturn		sys_ni_syscall
++140	common	osf_adjtime			sys_ni_syscall
 +141	common	getpeername			sys_getpeername
-+142	common	osf_gethostid			alpha_ni_syscall
-+143	common	osf_sethostid			alpha_ni_syscall
++142	common	osf_gethostid			sys_ni_syscall
++143	common	osf_sethostid			sys_ni_syscall
 +144	common	getrlimit			sys_getrlimit
 +145	common	setrlimit			sys_setrlimit
-+146	common	osf_old_killpg			alpha_ni_syscall
++146	common	osf_old_killpg			sys_ni_syscall
 +147	common	setsid				sys_setsid
 +148	common	quotactl			sys_quotactl
-+149	common	osf_oldquota			alpha_ni_syscall
++149	common	osf_oldquota			sys_ni_syscall
 +150	common	getsockname			sys_getsockname
-+153	common	osf_pid_block			alpha_ni_syscall
-+154	common	osf_pid_unblock			alpha_ni_syscall
++153	common	osf_pid_block			sys_ni_syscall
++154	common	osf_pid_unblock			sys_ni_syscall
 +156	common	sigaction			sys_osf_sigaction
-+157	common	osf_sigwaitprim			alpha_ni_syscall
-+158	common	osf_nfssvc			alpha_ni_syscall
++157	common	osf_sigwaitprim			sys_ni_syscall
++158	common	osf_nfssvc			sys_ni_syscall
 +159	common	osf_getdirentries		sys_osf_getdirentries
 +160	common	osf_statfs			sys_osf_statfs
 +161	common	osf_fstatfs			sys_osf_fstatfs
-+163	common	osf_asynch_daemon		alpha_ni_syscall
-+164	common	osf_getfh			alpha_ni_syscall
++163	common	osf_asynch_daemon		sys_ni_syscall
++164	common	osf_getfh			sys_ni_syscall
 +165	common	osf_getdomainname		sys_osf_getdomainname
 +166	common	setdomainname			sys_setdomainname
-+169	common	osf_exportfs			alpha_ni_syscall
-+181	common	osf_alt_plock			alpha_ni_syscall
-+184	common	osf_getmnt			alpha_ni_syscall
-+187	common	osf_alt_sigpending		alpha_ni_syscall
-+188	common	osf_alt_setsid			alpha_ni_syscall
++169	common	osf_exportfs			sys_ni_syscall
++181	common	osf_alt_plock			sys_ni_syscall
++184	common	osf_getmnt			sys_ni_syscall
++187	common	osf_alt_sigpending		sys_ni_syscall
++188	common	osf_alt_setsid			sys_ni_syscall
 +199	common	osf_swapon			sys_swapon
 +200	common	msgctl				sys_msgctl
 +201	common	msgget				sys_msgget
@@ -289,16 +289,16 @@ index 0000000..b3e17c6
 +210	common	shmctl				sys_shmctl
 +211	common	shmdt				sys_shmdt
 +212	common	shmget				sys_shmget
-+213	common	osf_mvalid			alpha_ni_syscall
-+214	common	osf_getaddressconf		alpha_ni_syscall
-+215	common	osf_msleep			alpha_ni_syscall
-+216	common	osf_mwakeup			alpha_ni_syscall
++213	common	osf_mvalid			sys_ni_syscall
++214	common	osf_getaddressconf		sys_ni_syscall
++215	common	osf_msleep			sys_ni_syscall
++216	common	osf_mwakeup			sys_ni_syscall
 +217	common	msync				sys_msync
-+218	common	osf_signal			alpha_ni_syscall
-+219	common	osf_utc_gettime			alpha_ni_syscall
-+220	common	osf_utc_adjtime			alpha_ni_syscall
-+222	common	osf_security			alpha_ni_syscall
-+223	common	osf_kloadcall			alpha_ni_syscall
++218	common	osf_signal			sys_ni_syscall
++219	common	osf_utc_gettime			sys_ni_syscall
++220	common	osf_utc_adjtime			sys_ni_syscall
++222	common	osf_security			sys_ni_syscall
++223	common	osf_kloadcall			sys_ni_syscall
 +224	common	osf_stat			sys_osf_stat
 +225	common	osf_lstat			sys_osf_lstat
 +226	common	osf_fstat			sys_osf_fstat
@@ -307,31 +307,31 @@ index 0000000..b3e17c6
 +233	common	getpgid				sys_getpgid
 +234	common	getsid				sys_getsid
 +235	common	sigaltstack			sys_sigaltstack
-+236	common	osf_waitid			alpha_ni_syscall
-+237	common	osf_priocntlset			alpha_ni_syscall
-+238	common	osf_sigsendset			alpha_ni_syscall
-+239	common	osf_set_speculative		alpha_ni_syscall
-+240	common	osf_msfs_syscall		alpha_ni_syscall
++236	common	osf_waitid			sys_ni_syscall
++237	common	osf_priocntlset			sys_ni_syscall
++238	common	osf_sigsendset			sys_ni_syscall
++239	common	osf_set_speculative		sys_ni_syscall
++240	common	osf_msfs_syscall		sys_ni_syscall
 +241	common	osf_sysinfo			sys_osf_sysinfo
-+242	common	osf_uadmin			alpha_ni_syscall
-+243	common	osf_fuser			alpha_ni_syscall
++242	common	osf_uadmin			sys_ni_syscall
++243	common	osf_fuser			sys_ni_syscall
 +244	common	osf_proplist_syscall		sys_osf_proplist_syscall
-+245	common	osf_ntp_adjtime			alpha_ni_syscall
-+246	common	osf_ntp_gettime			alpha_ni_syscall
-+247	common	osf_pathconf			alpha_ni_syscall
-+248	common	osf_fpathconf			alpha_ni_syscall
-+250	common	osf_uswitch			alpha_ni_syscall
++245	common	osf_ntp_adjtime			sys_ni_syscall
++246	common	osf_ntp_gettime			sys_ni_syscall
++247	common	osf_pathconf			sys_ni_syscall
++248	common	osf_fpathconf			sys_ni_syscall
++250	common	osf_uswitch			sys_ni_syscall
 +251	common	osf_usleep_thread		sys_osf_usleep_thread
-+252	common	osf_audcntl			alpha_ni_syscall
-+253	common	osf_audgen			alpha_ni_syscall
++252	common	osf_audcntl			sys_ni_syscall
++253	common	osf_audgen			sys_ni_syscall
 +254	common	sysfs				sys_sysfs
-+255	common	osf_subsys_info			alpha_ni_syscall
++255	common	osf_subsys_info			sys_ni_syscall
 +256	common	osf_getsysinfo			sys_osf_getsysinfo
 +257	common	osf_setsysinfo			sys_osf_setsysinfo
-+258	common	osf_afs_syscall			alpha_ni_syscall
-+259	common	osf_swapctl			alpha_ni_syscall
-+260	common	osf_memcntl			alpha_ni_syscall
-+261	common	osf_fdatasync			alpha_ni_syscall
++258	common	osf_afs_syscall			sys_ni_syscall
++259	common	osf_swapctl			sys_ni_syscall
++260	common	osf_memcntl			sys_ni_syscall
++261	common	osf_fdatasync			sys_ni_syscall
 +300	common	bdflush				sys_bdflush
 +301	common	sethae				sys_sethae
 +302	common	mount				sys_mount
@@ -597,10 +597,10 @@ index 0000000..e5b99bd
 +) > "$out"
 diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..32c2dc7
+index 0000000..85d78d9
 --- /dev/null
 +++ b/arch/alpha/kernel/syscalls/syscalltbl.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,32 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -616,11 +616,7 @@ index 0000000..32c2dc7
 +	t_entry="$3"
 +
 +	while [ $t_nxt -lt $t_nr ]; do
-+		if [ $t_nxt -lt 300 ]; then
-+			printf "__SYSCALL(%s, alpha_ni_syscall, )\n" "${t_nxt}"
-+		else
-+			printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
-+		fi
++		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
 +		t_nxt=$((t_nxt+1))
 +	done
 +	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"

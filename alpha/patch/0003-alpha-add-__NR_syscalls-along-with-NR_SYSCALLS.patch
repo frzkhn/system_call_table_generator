@@ -1,7 +1,7 @@
-From 84cb57705e5eb4099fb7ef19ffe1cf6dd3cdabb5 Mon Sep 17 00:00:00 2001
+From 4ad6d2a23900fe3ada25ddd3ad61f6de612d302a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 31 Oct 2018 12:14:17 +0530
-Subject: [PATCH v2 3/5] alpha: add __NR_syscalls along with NR_SYSCALLS
+Date: Tue, 13 Nov 2018 13:42:02 +0530
+Subject: [PATCH v3 3/5] alpha: add __NR_syscalls along with NR_SYSCALLS
 
 NR_SYSCALLS macro holds the number of system call exist
 in alpha architecture. We have to change the value of NR-
@@ -39,7 +39,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index cbd04d3..65a5056 100644
+index 4f0ceb3..21b706a 100644
 --- a/arch/alpha/include/asm/unistd.h
 +++ b/arch/alpha/include/asm/unistd.h
 @@ -4,7 +4,7 @@
@@ -49,8 +49,8 @@ index cbd04d3..65a5056 100644
 -#define NR_SYSCALLS			523
 +#define NR_SYSCALLS	__NR_syscalls
  
+ #define __ARCH_WANT_NEW_STAT
  #define __ARCH_WANT_OLD_READDIR
- #define __ARCH_WANT_STAT64
 diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
 index 47c65f1..ab40aa6 100644
 --- a/arch/alpha/include/uapi/asm/unistd.h

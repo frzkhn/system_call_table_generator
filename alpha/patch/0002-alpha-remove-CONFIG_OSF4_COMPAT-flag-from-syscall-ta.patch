@@ -1,7 +1,7 @@
-From 203961f488d79df6ec1a6fea01db9cf152f95890 Mon Sep 17 00:00:00 2001
+From d3b6bb9d673789f92c9b6ea2ab9fc3c8e86caf68 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 28 Jun 2018 10:51:17 +0530
-Subject: [PATCH v2 2/5] alpha: remove CONFIG_OSF4_COMPAT flag from syscall
+Date: Tue, 13 Nov 2018 13:40:02 +0530
+Subject: [PATCH v3 2/5] alpha: remove CONFIG_OSF4_COMPAT flag from syscall
  table
 
 Remove CONFIG_OSF4_COMPAT config flag from system call
@@ -65,13 +65,13 @@ index cff52d8..4a147bf 100644
  {
  	int prio = sys_getpriority(which, who);
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 1374e59..fcf2f60 100644
+index 5b2e8ec..59ca11d 100644
 --- a/arch/alpha/kernel/systbls.S
 +++ b/arch/alpha/kernel/systbls.S
 @@ -132,13 +132,8 @@ sys_call_table:
  	.quad sys_osf_getrusage
  	.quad sys_getsockopt
- 	.quad alpha_ni_syscall
+ 	.quad sys_ni_syscall
 -#ifdef CONFIG_OSF4_COMPAT
  	.quad sys_osf_readv			/* 120 */
  	.quad sys_osf_writev
