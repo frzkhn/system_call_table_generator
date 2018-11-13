@@ -1,7 +1,7 @@
-From 5bf92ac0cdd19a5a0117f89c798629cb4ab7eca6 Mon Sep 17 00:00:00 2001
+From b41e6b6092c2a743ad2857f659bb204e43bd4647 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Tue, 30 Oct 2018 09:27:50 +0530
-Subject: [PATCH v1 0/4] xtensa: system call table generation support
+Date: Tue, 13 Nov 2018 15:37:32 +0530
+Subject: [PATCH v2 0/3] xtensa: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -38,30 +38,34 @@ m68k, microblaze, mips, parisc, powerpc, sh and sparc.
 Below mentioned git repository contains more details 
 about the workflow.
 
- https://github.com/frzkhn/system_call_table_generator/
+https://github.com/frzkhn/system_call_table_generator/
 
 Finally, this is the ground work to solve the Y2038
 issue. We need to add two dozen of system calls to solve
 Y2038 issue. So this patch series will help to add new 
 system calls easily by adding new entry in the syscall.tbl.
 
-Firoz Khan (4):
-  xtensa: move SYS_XTENSA_* macros to non uapi header
+changes since v1:
+ - changed from generic-y to generated-y in Kbuild.
+ - removed the patch "0001-xtensa-move-SYS_XTENSA_-
+   macros-to-non-uapi-header.patch".
+
+Firoz Khan (3):
   xtensa: add __NR_syscalls along with __NR_syscall_count
   xtensa: add system call table generation support
   xtensa: generate uapi header and syscall table header files
 
  arch/xtensa/Makefile                      |   3 +
  arch/xtensa/include/asm/Kbuild            |   1 +
- arch/xtensa/include/asm/unistd.h          |  20 +
+ arch/xtensa/include/asm/unistd.h          |   2 +
  arch/xtensa/include/uapi/asm/Kbuild       |   1 +
- arch/xtensa/include/uapi/asm/unistd.h     | 798 +-----------------------------
+ arch/xtensa/include/uapi/asm/unistd.h     | 781 +-----------------------------
  arch/xtensa/kernel/syscall.c              |   5 +-
  arch/xtensa/kernel/syscalls/Makefile      |  38 ++
  arch/xtensa/kernel/syscalls/syscall.tbl   | 374 ++++++++++++++
  arch/xtensa/kernel/syscalls/syscallhdr.sh |  36 ++
  arch/xtensa/kernel/syscalls/syscalltbl.sh |  32 ++
- 10 files changed, 510 insertions(+), 798 deletions(-)
+ 10 files changed, 492 insertions(+), 781 deletions(-)
  create mode 100644 arch/xtensa/kernel/syscalls/Makefile
  create mode 100644 arch/xtensa/kernel/syscalls/syscall.tbl
  create mode 100644 arch/xtensa/kernel/syscalls/syscallhdr.sh

@@ -1,7 +1,7 @@
-From 49bf300ed54eec6d5bceb47d978549f15ed060fa Mon Sep 17 00:00:00 2001
+From 3eb5e4793da66c609e336cc9f3055e691199dcbe Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 29 Oct 2018 15:45:10 +0530
-Subject: [PATCH v1 3/4] xtensa: add system call table generation support
+Subject: [PATCH v2 2/3] xtensa: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
