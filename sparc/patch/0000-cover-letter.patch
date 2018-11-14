@@ -1,6 +1,6 @@
-From de595cdd8b8fffe17244a3c4362ee8844fb5fd5d Mon Sep 17 00:00:00 2001
+From 9cc94271354666b2d5752644c13106ce4c77fe70 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 5 Nov 2018 10:14:07 +0530
+Date: Wed, 14 Nov 2018 10:34:54 +0530
 Subject: [PATCH v3 0/4] sparc: system call table generation support
 
 The purpose of this patch series is, we can easily
@@ -39,7 +39,7 @@ ia64, m68k, microblaze, mips, parisc, powerpc, sh
 and xtensa. Below mentioned git repository contains
 more details about the workflow.
 
- https://github.com/frzkhn/system_call_table_generator/
+https://github.com/frzkhn/system_call_table_generator/
 
 Finally, this is the ground work to solve the Y2038
 issue. We need to add two dozen of system calls to 
@@ -48,6 +48,7 @@ add new system calls easily by adding new entry in the
 syscall.tbl.
 
 Changes since v2:
+ - changed from generic-y to generated-y in Kbuild.
  - added io_pgetevents entry in the syscall.tbl.
  - updated the compat system call table.
 

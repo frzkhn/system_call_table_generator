@@ -1,4 +1,4 @@
-From 3d1091cdfc9c97d4e9a39efbe322a0e516f09057 Mon Sep 17 00:00:00 2001
+From f8ac6b9de7d95b9cd4ee6e0a3199d8127534c641 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 5 Nov 2018 09:30:04 +0530
 Subject: [PATCH v3 2/4] sparc: add __NR_syscalls along with NR_syscalls

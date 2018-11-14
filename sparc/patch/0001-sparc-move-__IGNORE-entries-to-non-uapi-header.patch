@@ -1,4 +1,4 @@
-From 49510abd07ab9ece0583ac7e25fd889daacb8009 Mon Sep 17 00:00:00 2001
+From 3a4e4cf87006e413e4a0de72383160c6e66ac832 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 30 Oct 2018 10:03:59 +0530
 Subject: [PATCH v3 1/4] sparc: move __IGNORE* entries to non uapi header
