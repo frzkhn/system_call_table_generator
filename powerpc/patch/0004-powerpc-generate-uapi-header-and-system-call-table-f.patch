@@ -1,4 +1,4 @@
-From 1ab3bfe2f8e7bc6c5988960706516eec54470482 Mon Sep 17 00:00:00 2001
+From 2df3a9363e81ccb43c12a6abbe8d191faf764288 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 14 Nov 2018 13:55:46 +0530
 Subject: [PATCH v2 4/4] powerpc: generate uapi header and system call table
@@ -1018,14 +1018,12 @@ index db97da7..0000000
 -#include <asm/systbl.h>
 -END_TABLE NR_syscalls
 diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
-index 7517a43..bd2545f 100644
+index 7517a43..125f2a5 100644
 --- a/arch/powerpc/platforms/cell/spu_callbacks.c
 +++ b/arch/powerpc/platforms/cell/spu_callbacks.c
-@@ -33,22 +33,10 @@
-  *	mbind, mq_open, ipc, ...
+@@ -34,21 +34,9 @@
   */
  
-+#define __SYSCALL(nr, entry, nargs) entry,
  static void *spu_syscall_table[] = {
 -#define SYSCALL(func)		sys_ni_syscall,
 -#define COMPAT_SYS(func)	sys_ni_syscall,
@@ -1042,6 +1040,7 @@ index 7517a43..bd2545f 100644
 -
 -#define compat_sys_sigsuspend	sys_sigsuspend
 -#include <asm/systbl.h>
++#define __SYSCALL(nr, entry, nargs) entry,
 +#include <asm/syscall_table_spu.h>
 +#undef __SYSCALL
  };

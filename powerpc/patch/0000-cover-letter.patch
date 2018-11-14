@@ -1,6 +1,6 @@
-From 1ab3bfe2f8e7bc6c5988960706516eec54470482 Mon Sep 17 00:00:00 2001
+From 2df3a9363e81ccb43c12a6abbe8d191faf764288 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 14:33:35 +0530
+Date: Wed, 14 Nov 2018 15:18:17 +0530
 Subject: [PATCH v2 0/4] powerpc: system call table generation support
 
 The purpose of this patch series is, we can easily
