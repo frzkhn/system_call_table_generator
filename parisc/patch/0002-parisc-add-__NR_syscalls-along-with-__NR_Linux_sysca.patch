@@ -1,7 +1,7 @@
-From 73f1068dc62a10569404cf2a9c724665fd9a7666 Mon Sep 17 00:00:00 2001
+From 9819456e5fe2064213994a0870c5afd86856129a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 26 Sep 2018 11:06:25 +0530
-Subject: [PATCH v6 2/5] parisc: add __NR_syscalls along with
+Subject: [PATCH v7 2/5] parisc: add __NR_syscalls along with
  __NR_Linux_syscalls
 
 __NR_Linux_syscalls macro holds the number of system call
@@ -36,37 +36,39 @@ this macro with #ifdef __KERNEL__ to avoid side effects.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/parisc/include/asm/unistd.h      | 2 ++
- arch/parisc/include/uapi/asm/unistd.h | 4 +++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ arch/parisc/include/uapi/asm/unistd.h | 6 ++++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/arch/parisc/include/asm/unistd.h b/arch/parisc/include/asm/unistd.h
-index 93fd9f6..d30fdbcb 100644
+index fd1013f..c2c2afb 100644
 --- a/arch/parisc/include/asm/unistd.h
 +++ b/arch/parisc/include/asm/unistd.h
 @@ -4,6 +4,8 @@
  
  #include <uapi/asm/unistd.h>
  
-+#define __NR_Linux_syscalls     __NR_syscalls
++#define __NR_Linux_syscalls	__NR_syscalls
 +
  #ifndef __ASSEMBLY__
  
  #define SYS_ify(syscall_name)   __NR_##syscall_name
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index bb52e12..f10d065 100644
+index bb52e12..53cc748 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
-@@ -366,7 +366,9 @@
+@@ -366,8 +366,10 @@
  #define __NR_statx		(__NR_Linux + 349)
  #define __NR_io_pgetevents	(__NR_Linux + 350)
  
 -#define __NR_Linux_syscalls	(__NR_io_pgetevents + 1)
 +#ifdef __KERNEL__
-+#define __NR_syscalls           351
++#define __NR_syscalls		351
 +#endif
  
- #define LINUX_GATEWAY_ADDR      0x100
+-#define LINUX_GATEWAY_ADDR      0x100
++#define LINUX_GATEWAY_ADDR	0x100
  
+ #endif /* _UAPI_ASM_PARISC_UNISTD_H_ */
 -- 
 1.9.1
 

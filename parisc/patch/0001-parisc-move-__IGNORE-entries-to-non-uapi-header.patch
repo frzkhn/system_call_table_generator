@@ -1,7 +1,7 @@
-From 500c096a72cf392c23e4e5adfab1655a9068c023 Mon Sep 17 00:00:00 2001
+From 0ac743cae5bc1b50d6b9ff36bef3f6b6162e9036 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:04:16 +0530
-Subject: [PATCH v6 1/5] parisc: move __IGNORE* entries to non uapi header
+Subject: [PATCH v7 1/5] parisc: move __IGNORE* entries to non uapi header
 
 All the __IGNORE* entries are resides in the uapi header
 file move to non uapi header asm/unistd.h as it is not
@@ -22,15 +22,15 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/arch/parisc/include/asm/unistd.h b/arch/parisc/include/asm/unistd.h
-index 3d507d0..93fd9f6 100644
+index bc37a49..fd1013f 100644
 --- a/arch/parisc/include/asm/unistd.h
 +++ b/arch/parisc/include/asm/unistd.h
 @@ -8,6 +8,12 @@
  
  #define SYS_ify(syscall_name)   __NR_##syscall_name
  
-+#define __IGNORE_select                /* newselect */
-+#define __IGNORE_fadvise64             /* fadvise64_64 */
++#define __IGNORE_select			/* newselect */
++#define __IGNORE_fadvise64		/* fadvise64_64 */
 +#define __IGNORE_pkey_mprotect
 +#define __IGNORE_pkey_alloc
 +#define __IGNORE_pkey_free

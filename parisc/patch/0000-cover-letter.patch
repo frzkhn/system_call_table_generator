@@ -1,44 +1,77 @@
-From 90d89d672359eabd03b9ee3a609573968f503bf4 Mon Sep 17 00:00:00 2001
+From 2f8acc210c1a3e8a43ab48cdb6cc4344e9ffdf5e Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 25 Oct 2018 19:04:52 +0530
-Subject: [PATCH v6 0/5] parisc: system call table generation support
+Date: Wed, 14 Nov 2018 11:52:06 +0530
+Subject: [PATCH v7 0/5] parisc: system call table generation support
 
-The purpose of this patch series is, we can easily add/modify/delete
-system call table support by changing entry in syscall.tbl file 
-instead of manually changing many files. The other goal is to unify 
-the system call table generation support implementation across all 
-the architectures. 
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the
+system call table generation support implementation
+across all the architectures.
 
-The system call tables are in different format in all architecture. 
-It will be difficult to manually add, modify or delete the system 
-calls in the respective files manually. To make it easy by keeping
-a script and which'll generate uapi header file and syscall table 
-file.
+The system call tables are in different format in
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a
+script and which'll generate uapi header file and
+syscall table file.
 
-syscall.tbl contains the list of available system calls along with 
-system call number and corresponding entry point. Add a new system 
-call in this architecture will be possible by adding new entry in 
-the syscall.tbl file.
+syscall.tbl contains the list of available system
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in the
+syscall.tbl file.
 
 Adding a new table entry consisting of:
         - System call number.
         - ABI.
         - System call name.
         - Entry point name.
-	- Compat entry name, if required.
 
-ARM, s390 and x86 architecuture does exist the similar support. I 
-leverage their implementation to come up with a generic solution.
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to
+come up with a generic solution.
 
-I have done the same support for work for alpha, ia64, m68k, micro-
-blaze, mips, powerpc, sh, sparc, and xtensa. Below mentioned git
-repository contains more details.
-Git repo:- https://github.com/frzkhn/system_call_table_generator/
+I have done the same support for work for alpha, ia64,
+m68k, microblaze, mips, powerpc, sh, sparc and xtensa.
+Below mentioned git repository contains more details
+about the workflow.
 
-Finally, this is the ground work to solve the Y2038 issue. We need 
-to add two dozen of system calls to solve Y2038 issue. So this patch
-series will help to add new system calls easily by adding new entry 
-in the syscall.tbl.
+https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to
+solve Y2038 issue. So this patch series will help to
+add new system calls easily by adding new entry in
+the syscall.tbl.
+
+changes since v6:
+ - changed from generic-y to generated-y in Kbuild.
+
+changes since v5:
+ - optimized/updated the syscall table generation
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall_*.tbl.
+
+changes since v4:
+ - optimized/updated the syscall table generation
+   scripts.
+ - removed __IGNORE entries which was added in v2
+   to suppress the warning.
+
+changes since v3:
+ - optimized/updated the syscall table generation
+   scripts.
+ - added missing new line.
+
+changes since v2:
+ - updated the syscall.tbl file by including missed
+   entries.
+
+changes since v1:
+ - enclosed __NR_sycalls macro with __KERNEL__.
 
 Firoz Khan (5):
   parisc: move __IGNORE* entries to non uapi header
@@ -47,7 +80,7 @@ Firoz Khan (5):
   parisc: generate uapi header and system call table files
   parisc: syscalls: ignore nfsservctl for other architectures
 
- arch/parisc/Makefile                      |   4 +
+ arch/parisc/Makefile                      |   3 +
  arch/parisc/include/asm/Kbuild            |   3 +
  arch/parisc/include/asm/unistd.h          |   8 +
  arch/parisc/include/uapi/asm/Kbuild       |   2 +
@@ -59,7 +92,7 @@ Firoz Khan (5):
  arch/parisc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh |  36 +++
  scripts/checksyscalls.sh                  |   1 +
- 12 files changed, 532 insertions(+), 836 deletions(-)
+ 12 files changed, 531 insertions(+), 836 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl

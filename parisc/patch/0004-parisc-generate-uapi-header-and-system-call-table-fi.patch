@@ -1,7 +1,7 @@
-From afe702f85e77a71272813573ea482b484cd44c68 Mon Sep 17 00:00:00 2001
+From 9210226878856c9ec0a7da1a6270f1b0cee1f829 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 11 Oct 2018 14:22:48 +0530
-Subject: [PATCH v6 4/5] parisc: generate uapi header and system call table
+Date: Wed, 14 Nov 2018 11:29:48 +0530
+Subject: [PATCH v7 4/5] parisc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -19,56 +19,55 @@ will be included by kernel/syscall.S file.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/parisc/Makefile                  |   4 +
+ arch/parisc/Makefile                  |   3 +
  arch/parisc/include/asm/Kbuild        |   3 +
  arch/parisc/include/uapi/asm/Kbuild   |   2 +
- arch/parisc/include/uapi/asm/unistd.h | 373 +--------------------------
+ arch/parisc/include/uapi/asm/unistd.h | 371 +--------------------------
  arch/parisc/kernel/syscall.S          |  11 +-
  arch/parisc/kernel/syscall_table.S    | 459 ----------------------------------
- 6 files changed, 23 insertions(+), 829 deletions(-)
+ 6 files changed, 21 insertions(+), 828 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
 
 diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
-index 5ce0302..6b217da 100644
+index d047a09..1c4ea91 100644
 --- a/arch/parisc/Makefile
 +++ b/arch/parisc/Makefile
-@@ -159,6 +159,10 @@ endef
- 
- # we require gcc 3.3 or above to compile the kernel
- archprepare: checkbin
+@@ -156,3 +156,6 @@ define archhelp
+ 	@echo  '		  copy to $$(INSTALL_PATH)'
+ 	@echo  '  zinstall	- Install compressed vmlinuz kernel'
+ endef
 +
 +archheaders:
 +	$(Q)$(MAKE) $(build)=arch/parisc/kernel/syscalls all
-+
- checkbin:
- 	@if test "$(cc-version)" -lt "0303"; then \
- 		echo -n "Sorry, GCC v3.3 or above is required to build " ; \
 diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
-index 2013d63..6b66fb9 100644
+index 2013d63..0b1e354 100644
 --- a/arch/parisc/include/asm/Kbuild
 +++ b/arch/parisc/include/asm/Kbuild
-@@ -23,3 +23,6 @@ generic-y += user.h
- generic-y += vga.h
- generic-y += word-at-a-time.h
- generic-y += xor.h
-+generic-y += syscall_table_32.h
-+generic-y += syscall_table_64.h
-+generic-y += syscall_table_c32.h
+@@ -1,3 +1,6 @@
++generated-y += syscall_table_32.h
++generated-y += syscall_table_64.h
++generated-y += syscall_table_c32.h
+ generic-y += barrier.h
+ generic-y += current.h
+ generic-y += device.h
 diff --git a/arch/parisc/include/uapi/asm/Kbuild b/arch/parisc/include/uapi/asm/Kbuild
-index 286ef5a..04360d9 100644
+index adb5c64..d31b426 100644
 --- a/arch/parisc/include/uapi/asm/Kbuild
 +++ b/arch/parisc/include/uapi/asm/Kbuild
-@@ -7,3 +7,5 @@ generic-y += kvm_para.h
- generic-y += param.h
- generic-y += poll.h
- generic-y += resource.h
-+generic-y += unistd_32.h
-+generic-y += unistd_64.h
+@@ -1,6 +1,8 @@
+ # UAPI Header export list
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
++generated-y += unistd_64.h
+ generic-y += auxvec.h
+ generic-y += bpf_perf_event.h
+ generic-y += kvm_para.h
 diff --git a/arch/parisc/include/uapi/asm/unistd.h b/arch/parisc/include/uapi/asm/unistd.h
-index f10d065..518c1d6 100644
+index 53cc748..6e31f58 100644
 --- a/arch/parisc/include/uapi/asm/unistd.h
 +++ b/arch/parisc/include/uapi/asm/unistd.h
-@@ -2,374 +2,13 @@
+@@ -2,372 +2,11 @@
  #ifndef _UAPI_ASM_PARISC_UNISTD_H_
  #define _UAPI_ASM_PARISC_UNISTD_H_
  
@@ -437,23 +436,20 @@ index f10d065..518c1d6 100644
 -#define __NR_io_pgetevents	(__NR_Linux + 350)
 -
 -#ifdef __KERNEL__
--#define __NR_syscalls           351
-+#define __NR_Linux           0
+-#define __NR_syscalls		351
++#define __NR_Linux		0
 +#ifdef __LP64__
 +#include <asm/unistd_64.h>
 +#else
 +#include <asm/unistd_32.h>
  #endif
  
--#define LINUX_GATEWAY_ADDR      0x100
-+#define LINUX_GATEWAY_ADDR   0x100
- 
- #endif /* _UAPI_ASM_PARISC_UNISTD_H_ */
+ #define LINUX_GATEWAY_ADDR	0x100
 diff --git a/arch/parisc/kernel/syscall.S b/arch/parisc/kernel/syscall.S
-index f453997..5af0176 100644
+index 9505c31..b941068 100644
 --- a/arch/parisc/kernel/syscall.S
 +++ b/arch/parisc/kernel/syscall.S
-@@ -923,19 +923,24 @@ ENTRY(lws_table)
+@@ -919,19 +919,24 @@ ENTRY(lws_table)
  END(lws_table)
  	/* End of lws table */
  
