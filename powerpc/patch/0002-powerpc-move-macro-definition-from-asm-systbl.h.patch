@@ -1,18 +1,19 @@
-From c599a081a2068589e6eaf9908773056fe9087df0 Mon Sep 17 00:00:00 2001
+From c763c3e64a2d18eb6903096d58f0c3d63749080a Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 9 Nov 2018 15:18:07 +0530
 Subject: [PATCH v2 2/4] powerpc: move macro definition from asm/systbl.h
 
-Move macro definition for compat_sys_sigsuspend from asm/systbl.h
-to whereever this file is getting included.
+Move the macro definition for compat_sys_sigsuspend from
+asm/systbl.h to the file which it is getting included.
 
-One of the patch in this patch series is generating uapi header
-and syscall table files. In order to come up with a common impl-
-imentation across all architecture, we need to do this change.
+One of the patch in this patch series is generating uapi
+header and syscall table files. In order to come up with
+a common implimentation across all architecture, we need
+to do this change.
 
-This change will simplify the implementation of system call table
-generation script and help to come up a common implementation
-across all architecture.
+This change will simplify the implementation of system
+call table generation script and help to come up a common
+implementation across all architecture.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---

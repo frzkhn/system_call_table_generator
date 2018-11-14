@@ -1,4 +1,4 @@
-From 0069eb6e66cb28bee6fdb4212b21ca754f8ca6c3 Mon Sep 17 00:00:00 2001
+From 0a96c55bbc6ba9895a2aa5719ae4b74af73193bc Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 12 Sep 2018 11:04:03 +0530
 Subject: [PATCH v2 3/4] powerpc: add system call table generation support
@@ -52,7 +52,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/powerpc/kernel/syscalls/Makefile b/arch/powerpc/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..1445cbc
+index 0000000..6615c24
 --- /dev/null
 +++ b/arch/powerpc/kernel/syscalls/Makefile
 @@ -0,0 +1,61 @@
@@ -60,7 +60,7 @@ index 0000000..1445cbc
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 +
-+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') 	\
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
 +	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
 +
 +syscall := $(srctree)/$(src)/syscall.tbl
@@ -69,14 +69,14 @@ index 0000000..1445cbc
 +
 +quiet_cmd_syshdr = SYSHDR  $@
 +      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
-+		   '$(syshdr_abis_$(basetarget))'     		\
-+		   '$(syshdr_pfx_$(basetarget))'          	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
 +		   '$(syshdr_offset_$(basetarget))'
 +
 +quiet_cmd_systbl = SYSTBL  $@
-+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  	\
-+		   '$(systbl_abis_$(basetarget))'         	\
-+		   '$(systbl_abi_$(basetarget))'          	\
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
 +		   '$(systbl_offset_$(basetarget))'
 +
 +syshdr_abis_unistd_32 := common,32
@@ -106,8 +106,8 @@ index 0000000..1445cbc
 +	$(call if_changed,systbl)
 +
 +uapisyshdr-y		+= unistd_32.h unistd_64.h
-+kapisyshdr-y		+= syscall_table_32.h     	\
-+			   syscall_table_64.h     	\
++kapisyshdr-y		+= syscall_table_32.h		\
++			   syscall_table_64.h		\
 +			   syscall_table_c32.h		\
 +			   syscall_table_spu.h
 +

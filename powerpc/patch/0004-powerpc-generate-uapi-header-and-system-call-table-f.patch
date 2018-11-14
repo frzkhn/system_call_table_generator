@@ -1,6 +1,6 @@
-From 7f242a93b99d1398d37b382a2649e0ccbd67c798 Mon Sep 17 00:00:00 2001
+From 1ab3bfe2f8e7bc6c5988960706516eec54470482 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 9 Nov 2018 16:51:01 +0530
+Date: Wed, 14 Nov 2018 13:55:46 +0530
 Subject: [PATCH v2 4/4] powerpc: generate uapi header and system call table
  files
 
@@ -473,7 +473,7 @@ index a658091..61398cc 100644
  generic-y += param.h
  generic-y += poll.h
 diff --git a/arch/powerpc/include/uapi/asm/unistd.h b/arch/powerpc/include/uapi/asm/unistd.h
-index 8b7fcd4..b51b335 100644
+index 7195868..5f84e3d 100644
 --- a/arch/powerpc/include/uapi/asm/unistd.h
 +++ b/arch/powerpc/include/uapi/asm/unistd.h
 @@ -10,398 +10,10 @@
@@ -740,7 +740,7 @@ index 8b7fcd4..b51b335 100644
 -#define __NR_utimes		251
 -#define __NR_statfs64		252
 -#define __NR_fstatfs64		253
--#ifndef __powerpc64__
+ #ifndef __powerpc64__
 -#define __NR_fadvise64_64	254
 -#endif
 -#define __NR_rtas		255
@@ -779,9 +779,9 @@ index 8b7fcd4..b51b335 100644
 -#define __NR_mknodat		288
 -#define __NR_fchownat		289
 -#define __NR_futimesat		290
- #ifdef __powerpc64__
+-#ifdef __powerpc64__
 -#define __NR_newfstatat		291
-+#include <asm/unistd_64.h>
++#include <asm/unistd_32.h>
  #else
 -#define __NR_fstatat64		291
 -#endif
@@ -872,8 +872,8 @@ index 8b7fcd4..b51b335 100644
 -#define __NR_io_pgetevents	388
 -
 -#ifdef __KERNEL__
--#define __NR_syscalls           389
-+#include <asm/unistd_32.h>
+-#define __NR_syscalls		389
++#include <asm/unistd_64.h>
  #endif
  
  #endif /* _UAPI_ASM_POWERPC_UNISTD_H_ */
