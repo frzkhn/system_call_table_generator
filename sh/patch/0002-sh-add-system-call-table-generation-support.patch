@@ -1,7 +1,7 @@
-From a6b0894bbfd08d31f0f40dc3a3f123fece583cce Mon Sep 17 00:00:00 2001
+From a3b84f0eb3d6084c4f3fafaa6be02f8739fef146 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 1 Aug 2018 15:29:22 +0530
-Subject: [PATCH v2 2/3] sh: add system call table generation support
+Subject: [PATCH v3 2/3] sh: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
