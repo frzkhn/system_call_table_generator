@@ -1,4 +1,4 @@
-From c543651d35cc516a2853b1f99cd725a0f18788be Mon Sep 17 00:00:00 2001
+From e5fe576425477281a18d31b9c081fc961848df32 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 14 Nov 2018 16:13:38 +0530
 Subject: [PATCH v2 5/5] mips: generate uapi header and system call table files

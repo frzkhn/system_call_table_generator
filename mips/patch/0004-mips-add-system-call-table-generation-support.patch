@@ -1,4 +1,4 @@
-From 1b14f453c4fa455b8dcb6246cbab4f60a50c7713 Mon Sep 17 00:00:00 2001
+From 7a06ec2e4ec3dccfd63ba4616f985e7e0136ef14 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 14 Sep 2018 11:24:11 +0530
 Subject: [PATCH v2 4/5] mips: add system call table generation support
@@ -44,12 +44,12 @@ solution.
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/mips/kernel/syscalls/Makefile        |  71 ++++++
- arch/mips/kernel/syscalls/syscall_64.tbl  | 338 ++++++++++++++++++++++++++
- arch/mips/kernel/syscalls/syscall_n32.tbl | 342 +++++++++++++++++++++++++++
- arch/mips/kernel/syscalls/syscall_o32.tbl | 378 ++++++++++++++++++++++++++++++
+ arch/mips/kernel/syscalls/syscall_64.tbl  | 339 ++++++++++++++++++++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl | 343 +++++++++++++++++++++++++++
+ arch/mips/kernel/syscalls/syscall_o32.tbl | 382 ++++++++++++++++++++++++++++++
  arch/mips/kernel/syscalls/syscallhdr.sh   |  36 +++
  arch/mips/kernel/syscalls/syscalltbl.sh   |  36 +++
- 6 files changed, 1201 insertions(+)
+ 6 files changed, 1207 insertions(+)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
  create mode 100644 arch/mips/kernel/syscalls/syscall_64.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
@@ -136,10 +136,10 @@ index 0000000..dc6bbb1
 +	@:
 diff --git a/arch/mips/kernel/syscalls/syscall_64.tbl b/arch/mips/kernel/syscalls/syscall_64.tbl
 new file mode 100644
-index 0000000..bb54743
+index 0000000..da236ac
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscall_64.tbl
-@@ -0,0 +1,338 @@
+@@ -0,0 +1,339 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for mips
@@ -326,6 +326,7 @@ index 0000000..bb54743
 +174	64	getpmsg				sys_ni_syscall
 +175	64	putpmsg				sys_ni_syscall
 +176	64	afs_syscall			sys_ni_syscall
++# 177 reserved for security
 +177	64	reserved177			sys_ni_syscall
 +178	64	gettid				sys_gettid
 +179	64	readahead			sys_readahead
@@ -480,10 +481,10 @@ index 0000000..bb54743
 +328	64	io_pgetevents			sys_io_pgetevents
 diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
 new file mode 100644
-index 0000000..a81d69b
+index 0000000..53d5862
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
-@@ -0,0 +1,342 @@
+@@ -0,0 +1,343 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for mips
@@ -670,6 +671,7 @@ index 0000000..a81d69b
 +174	n32	getpmsg				sys_ni_syscall
 +175	n32	putpmsg				sys_ni_syscall
 +176	n32	afs_syscall			sys_ni_syscall
++# 177 reserved for security
 +177	n32	reserved177			sys_ni_syscall
 +178	n32	gettid				sys_gettid
 +179	n32	readahead			sys_readahead
@@ -828,10 +830,10 @@ index 0000000..a81d69b
 +332	n32	io_pgetevents			compat_sys_io_pgetevents
 diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
 new file mode 100644
-index 0000000..033a10d
+index 0000000..3d5a47b
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
-@@ -0,0 +1,378 @@
+@@ -0,0 +1,382 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for mips
@@ -859,6 +861,7 @@ index 0000000..033a10d
 +15	o32	chmod				sys_chmod
 +16	o32	lchown				sys_lchown
 +17	o32	break				sys_ni_syscall
++# 18 was sys_stat
 +18	o32	unused18			sys_ni_syscall
 +19	o32	lseek				sys_lseek
 +20	o32	getpid				sys_getpid
@@ -869,6 +872,7 @@ index 0000000..033a10d
 +25	o32	stime				sys_stime			compat_sys_stime
 +26	o32	ptrace				sys_ptrace			compat_sys_ptrace
 +27	o32	alarm				sys_alarm
++# 28 was sys_fstat
 +28	o32	unused28			sys_ni_syscall
 +29	o32	pause				sys_pause
 +30	o32	utime				sys_utime			compat_sys_utime
@@ -923,8 +927,10 @@ index 0000000..033a10d
 +79	o32	settimeofday			sys_settimeofday		compat_sys_settimeofday
 +80	o32	getgroups			sys_getgroups
 +81	o32	setgroups			sys_setgroups
++# 82 was old_select
 +82	o32	reserved82			sys_ni_syscall
 +83	o32	symlink				sys_symlink
++# 84 was sys_lstat
 +84	o32	unused84			sys_ni_syscall
 +85	o32	readlink			sys_readlink
 +86	o32	uselib				sys_uselib

@@ -1,6 +1,6 @@
-From c543651d35cc516a2853b1f99cd725a0f18788be Mon Sep 17 00:00:00 2001
+From e5fe576425477281a18d31b9c081fc961848df32 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 15 Nov 2018 09:34:23 +0530
+Date: Thu, 15 Nov 2018 11:27:35 +0530
 Subject: [PATCH v2 0/5] mips: system call table generation support
 
 The purpose of this patch series is, we can easily
@@ -72,12 +72,12 @@ Firoz Khan (5):
  arch/mips/kernel/scall64-n32.S            |  341 +---------
  arch/mips/kernel/scall64-o32.S            |  379 +----------
  arch/mips/kernel/syscalls/Makefile        |   71 ++
- arch/mips/kernel/syscalls/syscall_64.tbl  |  338 +++++++++
- arch/mips/kernel/syscalls/syscall_n32.tbl |  342 ++++++++++
- arch/mips/kernel/syscalls/syscall_o32.tbl |  378 +++++++++++
+ arch/mips/kernel/syscalls/syscall_64.tbl  |  339 +++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl |  343 ++++++++++
+ arch/mips/kernel/syscalls/syscall_o32.tbl |  382 +++++++++++
  arch/mips/kernel/syscalls/syscallhdr.sh   |   36 +
  arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
- 16 files changed, 1253 insertions(+), 2472 deletions(-)
+ 16 files changed, 1259 insertions(+), 2472 deletions(-)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
  create mode 100644 arch/mips/kernel/syscalls/syscall_64.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
