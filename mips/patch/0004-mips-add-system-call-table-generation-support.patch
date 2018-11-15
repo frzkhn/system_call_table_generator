@@ -1,4 +1,4 @@
-From d333546913f9fd2ecc24cad1780d9c1d8f8896fb Mon Sep 17 00:00:00 2001
+From 1b14f453c4fa455b8dcb6246cbab4f60a50c7713 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 14 Sep 2018 11:24:11 +0530
 Subject: [PATCH v2 4/5] mips: add system call table generation support
@@ -59,7 +59,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/mips/kernel/syscalls/Makefile b/arch/mips/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..a10ee9c
+index 0000000..dc6bbb1
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/Makefile
 @@ -0,0 +1,71 @@
@@ -67,7 +67,7 @@ index 0000000..a10ee9c
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 +
-+_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)') 	\
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
 +	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
 +
 +syscallo32 := $(srctree)/$(src)/syscall_o32.tbl
@@ -77,15 +77,15 @@ index 0000000..a10ee9c
 +systbl := $(srctree)/$(src)/syscalltbl.sh
 +
 +quiet_cmd_syshdr = SYSHDR  $@
-+      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'  	\
-+		   '$(syshdr_abis_$(basetarget))'         	\
-+		   '$(syshdr_pfx_$(basetarget))'          	\
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
 +		   '$(syshdr_offset_$(basetarget))'
 +
 +quiet_cmd_systbl = SYSTBL  $@
-+      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'  	\
-+		   '$(systbl_abis_$(basetarget))'         	\
-+		   '$(systbl_abi_$(basetarget))'          	\
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
 +		   '$(systbl_offset_$(basetarget))'
 +
 +syshdr_offset_unistd_64 := __NR_Linux
@@ -120,11 +120,11 @@ index 0000000..a10ee9c
 +$(kapi)/syscall_table_64_o32.h: $(syscallo32) $(systbl)
 +	$(call if_changed,systbl)
 +
-+uapisyshdr-y		+= unistd_64.h 			\
++uapisyshdr-y		+= unistd_64.h			\
 +			   unistd_n32.h			\
 +			   unistd_o32.h
-+kapisyshdr-y		+= syscall_table_32_o32.h     	\
-+			   syscall_table_64_64.h     	\
++kapisyshdr-y		+= syscall_table_32_o32.h	\
++			   syscall_table_64_64.h	\
 +			   syscall_table_64_n32.h	\
 +			   syscall_table_64_o32.h
 +

@@ -1,6 +1,6 @@
-From 7c7644f5ae5ccd00d069c41f191c3e01b3efa584 Mon Sep 17 00:00:00 2001
+From c543651d35cc516a2853b1f99cd725a0f18788be Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 9 Nov 2018 10:56:25 +0530
+Date: Thu, 15 Nov 2018 09:34:23 +0530
 Subject: [PATCH v2 0/5] mips: system call table generation support
 
 The purpose of this patch series is, we can easily
@@ -39,19 +39,20 @@ ia64, m68k, microblaze, parisc, powerpc, sh, sparc,
 and xtensa. Below mentioned git repository contains
 more details about the workflow.
 
- https://github.com/frzkhn/system_call_table_generator/
+https://github.com/frzkhn/system_call_table_generator/
 
 Finally, this is the ground work to solve the Y2038
 issue. We need to add two dozen of system calls to 
 solve Y2038 issue. So this patch series will help to
-add new system calls easily by adding new entry in the
-syscall.tbl.
+add new system calls easily by adding new entry in
+the syscall.tbl.
 
 Changes since v1:
  - optimized/updated the syscall table generation 
    scripts.
  - fixed all mixed indentation issues in syscall.tbl.
  - added "comments" in syscall_*.tbl.
+ - changed from generic-y to generated-y in Kbuild.
 
 Firoz Khan (5):
   mips: add __NR_syscalls along with __NR_Linux_syscalls
@@ -62,21 +63,21 @@ Firoz Khan (5):
 
  arch/mips/Makefile                        |    3 +
  arch/mips/include/asm/Kbuild              |    4 +
- arch/mips/include/asm/unistd.h            |   24 +-
+ arch/mips/include/asm/unistd.h            |    6 +-
  arch/mips/include/uapi/asm/Kbuild         |    3 +
- arch/mips/include/uapi/asm/unistd.h       | 1074 +----------------------------
+ arch/mips/include/uapi/asm/unistd.h       | 1057 +----------------------------
  arch/mips/kernel/ftrace.c                 |    6 +-
- arch/mips/kernel/scall32-o32.S            |  395 +----------
+ arch/mips/kernel/scall32-o32.S            |  390 +----------
  arch/mips/kernel/scall64-64.S             |  335 +--------
- arch/mips/kernel/scall64-n32.S            |  341 +--------
- arch/mips/kernel/scall64-o32.S            |  379 +---------
+ arch/mips/kernel/scall64-n32.S            |  341 +---------
+ arch/mips/kernel/scall64-o32.S            |  379 +----------
  arch/mips/kernel/syscalls/Makefile        |   71 ++
  arch/mips/kernel/syscalls/syscall_64.tbl  |  338 +++++++++
- arch/mips/kernel/syscalls/syscall_n32.tbl |  342 +++++++++
- arch/mips/kernel/syscalls/syscall_o32.tbl |  378 ++++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl |  342 ++++++++++
+ arch/mips/kernel/syscalls/syscall_o32.tbl |  378 +++++++++++
  arch/mips/kernel/syscalls/syscallhdr.sh   |   36 +
  arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
- 16 files changed, 1267 insertions(+), 2498 deletions(-)
+ 16 files changed, 1253 insertions(+), 2472 deletions(-)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
  create mode 100644 arch/mips/kernel/syscalls/syscall_64.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl

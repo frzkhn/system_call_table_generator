@@ -1,6 +1,6 @@
-From 7c7644f5ae5ccd00d069c41f191c3e01b3efa584 Mon Sep 17 00:00:00 2001
+From c543651d35cc516a2853b1f99cd725a0f18788be Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 8 Nov 2018 15:40:45 +0530
+Date: Wed, 14 Nov 2018 16:13:38 +0530
 Subject: [PATCH v2 5/5] mips: generate uapi header and system call table files
 
 System call table generation script must be run to gener-
@@ -16,20 +16,20 @@ identical.
 
 The generated uapi header file will be included in uapi/-
 asm/unistd.h and generated system call table header file
-will be included by kernel/scall32-o32/64-64/64-n32/64-
--o32.Sfile.
+will be included by kernel/scall32-o32/64-64/64-n32/-
+64-o32.Sfile.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/mips/Makefile                  |    3 +
  arch/mips/include/asm/Kbuild        |    4 +
  arch/mips/include/uapi/asm/Kbuild   |    3 +
- arch/mips/include/uapi/asm/unistd.h | 1070 +----------------------------------
+ arch/mips/include/uapi/asm/unistd.h | 1056 +----------------------------------
  arch/mips/kernel/scall32-o32.S      |  372 +-----------
  arch/mips/kernel/scall64-64.S       |  333 +----------
  arch/mips/kernel/scall64-n32.S      |  337 +----------
- arch/mips/kernel/scall64-o32.S      |  373 +-----------
- 8 files changed, 28 insertions(+), 2467 deletions(-)
+ arch/mips/kernel/scall64-o32.S      |  373 +------------
+ 8 files changed, 25 insertions(+), 2456 deletions(-)
 
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
 index 6841049..f0a849a 100644
@@ -72,17 +72,17 @@ index 7a4becd..8155667 100644
  generic-y += bpf_perf_event.h
  generic-y += ipcbuf.h
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index f0f2d81..99904a5 100644
+index 9a19b347..66bc736 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
-@@ -17,1080 +17,22 @@
+@@ -17,383 +17,8 @@
  
  #if _MIPS_SIM == _MIPS_SIM_ABI32
  
 -/*
 - * Linux o32 style syscalls are in the range from 4000 to 4999.
 - */
--#define __NR_Linux			4000
+ #define __NR_Linux			4000
 -#define __NR_syscall			(__NR_Linux +	0)
 -#define __NR_exit			(__NR_Linux +	1)
 -#define __NR_fork			(__NR_Linux +	2)
@@ -453,23 +453,21 @@ index f0f2d81..99904a5 100644
 -#define __NR_rseq			(__NR_Linux + 367)
 -#define __NR_io_pgetevents		(__NR_Linux + 368)
 -
--/*
-- * Offset of the last Linux o32 flavoured syscall
-- */
 -#ifdef __KERNEL__
 -#define __NR_syscalls			369
 -#endif
-+#define __NR_Linux	4000
 +#include <asm/unistd_o32.h>
  
- #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+ /*
+  * Offset of the last Linux o32 flavoured syscall
+@@ -407,343 +32,8 @@
  
  #if _MIPS_SIM == _MIPS_SIM_ABI64
  
 -/*
 - * Linux 64-bit syscalls are in the range from 5000 to 5999.
 - */
--#define __NR_Linux			5000
+ #define __NR_Linux			5000
 -#define __NR_read			(__NR_Linux +	0)
 -#define __NR_write			(__NR_Linux +	1)
 -#define __NR_open			(__NR_Linux +	2)
@@ -800,23 +798,21 @@ index f0f2d81..99904a5 100644
 -#define __NR_rseq			(__NR_Linux + 327)
 -#define __NR_io_pgetevents		(__NR_Linux + 328)
 -
--/*
-- * Offset of the last Linux 64-bit flavoured syscall
-- */
 -#ifdef __KERNEL__
 -#define __NR_syscalls			329
 -#endif
-+#define __NR_Linux	5000
 +#include <asm/unistd_64.h>
  
- #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
+ /*
+  * Offset of the last Linux 64-bit flavoured syscall
+@@ -757,348 +47,8 @@
  
  #if _MIPS_SIM == _MIPS_SIM_NABI32
  
 -/*
 - * Linux N32 syscalls are in the range from 6000 to 6999.
 - */
--#define __NR_Linux			6000
+ #define __NR_Linux			6000
 -#define __NR_read			(__NR_Linux +	0)
 -#define __NR_write			(__NR_Linux +	1)
 -#define __NR_open			(__NR_Linux +	2)
@@ -1151,22 +1147,19 @@ index f0f2d81..99904a5 100644
 -#define __NR_rseq			(__NR_Linux + 331)
 -#define __NR_io_pgetevents		(__NR_Linux + 332)
 -
--/*
-- * Offset of the last N32 flavoured syscall
-- */
 -#ifdef __KERNEL__
 -#define __NR_syscalls			333
 -#endif
-+#define __NR_Linux	6000
+-
 +#include <asm/unistd_n32.h>
- 
- #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
- 
+ /*
+  * Offset of the last N32 flavoured syscall
+  */
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index b559f0e..435caa4 100644
+index 4eee437..c98ffd7 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
-@@ -213,375 +213,9 @@ einval: li	v0, -ENOSYS
+@@ -220,375 +220,9 @@ einval: li	v0, -ENOSYS
  #define mipsmt_sys_sched_getaffinity sys_sched_getaffinity
  #endif /* CONFIG_MIPS_MT_FPAFF */
  

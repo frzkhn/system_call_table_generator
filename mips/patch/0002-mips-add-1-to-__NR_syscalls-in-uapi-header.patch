@@ -1,6 +1,6 @@
-From 4c6e2b0ac3108e655a1d60c83a522f1a47de6bac Mon Sep 17 00:00:00 2001
+From 9e07a94a7409a02120d1191ad291b0f570853e76 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 8 Nov 2018 15:24:56 +0530
+Date: Wed, 14 Nov 2018 16:01:07 +0530
 Subject: [PATCH v2 2/5] mips: add +1 to __NR_syscalls in uapi header
 
 All other architectures are hold a value for __NR_syscalls will
@@ -26,11 +26,11 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  7 files changed, 18 insertions(+), 18 deletions(-)
 
 diff --git a/arch/mips/include/asm/unistd.h b/arch/mips/include/asm/unistd.h
-index 191dda8..2bea181 100644
+index c68b8ae..16f21c3 100644
 --- a/arch/mips/include/asm/unistd.h
 +++ b/arch/mips/include/asm/unistd.h
-@@ -33,11 +33,11 @@
- #define __NR_N32_Linux_syscalls		__NR_syscalls
+@@ -15,11 +15,11 @@
+ #include <uapi/asm/unistd.h>
  
  #ifdef CONFIG_MIPS32_N32
 -#define NR_syscalls  (__NR_N32_Linux + __NR_N32_Linux_syscalls)
@@ -45,36 +45,36 @@ index 191dda8..2bea181 100644
  
  #ifndef __ASSEMBLY__
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index d9b26d1..f0f2d81 100644
+index 0ccf954..9a19b347 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
-@@ -395,7 +395,7 @@
-  * Offset of the last Linux o32 flavoured syscall
-  */
+@@ -392,7 +392,7 @@
+ #define __NR_io_pgetevents		(__NR_Linux + 368)
+ 
  #ifdef __KERNEL__
 -#define __NR_syscalls			368
 +#define __NR_syscalls			369
  #endif
  
- #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
-@@ -740,7 +740,7 @@
-  * Offset of the last Linux 64-bit flavoured syscall
-  */
+ /*
+@@ -742,7 +742,7 @@
+ #define __NR_io_pgetevents		(__NR_Linux + 328)
+ 
  #ifdef __KERNEL__
 -#define __NR_syscalls			328
 +#define __NR_syscalls			329
  #endif
  
- #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
-@@ -1089,7 +1089,7 @@
-  * Offset of the last N32 flavoured syscall
-  */
+ /*
+@@ -1096,7 +1096,7 @@
+ #define __NR_io_pgetevents		(__NR_Linux + 332)
+ 
  #ifdef __KERNEL__
 -#define __NR_syscalls			332
 +#define __NR_syscalls			333
  #endif
  
- #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+ /*
 diff --git a/arch/mips/kernel/ftrace.c b/arch/mips/kernel/ftrace.c
 index 7f3dfdb..add4301 100644
 --- a/arch/mips/kernel/ftrace.c

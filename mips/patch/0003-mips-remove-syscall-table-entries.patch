@@ -1,4 +1,4 @@
-From 11207e3e7d25a6c6085a732c21b97ecec9a3595e Mon Sep 17 00:00:00 2001
+From abbea40c6941d1b340dd6d47b2ac8b0aa32408b8 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 8 Nov 2018 15:12:11 +0530
 Subject: [PATCH v2 3/5] mips: remove syscall table entries
@@ -16,18 +16,25 @@ _sys_sched_getaffinity from the table and define it in other way.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/kernel/scall32-o32.S | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ arch/mips/kernel/scall32-o32.S | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index a9b895f..b559f0e 100644
+index a9b895f..4eee437 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
-@@ -208,6 +208,11 @@ einval: li	v0, -ENOSYS
+@@ -208,6 +208,18 @@ einval: li	v0, -ENOSYS
  	jr	ra
  	END(sys_syscall)
  
 +#ifdef CONFIG_MIPS_MT_FPAFF
++	/*
++	 * For FPU affinity scheduling on MIPS MT processors, we need to
++	 * intercept sys_sched_xxxaffinity() calls until we get a proper hook
++	 * in kernel/sched/core.c.  Considered only temporary we only support
++	 * these hooks for the 32-bit kernel - there is no MIPS64 MT processor
++	 * atm.
++	 */
 +#define mipsmt_sys_sched_setaffinity sys_sched_setaffinity
 +#define mipsmt_sys_sched_getaffinity sys_sched_getaffinity
 +#endif /* CONFIG_MIPS_MT_FPAFF */
@@ -35,7 +42,7 @@ index a9b895f..b559f0e 100644
  	.align	2
  	.type	sys_call_table, @object
  EXPORT(sys_call_table)
-@@ -450,20 +455,8 @@ EXPORT(sys_call_table)
+@@ -450,20 +462,8 @@ EXPORT(sys_call_table)
  	PTR	sys_tkill
  	PTR	sys_sendfile64
  	PTR	sys_futex
