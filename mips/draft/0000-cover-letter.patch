@@ -1,0 +1,46 @@
+From 42e84af49ecadeaf2c073344925022f3a2935fff Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Tue, 20 Nov 2018 17:27:49 +0530
+Subject: [PATCH v3 0/6] *** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Firoz Khan (6):
+  mips: add __NR_syscalls along with __NR_Linux_syscalls
+  mips: remove unused macros
+  mips: add +1 to __NR_syscalls in uapi header
+  mips: remove syscall table entries
+  mips: add system call table generation support
+  mips: generate uapi header and system call table files
+
+ arch/mips/Makefile                        |    3 +
+ arch/mips/include/asm/Kbuild              |    4 +
+ arch/mips/include/asm/unistd.h            |    8 -
+ arch/mips/include/uapi/asm/Kbuild         |    3 +
+ arch/mips/include/uapi/asm/unistd.h       | 1060 +----------------------------
+ arch/mips/kernel/Makefile                 |    2 +-
+ arch/mips/kernel/ftrace.c                 |    6 +-
+ arch/mips/kernel/scall32-o32.S            |  391 +----------
+ arch/mips/kernel/scall64-64.S             |  444 ------------
+ arch/mips/kernel/scall64-n32.S            |  341 +---------
+ arch/mips/kernel/scall64-n64.S            |  117 ++++
+ arch/mips/kernel/scall64-o32.S            |  379 +----------
+ arch/mips/kernel/syscalls/Makefile        |   71 ++
+ arch/mips/kernel/syscalls/syscall_n32.tbl |  343 ++++++++++
+ arch/mips/kernel/syscalls/syscall_n64.tbl |  339 +++++++++
+ arch/mips/kernel/syscalls/syscall_o32.tbl |  382 +++++++++++
+ arch/mips/kernel/syscalls/syscallhdr.sh   |   36 +
+ arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
+ 18 files changed, 1372 insertions(+), 2593 deletions(-)
+ delete mode 100644 arch/mips/kernel/scall64-64.S
+ create mode 100644 arch/mips/kernel/scall64-n64.S
+ create mode 100644 arch/mips/kernel/syscalls/Makefile
+ create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
+ create mode 100644 arch/mips/kernel/syscalls/syscall_n64.tbl
+ create mode 100644 arch/mips/kernel/syscalls/syscall_o32.tbl
+ create mode 100644 arch/mips/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/mips/kernel/syscalls/syscalltbl.sh
+
+-- 
+1.9.1
+
