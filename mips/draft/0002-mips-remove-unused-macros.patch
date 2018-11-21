@@ -1,4 +1,4 @@
-From 1908e639a32d800b89eb46fe282dda17138a4755 Mon Sep 17 00:00:00 2001
+From 693690bc207d30ca4b699c0a0671f534678a53dd Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 20 Nov 2018 15:08:35 +0530
 Subject: [PATCH v3 2/6] mips: remove unused macros

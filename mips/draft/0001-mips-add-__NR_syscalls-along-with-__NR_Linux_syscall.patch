@@ -1,4 +1,4 @@
-From d688202da63cd915cae1d4c6e33de23a22382a6a Mon Sep 17 00:00:00 2001
+From f4012b96d8520915b4395b6f907fa90dde52c097 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 14 Nov 2018 15:48:51 +0530
 Subject: [PATCH v3 1/6] mips: add __NR_syscalls along with __NR_Linux_syscalls
@@ -34,14 +34,14 @@ this macro with #ifdef __KERNEL__ to avoid side effects.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/include/uapi/asm/unistd.h | 26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ arch/mips/include/uapi/asm/unistd.h | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index f25dd1d..26db9c5 100644
+index f25dd1d..6914be5 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
-@@ -391,16 +391,20 @@
+@@ -391,11 +391,14 @@
  #define __NR_rseq			(__NR_Linux + 367)
  #define __NR_io_pgetevents		(__NR_Linux + 368)
  
@@ -54,17 +54,10 @@ index f25dd1d..26db9c5 100644
   */
 -#define __NR_Linux_syscalls		368
 +#define __NR_Linux_syscalls		__NR_syscalls
-+#define __NR_O32_syscalls		__NR_syscalls
  
  #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
  
- #define __NR_O32_Linux			4000
--#define __NR_O32_Linux_syscalls		368
-+#define __NR_O32_Linux_syscalls		__NR_O32_syscalls
- 
- #if _MIPS_SIM == _MIPS_SIM_ABI64
- 
-@@ -738,15 +742,20 @@
+@@ -738,10 +741,14 @@
  #define __NR_rseq			(__NR_Linux + 327)
  #define __NR_io_pgetevents		(__NR_Linux + 328)
  
@@ -77,17 +70,10 @@ index f25dd1d..26db9c5 100644
   */
 -#define __NR_Linux_syscalls		328
 +#define __NR_Linux_syscalls		__NR_syscalls
-+#define __NR_64_syscalls		__NR_syscalls
  
  #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
  
- #define __NR_64_Linux			5000
--#define __NR_64_Linux_syscalls		328
-+#define __NR_64_Linux_syscalls		__NR_64_syscalls
- 
- #if _MIPS_SIM == _MIPS_SIM_NABI32
- 
-@@ -1088,14 +1097,19 @@
+@@ -1088,10 +1095,14 @@
  #define __NR_rseq			(__NR_Linux + 331)
  #define __NR_io_pgetevents		(__NR_Linux + 332)
  
@@ -100,15 +86,9 @@ index f25dd1d..26db9c5 100644
   */
 -#define __NR_Linux_syscalls		332
 +#define __NR_Linux_syscalls		__NR_syscalls
-+#define __NR_N32_syscalls		__NR_syscalls
  
  #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
  
- #define __NR_N32_Linux			6000
--#define __NR_N32_Linux_syscalls		332
-+#define __NR_N32_Linux_syscalls		__NR_N32_syscalls
- 
- #endif /* _UAPI_ASM_UNISTD_H */
 -- 
 1.9.1
 

@@ -1,4 +1,4 @@
-From 42c679bfc4622b01ac0dee53feca2f0737707ff9 Mon Sep 17 00:00:00 2001
+From 8d58c3df53ed7de7aa931755b6c012bd427ee5e0 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 20 Nov 2018 15:15:25 +0530
 Subject: [PATCH v3 3/6] mips: add +1 to __NR_syscalls in uapi header
@@ -16,16 +16,16 @@ system call number +1.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/include/uapi/asm/unistd.h | 6 +++---
- arch/mips/kernel/ftrace.c           | 6 +++---
- arch/mips/kernel/scall32-o32.S      | 4 ++--
- arch/mips/kernel/scall64-64.S       | 2 +-
- arch/mips/kernel/scall64-n32.S      | 4 ++--
- arch/mips/kernel/scall64-o32.S      | 6 +++---
- 6 files changed, 14 insertions(+), 14 deletions(-)
+ arch/mips/include/uapi/asm/unistd.h | 12 ++++++------
+ arch/mips/kernel/ftrace.c           |  6 +++---
+ arch/mips/kernel/scall32-o32.S      |  4 ++--
+ arch/mips/kernel/scall64-64.S       |  2 +-
+ arch/mips/kernel/scall64-n32.S      |  4 ++--
+ arch/mips/kernel/scall64-o32.S      |  6 +++---
+ 6 files changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index 26db9c5..ce59ef6 100644
+index 6914be5..dac1335 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
 @@ -392,7 +392,7 @@
@@ -37,7 +37,16 @@ index 26db9c5..ce59ef6 100644
  #endif
  
  /*
-@@ -743,7 +743,7 @@
+@@ -403,7 +403,7 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+ 
+ #define __NR_O32_Linux			4000
+-#define __NR_O32_Linux_syscalls		368
++#define __NR_O32_Linux_syscalls		369
+ 
+ #if _MIPS_SIM == _MIPS_SIM_ABI64
+ 
+@@ -742,7 +742,7 @@
  #define __NR_io_pgetevents		(__NR_Linux + 328)
  
  #ifdef __KERNEL__
@@ -46,7 +55,16 @@ index 26db9c5..ce59ef6 100644
  #endif
  
  /*
-@@ -1098,7 +1098,7 @@
+@@ -753,7 +753,7 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
+ 
+ #define __NR_64_Linux			5000
+-#define __NR_64_Linux_syscalls		328
++#define __NR_64_Linux_syscalls		329
+ 
+ #if _MIPS_SIM == _MIPS_SIM_NABI32
+ 
+@@ -1096,7 +1096,7 @@
  #define __NR_io_pgetevents		(__NR_Linux + 332)
  
  #ifdef __KERNEL__
@@ -55,6 +73,14 @@ index 26db9c5..ce59ef6 100644
  #endif
  
  /*
+@@ -1107,6 +1107,6 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+ 
+ #define __NR_N32_Linux			6000
+-#define __NR_N32_Linux_syscalls		332
++#define __NR_N32_Linux_syscalls		333
+ 
+ #endif /* _UAPI_ASM_UNISTD_H */
 diff --git a/arch/mips/kernel/ftrace.c b/arch/mips/kernel/ftrace.c
 index 7f3dfdb..f32caaf 100644
 --- a/arch/mips/kernel/ftrace.c

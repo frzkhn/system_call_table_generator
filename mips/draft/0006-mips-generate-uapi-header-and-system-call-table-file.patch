@@ -1,22 +1,22 @@
-From 42e84af49ecadeaf2c073344925022f3a2935fff Mon Sep 17 00:00:00 2001
+From 4ecccee8ce820ab0dc41b0e14a947bc48bfc5d4b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 16:13:38 +0530
+Date: Wed, 21 Nov 2018 14:11:02 +0530
 Subject: [PATCH v3 6/6] mips: generate uapi header and system call table files
 
 System call table generation script must be run to gener-
-ate unistd_64/n32/o32.h and syscall_table_32_o32/64_64/64-
-_n32/64-o32.h files. This patch will have changes which
+ate unistd_n64/n32/o32.h and syscall_table_32_o32/64_n64/
+64_n32/64-o32.h files. This patch will have changes which
 will invokes the script.
 
-This patch will generate unistd_64/n32/o32.h and syscall-
-_table_32_o32/64_64/64-n32/64-o32.h files by the syscall
+This patch will generate unistd_n64/n32/o32.h and syscall-
+_table_32_o32/64_n64/64-n32/64-o32.h files by the syscall
 table generation script invoked by parisc/Makefile and
 the generated files against the removed files must be
 identical.
 
 The generated uapi header file will be included in uapi/-
 asm/unistd.h and generated system call table header file
-will be included by kernel/scall32-o32/64-64/64-n32/-
+will be included by kernel/scall32-o32/64-n64/64-n32/-
 64-o32.Sfile.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
@@ -76,7 +76,7 @@ index 7a4becd..b3cb21d 100644
  generic-y += bpf_perf_event.h
  generic-y += ipcbuf.h
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index ce59ef6..d4595bc 100644
+index dac1335..c906c35 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
 @@ -17,383 +17,8 @@
@@ -464,7 +464,7 @@ index ce59ef6..d4595bc 100644
  
  /*
   * Offset of the last Linux o32 flavoured syscall
-@@ -408,343 +33,8 @@
+@@ -407,343 +32,8 @@
  
  #if _MIPS_SIM == _MIPS_SIM_ABI64
  
@@ -809,7 +809,7 @@ index ce59ef6..d4595bc 100644
  
  /*
   * Offset of the last Linux 64-bit flavoured syscall
-@@ -759,348 +49,8 @@
+@@ -757,348 +47,8 @@
  
  #if _MIPS_SIM == _MIPS_SIM_NABI32
  
@@ -1173,7 +1173,7 @@ index 210c280..25af613 100644
  obj-$(CONFIG_MIPS32_N32)	+= binfmt_elfn32.o scall64-n32.o signal_n32.o
  obj-$(CONFIG_MIPS32_O32)	+= binfmt_elfo32.o scall64-o32.o signal_o32.o
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index d47742e..b7199a3 100644
+index 903250f..b7199a3 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
 @@ -217,375 +217,9 @@ einval: li	v0, -ENOSYS
@@ -1423,8 +1423,8 @@ index d47742e..b7199a3 100644
 -	PTR	sys_tkill
 -	PTR	sys_sendfile64
 -	PTR	sys_futex
--	PTR	sys_sched_setaffinity
--	PTR	sys_sched_getaffinity		/* 4240 */
+-	PTR	mipsmt_sys_sched_setaffinity
+-	PTR	mipsmt_sys_sched_getaffinity	/* 4240 */
 -	PTR	sys_io_setup
 -	PTR	sys_io_destroy
 -	PTR	sys_io_getevents
