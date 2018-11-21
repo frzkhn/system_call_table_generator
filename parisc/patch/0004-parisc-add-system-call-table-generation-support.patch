@@ -1,7 +1,7 @@
-From e136886f1a274dd880b59ec2bf03538805fb48b4 Mon Sep 17 00:00:00 2001
+From 71bac7359e2ab512311e3924a9b4111cdb66fc35 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Sun, 9 Sep 2018 07:22:50 +0530
-Subject: [PATCH v7 3/5] parisc: add system call table generation support
+Subject: [PATCH v8 4/6] parisc: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -41,12 +41,13 @@ I leverage their implementation to come up with a generic
 solution.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+Acked-by: Helge Deller <deller@gmx.de>
 ---
- arch/parisc/kernel/syscalls/Makefile      |  57 +++++
+ arch/parisc/kernel/syscalls/Makefile      |  55 +++++
  arch/parisc/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh |  36 +++
- 4 files changed, 498 insertions(+)
+ 4 files changed, 496 insertions(+)
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
@@ -54,10 +55,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..defa887
+index 0000000..c22a21c
 --- /dev/null
 +++ b/arch/parisc/kernel/syscalls/Makefile
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,55 @@
 +# SPDX-License-Identifier: GPL-2.0
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
@@ -82,12 +83,10 @@ index 0000000..defa887
 +		   '$(systbl_offset_$(basetarget))'
 +
 +syshdr_abis_unistd_32 := common,32
-+syshdr_offset_unistd_32 := __NR_Linux
 +$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
 +syshdr_abis_unistd_64 := common,64
-+syshdr_offset_unistd_64 := __NR_Linux
 +$(uapi)/unistd_64.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +

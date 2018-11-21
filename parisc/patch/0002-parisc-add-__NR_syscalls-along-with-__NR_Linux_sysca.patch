@@ -1,7 +1,7 @@
-From 9819456e5fe2064213994a0870c5afd86856129a Mon Sep 17 00:00:00 2001
+From 7380f48019946be424733670a0751dc9af84280b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 26 Sep 2018 11:06:25 +0530
-Subject: [PATCH v7 2/5] parisc: add __NR_syscalls along with
+Subject: [PATCH v8 2/6] parisc: add __NR_syscalls along with
  __NR_Linux_syscalls
 
 __NR_Linux_syscalls macro holds the number of system call
@@ -34,6 +34,7 @@ simplifies the implementation. We also need to enclose
 this macro with #ifdef __KERNEL__ to avoid side effects.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+Acked-by: Helge Deller <deller@gmx.de>
 ---
  arch/parisc/include/asm/unistd.h      | 2 ++
  arch/parisc/include/uapi/asm/unistd.h | 6 ++++--

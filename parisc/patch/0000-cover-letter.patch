@@ -1,7 +1,7 @@
-From 2f8acc210c1a3e8a43ab48cdb6cc4344e9ffdf5e Mon Sep 17 00:00:00 2001
+From 8aa33268f9fabfb89d03ca530847605b5c17cea9 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 11:52:06 +0530
-Subject: [PATCH v7 0/5] parisc: system call table generation support
+Date: Wed, 21 Nov 2018 09:12:27 +0530
+Subject: [PATCH v8 0/6] parisc: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -46,6 +46,9 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in
 the syscall.tbl.
 
+changes since v7:
+ - removed __NR_Linux from uapi header file.
+
 changes since v6:
  - changed from generic-y to generated-y in Kbuild.
 
@@ -73,9 +76,10 @@ changes since v2:
 changes since v1:
  - enclosed __NR_sycalls macro with __KERNEL__.
 
-Firoz Khan (5):
+Firoz Khan (6):
   parisc: move __IGNORE* entries to non uapi header
   parisc: add __NR_syscalls along with __NR_Linux_syscalls
+  parisc: remove __NR_Linux from uapi header file.
   parisc: add system call table generation support
   parisc: generate uapi header and system call table files
   parisc: syscalls: ignore nfsservctl for other architectures
@@ -84,15 +88,15 @@ Firoz Khan (5):
  arch/parisc/include/asm/Kbuild            |   3 +
  arch/parisc/include/asm/unistd.h          |   8 +
  arch/parisc/include/uapi/asm/Kbuild       |   2 +
- arch/parisc/include/uapi/asm/unistd.h     | 382 +------------------------
+ arch/parisc/include/uapi/asm/unistd.h     | 379 +-----------------------
  arch/parisc/kernel/syscall.S              |  11 +-
  arch/parisc/kernel/syscall_table.S        | 459 ------------------------------
- arch/parisc/kernel/syscalls/Makefile      |  57 ++++
+ arch/parisc/kernel/syscalls/Makefile      |  55 ++++
  arch/parisc/kernel/syscalls/syscall.tbl   | 369 ++++++++++++++++++++++++
  arch/parisc/kernel/syscalls/syscallhdr.sh |  36 +++
  arch/parisc/kernel/syscalls/syscalltbl.sh |  36 +++
  scripts/checksyscalls.sh                  |   1 +
- 12 files changed, 531 insertions(+), 836 deletions(-)
+ 12 files changed, 527 insertions(+), 835 deletions(-)
  delete mode 100644 arch/parisc/kernel/syscall_table.S
  create mode 100644 arch/parisc/kernel/syscalls/Makefile
  create mode 100644 arch/parisc/kernel/syscalls/syscall.tbl
