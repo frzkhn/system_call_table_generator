@@ -1,7 +1,7 @@
-From 2df3a9363e81ccb43c12a6abbe8d191faf764288 Mon Sep 17 00:00:00 2001
+From d4b2b2cfa73379caf5fb5c0f802175e60d842d96 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 13:55:46 +0530
-Subject: [PATCH v2 4/4] powerpc: generate uapi header and system call table
+Date: Mon, 26 Nov 2018 13:46:08 +0530
+Subject: [PATCH v3 4/4] powerpc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -26,9 +26,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/powerpc/include/uapi/asm/unistd.h      | 392 +--------------------------
  arch/powerpc/kernel/Makefile                |  10 -
  arch/powerpc/kernel/systbl.S                |  36 +--
- arch/powerpc/kernel/systbl_chk.c            |  61 -----
- arch/powerpc/platforms/cell/spu_callbacks.c |  18 +-
- 9 files changed, 27 insertions(+), 894 deletions(-)
+ arch/powerpc/kernel/systbl_chk.c            |  60 -----
+ arch/powerpc/platforms/cell/spu_callbacks.c |  17 +-
+ 9 files changed, 27 insertions(+), 892 deletions(-)
  delete mode 100644 arch/powerpc/include/asm/systbl.h
  delete mode 100644 arch/powerpc/kernel/systbl_chk.c
 
@@ -952,10 +952,10 @@ index 9ff1913..d756348 100644
 +#endif
 diff --git a/arch/powerpc/kernel/systbl_chk.c b/arch/powerpc/kernel/systbl_chk.c
 deleted file mode 100644
-index db97da7..0000000
+index 4653258..0000000
 --- a/arch/powerpc/kernel/systbl_chk.c
 +++ /dev/null
-@@ -1,61 +0,0 @@
+@@ -1,60 +0,0 @@
 -/*
 - * This file, when run through CPP produces a list of syscall numbers
 - * in the order of systbl.h.  That way we can check for gaps and syscalls
@@ -1014,14 +1014,13 @@ index db97da7..0000000
 -#define getrlimit		ugetrlimit
 -
 -START_TABLE
--#define compat_sys_sigsuspend	sys_sigsuspend
 -#include <asm/systbl.h>
 -END_TABLE NR_syscalls
 diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
-index 7517a43..125f2a5 100644
+index 8ae8620..125f2a5 100644
 --- a/arch/powerpc/platforms/cell/spu_callbacks.c
 +++ b/arch/powerpc/platforms/cell/spu_callbacks.c
-@@ -34,21 +34,9 @@
+@@ -34,20 +34,9 @@
   */
  
  static void *spu_syscall_table[] = {
@@ -1038,7 +1037,6 @@ index 7517a43..125f2a5 100644
 -#define COMPAT_SPU_NEW(func)	sys_##func,
 -#define SYSX_SPU(f, f3264, f32)	f,
 -
--#define compat_sys_sigsuspend	sys_sigsuspend
 -#include <asm/systbl.h>
 +#define __SYSCALL(nr, entry, nargs) entry,
 +#include <asm/syscall_table_spu.h>

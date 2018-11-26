@@ -1,7 +1,7 @@
-From c763c3e64a2d18eb6903096d58f0c3d63749080a Mon Sep 17 00:00:00 2001
+From 777386b8e1693fa2df252f4646d48a0f368b285f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 9 Nov 2018 15:18:07 +0530
-Subject: [PATCH v2 2/4] powerpc: move macro definition from asm/systbl.h
+Subject: [PATCH v3 2/4] powerpc: move macro definition from asm/systbl.h
 
 Move the macro definition for compat_sys_sigsuspend from
 asm/systbl.h to the file which it is getting included.
@@ -17,11 +17,9 @@ implementation across all architecture.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/powerpc/include/asm/systbl.h           | 1 -
- arch/powerpc/kernel/systbl.S                | 1 +
- arch/powerpc/kernel/systbl_chk.c            | 1 +
- arch/powerpc/platforms/cell/spu_callbacks.c | 1 +
- 4 files changed, 3 insertions(+), 1 deletion(-)
+ arch/powerpc/include/asm/systbl.h | 1 -
+ arch/powerpc/kernel/systbl.S      | 1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/include/asm/systbl.h b/arch/powerpc/include/asm/systbl.h
 index 01b5171..c4321b9 100644
@@ -45,29 +43,6 @@ index 919a327..9ff1913 100644
  
 +#define compat_sys_sigsuspend	sys_sigsuspend
  #include <asm/systbl.h>
-diff --git a/arch/powerpc/kernel/systbl_chk.c b/arch/powerpc/kernel/systbl_chk.c
-index 4653258..db97da7 100644
---- a/arch/powerpc/kernel/systbl_chk.c
-+++ b/arch/powerpc/kernel/systbl_chk.c
-@@ -56,5 +56,6 @@
- #define getrlimit		ugetrlimit
- 
- START_TABLE
-+#define compat_sys_sigsuspend	sys_sigsuspend
- #include <asm/systbl.h>
- END_TABLE NR_syscalls
-diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
-index 8ae8620..7517a43 100644
---- a/arch/powerpc/platforms/cell/spu_callbacks.c
-+++ b/arch/powerpc/platforms/cell/spu_callbacks.c
-@@ -47,6 +47,7 @@
- #define COMPAT_SPU_NEW(func)	sys_##func,
- #define SYSX_SPU(f, f3264, f32)	f,
- 
-+#define compat_sys_sigsuspend	sys_sigsuspend
- #include <asm/systbl.h>
- };
- 
 -- 
 1.9.1
 

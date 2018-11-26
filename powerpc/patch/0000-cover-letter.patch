@@ -1,7 +1,7 @@
-From 2df3a9363e81ccb43c12a6abbe8d191faf764288 Mon Sep 17 00:00:00 2001
+From d4b2b2cfa73379caf5fb5c0f802175e60d842d96 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 15:18:17 +0530
-Subject: [PATCH v2 0/4] powerpc: system call table generation support
+Date: Mon, 26 Nov 2018 15:01:15 +0530
+Subject: [PATCH v3 0/4] powerpc: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -48,7 +48,11 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in the
 syscall.tbl.
 
-Changes since v1:
+changes since v2:
+ - modified/optimized the syscall.tbl to avoid duplicate.
+ - updated the syscalltbl.sh to meet the above point.
+
+changes since v1:
  - optimized/updated the syscall table generation 
    scripts.
  - fixed all mixed indentation issues in syscall.tbl.
@@ -63,19 +67,19 @@ Firoz Khan (4):
 
  arch/powerpc/Makefile                       |   3 +
  arch/powerpc/include/asm/Kbuild             |   4 +
- arch/powerpc/include/asm/systbl.h           | 396 ---------------------------
+ arch/powerpc/include/asm/systbl.h           | 396 --------------------------
  arch/powerpc/include/asm/unistd.h           |   3 +-
  arch/powerpc/include/uapi/asm/Kbuild        |   2 +
- arch/powerpc/include/uapi/asm/unistd.h      | 389 +-------------------------
+ arch/powerpc/include/uapi/asm/unistd.h      | 389 +------------------------
  arch/powerpc/kernel/Makefile                |  10 -
- arch/powerpc/kernel/syscalls/Makefile       |  61 +++++
- arch/powerpc/kernel/syscalls/syscall.tbl    | 408 ++++++++++++++++++++++++++++
+ arch/powerpc/kernel/syscalls/Makefile       |  63 ++++
+ arch/powerpc/kernel/syscalls/syscall.tbl    | 427 ++++++++++++++++++++++++++++
  arch/powerpc/kernel/syscalls/syscallhdr.sh  |  36 +++
- arch/powerpc/kernel/syscalls/syscalltbl.sh  |  41 +++
+ arch/powerpc/kernel/syscalls/syscalltbl.sh  |  36 +++
  arch/powerpc/kernel/systbl.S                |  37 +--
  arch/powerpc/kernel/systbl_chk.c            |  60 ----
  arch/powerpc/platforms/cell/spu_callbacks.c |  17 +-
- 14 files changed, 575 insertions(+), 892 deletions(-)
+ 14 files changed, 591 insertions(+), 892 deletions(-)
  delete mode 100644 arch/powerpc/include/asm/systbl.h
  create mode 100644 arch/powerpc/kernel/syscalls/Makefile
  create mode 100644 arch/powerpc/kernel/syscalls/syscall.tbl

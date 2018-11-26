@@ -1,7 +1,7 @@
-From 6a2c0469050bdac013524accde7dadd0866ac07b Mon Sep 17 00:00:00 2001
+From 18bbb2888b0c8b2bceda432f1e5e504350cfc311 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 12 Sep 2018 10:53:41 +0530
-Subject: [PATCH v2 1/4] powerpc: add __NR_syscalls along with NR_syscalls
+Subject: [PATCH v3 1/4] powerpc: add __NR_syscalls along with NR_syscalls
 
 NR_syscalls macro holds the number of system call exist
 in powerpc architecture. We have to change the value of
