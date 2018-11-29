@@ -1,6 +1,6 @@
-From d4b2b2cfa73379caf5fb5c0f802175e60d842d96 Mon Sep 17 00:00:00 2001
+From faebedb57e2769140ff53bdd24cdb082d3de0d90 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 26 Nov 2018 15:01:15 +0530
+Date: Thu, 29 Nov 2018 09:25:17 +0530
 Subject: [PATCH v3 0/4] powerpc: system call table generation support
 
 The purpose of this patch series is, we can easily
@@ -28,7 +28,7 @@ Adding a new table entry consisting of:
         - ABI.
         - System call name.
         - Entry point name.
-	- Compat entry name.
+	- Compat entry name, if required.
 	- spu entry name, if required.
 
 ARM, s390 and x86 architecuture does exist the sim-
@@ -49,7 +49,8 @@ add new system calls easily by adding new entry in the
 syscall.tbl.
 
 changes since v2:
- - modified/optimized the syscall.tbl to avoid duplicate.
+ - modified/optimized the syscall.tbl to avoid duplicate
+   for the spu entries.
  - updated the syscalltbl.sh to meet the above point.
 
 changes since v1:

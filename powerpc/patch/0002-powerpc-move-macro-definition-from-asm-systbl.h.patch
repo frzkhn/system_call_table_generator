@@ -1,4 +1,4 @@
-From 777386b8e1693fa2df252f4646d48a0f368b285f Mon Sep 17 00:00:00 2001
+From e053c3e31685e198c43a1da3ca17d886b6fa5792 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 9 Nov 2018 15:18:07 +0530
 Subject: [PATCH v3 2/4] powerpc: move macro definition from asm/systbl.h

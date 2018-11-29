@@ -1,4 +1,4 @@
-From d4b2b2cfa73379caf5fb5c0f802175e60d842d96 Mon Sep 17 00:00:00 2001
+From faebedb57e2769140ff53bdd24cdb082d3de0d90 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 26 Nov 2018 13:46:08 +0530
 Subject: [PATCH v3 4/4] powerpc: generate uapi header and system call table

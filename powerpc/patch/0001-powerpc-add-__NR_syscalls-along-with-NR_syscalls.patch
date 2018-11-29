@@ -1,4 +1,4 @@
-From 18bbb2888b0c8b2bceda432f1e5e504350cfc311 Mon Sep 17 00:00:00 2001
+From 0f8fae304350ead50c18ac5b0ee5cec97f65040b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 12 Sep 2018 10:53:41 +0530
 Subject: [PATCH v3 1/4] powerpc: add __NR_syscalls along with NR_syscalls
