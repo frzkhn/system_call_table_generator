@@ -1,7 +1,7 @@
-From 9d8474d3810d5926621766db45cc9d7d34bcf98f Mon Sep 17 00:00:00 2001
+From 342f538220e5c5396ea226b1abc307227be0d82f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 8 Nov 2018 15:12:11 +0530
-Subject: [PATCH v3 4/6] mips: remove syscall table entries
+Subject: [PATCH 4/8] mips: remove syscall table entries
 
 The config flag - CONFIG_MIPS_MT_FPAFF uses to check whether which
 syscall entries need to be used in scall32-o32.S file.
@@ -16,11 +16,11 @@ _sys_sched_getaffinity from the table and define it in other way.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/kernel/scall32-o32.S | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ arch/mips/kernel/scall32-o32.S | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index 10f6367..903250f 100644
+index 10f6367..43fa5cd 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
 @@ -205,6 +205,18 @@ einval: li	v0, -ENOSYS
@@ -35,8 +35,8 @@ index 10f6367..903250f 100644
 +	 * these hooks for the 32-bit kernel - there is no MIPS64 MT processor
 +	 * atm.
 +	 */
-+#define mipsmt_sys_sched_setaffinity sys_sched_setaffinity
-+#define mipsmt_sys_sched_getaffinity sys_sched_getaffinity
++#define sys_sched_setaffinity	mipsmt_sys_sched_setaffinity
++#define sys_sched_getaffinity	mipsmt_sys_sched_getaffinity
 +#endif /* CONFIG_MIPS_MT_FPAFF */
 +
  	.align	2
@@ -54,13 +54,12 @@ index 10f6367..903250f 100644
 -	 * these hooks for the 32-bit kernel - there is no MIPS64 MT processor
 -	 * atm.
 -	 */
- 	PTR	mipsmt_sys_sched_setaffinity
+-	PTR	mipsmt_sys_sched_setaffinity
 -	PTR	mipsmt_sys_sched_getaffinity
 -#else
--	PTR	sys_sched_setaffinity
--	PTR	sys_sched_getaffinity		/* 4240 */
+ 	PTR	sys_sched_setaffinity
+ 	PTR	sys_sched_getaffinity		/* 4240 */
 -#endif /* CONFIG_MIPS_MT_FPAFF */
-+	PTR	mipsmt_sys_sched_getaffinity	/* 4240 */
  	PTR	sys_io_setup
  	PTR	sys_io_destroy
  	PTR	sys_io_getevents

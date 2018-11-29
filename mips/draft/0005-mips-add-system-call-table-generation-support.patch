@@ -1,7 +1,7 @@
-From 923901a0c580883100fa7c9ea0640a2a632a4f51 Mon Sep 17 00:00:00 2001
+From b0542270f7306a8699fe08889527cbb1eee79cfb Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 14 Sep 2018 11:24:11 +0530
-Subject: [PATCH v3 5/6] mips: add system call table generation support
+Subject: [PATCH 5/8] mips: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -43,13 +43,13 @@ solution.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/kernel/syscalls/Makefile        |  71 ++++++
+ arch/mips/kernel/syscalls/Makefile        |  80 +++++++
  arch/mips/kernel/syscalls/syscall_n32.tbl | 343 +++++++++++++++++++++++++++
  arch/mips/kernel/syscalls/syscall_n64.tbl | 339 ++++++++++++++++++++++++++
  arch/mips/kernel/syscalls/syscall_o32.tbl | 382 ++++++++++++++++++++++++++++++
- arch/mips/kernel/syscalls/syscallhdr.sh   |  36 +++
- arch/mips/kernel/syscalls/syscalltbl.sh   |  36 +++
- 6 files changed, 1207 insertions(+)
+ arch/mips/kernel/syscalls/syscallhdr.sh   |  41 ++++
+ arch/mips/kernel/syscalls/syscalltbl.sh   |  37 +++
+ 6 files changed, 1222 insertions(+)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n64.tbl
@@ -59,10 +59,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/mips/kernel/syscalls/Makefile b/arch/mips/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..372e6e1
+index 0000000..73927d8
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/Makefile
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,80 @@
 +# SPDX-License-Identifier: GPL-2.0
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
@@ -79,53 +79,62 @@ index 0000000..372e6e1
 +quiet_cmd_syshdr = SYSHDR  $@
 +      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
 +		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_abi_$(basetarget))'		\
 +		   '$(syshdr_pfx_$(basetarget))'		\
-+		   '$(syshdr_offset_$(basetarget))'
++		   '$(syshdr_offsetf_$(basetarget))'		\
++		   '$(syshdr_offsetv_$(basetarget))'
 +
 +quiet_cmd_systbl = SYSTBL  $@
 +      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
 +		   '$(systbl_abis_$(basetarget))'		\
 +		   '$(systbl_abi_$(basetarget))'		\
-+		   '$(systbl_offset_$(basetarget))'
++		   '$(systbl_offsetf_$(basetarget))'		\
++		   '$(systbl_offsetv_$(basetarget))'
 +
-+syshdr_offset_unistd_n64 := __NR_Linux
-+$(uapi)/unistd_n64.h: $(syscalln64) $(syshdr)
-+	$(call if_changed,syshdr)
-+
-+syshdr_offset_unistd_n32 := __NR_Linux
++syshdr_abi_unistd_n32 := n32
++syshdr_offsetf_unistd_n32 := __NR_Linux
++syshdr_offsetv_unistd_n32 := 6000
 +$(uapi)/unistd_n32.h: $(syscalln32) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+syshdr_offset_unistd_o32 := __NR_Linux
++syshdr_abi_unistd_n64 := n64
++syshdr_offsetf_unistd_n64 := __NR_Linux
++syshdr_offsetv_unistd_n64 := 5000
++$(uapi)/unistd_n64.h: $(syscalln64) $(syshdr)
++	$(call if_changed,syshdr)
++
++syshdr_abi_unistd_o32 := o32
++syshdr_offsetf_unistd_o32 := __NR_Linux
++syshdr_offsetv_unistd_o32 := 4000
 +$(uapi)/unistd_o32.h: $(syscallo32) $(syshdr)
 +	$(call if_changed,syshdr)
 +
 +systbl_abi_syscall_table_32_o32 := 32_o32
-+systbl_offset_syscall_table_32_o32 := 4000
++systbl_offsetv_syscall_table_32_o32 := 4000
 +$(kapi)/syscall_table_32_o32.h: $(syscallo32) $(systbl)
 +	$(call if_changed,systbl)
 +
-+systbl_abi_syscall_table_64_n64 := 64_n64
-+systbl_offset_syscall_table_64_n64 := 5000
-+$(kapi)/syscall_table_64_n64.h: $(syscalln64) $(systbl)
-+	$(call if_changed,systbl)
-+
 +systbl_abi_syscall_table_64_n32 := 64_n32
-+systbl_offset_syscall_table_64_n32 := 6000
++systbl_offsetv_syscall_table_64_n32 := 6000
 +$(kapi)/syscall_table_64_n32.h: $(syscalln32) $(systbl)
 +	$(call if_changed,systbl)
 +
++systbl_abi_syscall_table_64_n64 := 64_n64
++systbl_offsetv_syscall_table_64_n64 := 5000
++$(kapi)/syscall_table_64_n64.h: $(syscalln64) $(systbl)
++	$(call if_changed,systbl)
++
 +systbl_abi_syscall_table_64_o32 := 64_o32
-+systbl_offset_syscall_table_64_o32 := 4000
++systbl_offsetv_syscall_table_64_o32 := 4000
 +$(kapi)/syscall_table_64_o32.h: $(syscallo32) $(systbl)
 +	$(call if_changed,systbl)
 +
-+uapisyshdr-y		+= unistd_n64.h			\
-+			   unistd_n32.h			\
++uapisyshdr-y		+= unistd_n32.h			\
++			   unistd_n64.h			\
 +			   unistd_o32.h
 +kapisyshdr-y		+= syscall_table_32_o32.h	\
-+			   syscall_table_64_n64.h	\
 +			   syscall_table_64_n32.h	\
++			   syscall_table_64_n64.h	\
 +			   syscall_table_64_o32.h
 +
 +targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
@@ -830,7 +839,7 @@ index 0000000..a8286cc
 +328	n64	io_pgetevents			sys_io_pgetevents
 diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
 new file mode 100644
-index 0000000..6159917
+index 0000000..3d5a47b
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
 @@ -0,0 +1,382 @@
@@ -1086,8 +1095,8 @@ index 0000000..6159917
 +236	o32	tkill				sys_tkill
 +237	o32	sendfile64			sys_sendfile64
 +238	o32	futex				sys_futex			compat_sys_futex
-+239	o32	sched_setaffinity		mipsmt_sys_sched_setaffinity	compat_sys_sched_setaffinity
-+240	o32	sched_getaffinity		mipsmt_sys_sched_getaffinity	compat_sys_sched_getaffinity
++239	o32	sched_setaffinity		sys_sched_setaffinity		compat_sys_sched_setaffinity
++240	o32	sched_getaffinity		sys_sched_getaffinity		compat_sys_sched_getaffinity
 +241	o32	io_setup			sys_io_setup			compat_sys_io_setup
 +242	o32	io_destroy			sys_io_destroy
 +243	o32	io_getevents			sys_io_getevents		compat_sys_io_getevents
@@ -1218,18 +1227,20 @@ index 0000000..6159917
 +368	o32	io_pgetevents			sys_io_pgetevents		compat_sys_io_pgetevents
 diff --git a/arch/mips/kernel/syscalls/syscallhdr.sh b/arch/mips/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..6794cc1
+index 0000000..2acea37
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,41 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
 +in="$1"
 +out="$2"
 +my_abis=`echo "($3)" | tr ',' '|'`
-+prefix="$4"
-+offset="$5"
++my_abi=`echo "$4" | tr 'a-z' 'A-Z'`
++prefix="$5"
++offsetf="$6"
++offsetv="$7"
 +
 +fileguard=_UAPI_ASM_MIPS_`basename "$out" | sed \
 +	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
@@ -1241,12 +1252,12 @@ index 0000000..6794cc1
 +
 +	nxt=0
 +	while read nr abi name entry compat ; do
-+		if [ -z "$offset" ]; then
++		if [ -z "$offsetf" ]; then
 +			printf "#define __NR_%s%s\t%s\n" \
 +				"${prefix}" "${name}" "${nr}"
 +		else
 +			printf "#define __NR_%s%s\t(%s + %s)\n" \
-+				"${prefix}" "${name}" "${offset}" "${nr}"
++				"${prefix}" "${name}" "${offsetf}" "${nr}"
 +		fi
 +		nxt=$((nr+1))
 +	done
@@ -1256,14 +1267,17 @@ index 0000000..6794cc1
 +	printf "#define __NR_syscalls\t%s\n" "${nxt}"
 +	printf "#endif\n"
 +	printf "\n"
++	printf "#define __NR_%s_Linux\t%s\n" "${my_abi}" "${offsetv}"
++	printf "#define __NR_%s_Linux_syscalls\t%s\n" "${my_abi}" "${nxt}"
++	printf "\n"
 +	printf "#endif /* %s */" "${fileguard}"
 +) > "$out"
 diff --git a/arch/mips/kernel/syscalls/syscalltbl.sh b/arch/mips/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..acd338d
+index 0000000..9f10881
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscalltbl.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,37 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -1271,7 +1285,8 @@ index 0000000..acd338d
 +out="$2"
 +my_abis=`echo "($3)" | tr ',' '|'`
 +my_abi="$4"
-+offset="$5"
++offsetf="$5"
++offsetv="$6"
 +
 +emit() {
 +	t_nxt="$1"
@@ -1287,15 +1302,15 @@ index 0000000..acd338d
 +
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 +	nxt=0
-+	if [ -z "$offset" ]; then
-+		offset=0
++	if [ -z "$offsetv" ]; then
++		offsetv=0
 +	fi
 +
 +	while read nr abi name entry compat ; do
 +		if [ "$my_abi" = "64_o32" ] && [ ! -z "$compat" ]; then
-+			emit $((nxt+offset)) $((nr+offset)) $compat
++			emit $((nxt+offsetv)) $((nr+offsetv)) $compat
 +		else
-+			emit $((nxt+offset)) $((nr+offset)) $entry
++			emit $((nxt+offsetv)) $((nr+offsetv)) $entry
 +		fi
 +		nxt=$((nr+1))
 +	done

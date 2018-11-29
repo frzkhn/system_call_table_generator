@@ -1,0 +1,110 @@
+From 289a20c2160c154b651857a9a0be28ba08e7b795 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Tue, 27 Nov 2018 12:15:34 +0530
+Subject: [PATCH 7/8] mips: arnd's feedback
+
+---
+ arch/mips/include/uapi/asm/unistd.h | 12 ++++++++++++
+ arch/mips/kernel/scall32-o32.S      |  5 +++++
+ arch/mips/kernel/scall64-n32.S      |  5 +++++
+ arch/mips/kernel/scall64-n64.S      |  5 +++++
+ arch/mips/kernel/scall64-o32.S      |  5 +++++
+ 5 files changed, 32 insertions(+)
+
+diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
+index f4dbc70..5087055 100644
+--- a/arch/mips/include/uapi/asm/unistd.h
++++ b/arch/mips/include/uapi/asm/unistd.h
+@@ -15,6 +15,12 @@
+ 
+ #include <asm/sgidefs.h>
+ 
++#ifndef __ASSEMBLER__
++extern const unsigned int __NR_N32_Linux_syscalls;
++extern const unsigned int __NR_N64_Linux_syscalls;
++extern const unsigned int __NR_O32_Linux_syscalls;
++#endif
++
+ #if _MIPS_SIM == _MIPS_SIM_ABI32
+ 
+ #define __NR_Linux			4000
+@@ -27,6 +33,8 @@
+ 
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+ 
++#define __NR_O32_Linux			4000
++
+ #if _MIPS_SIM == _MIPS_SIM_ABI64
+ 
+ #define __NR_Linux			5000
+@@ -39,6 +47,8 @@
+ 
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
+ 
++#define __NR_N64_Linux			5000
++
+ #if _MIPS_SIM == _MIPS_SIM_NABI32
+ 
+ #define __NR_Linux			6000
+@@ -50,4 +60,6 @@
+ 
+ #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+ 
++#define __NR_N32_Linux			6000
++
+ #endif /* _UAPI_ASM_UNISTD_H */
+diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
+index d9434cd..c2eae31 100644
+--- a/arch/mips/kernel/scall32-o32.S
++++ b/arch/mips/kernel/scall32-o32.S
+@@ -223,3 +223,8 @@ einval: li	v0, -ENOSYS
+ EXPORT(sys_call_table)
+ #include <asm/syscall_table_32_o32.h>
+ #undef __SYSCALL
++
++	.type	__NR_O32_Linux_syscalls, @object
++__NR_O32_Linux_syscalls:
++	.long  . - sys_call_table
++END(__NR_O32_Linux_syscalls)
+diff --git a/arch/mips/kernel/scall64-n32.S b/arch/mips/kernel/scall64-n32.S
+index c761ddf..9c67588 100644
+--- a/arch/mips/kernel/scall64-n32.S
++++ b/arch/mips/kernel/scall64-n32.S
+@@ -106,3 +106,8 @@ not_n32_scall:
+ EXPORT(sysn32_call_table)
+ #include <asm/syscall_table_64_n32.h>
+ #undef __SYSCALL
++
++	.type	__NR_N32_Linux_syscalls, @object
++__NR_N32_Linux_syscalls:
++	.long 	. - sys_call_table
++END(__NR_N32_Linux_syscalls)
+diff --git a/arch/mips/kernel/scall64-n64.S b/arch/mips/kernel/scall64-n64.S
+index 402a085..92da6ac 100644
+--- a/arch/mips/kernel/scall64-n64.S
++++ b/arch/mips/kernel/scall64-n64.S
+@@ -115,3 +115,8 @@ illegal_syscall:
+ EXPORT(sys_call_table)
+ #include <asm/syscall_table_64_n64.h>
+ #undef __SYSCALL
++
++	.type	__NR_N64_Linux_syscalls, @object
++__NR_N64_Linux_syscalls:
++	.long	. - sys_call_table
++END(__NR_N64_Linux_syscalls)
+diff --git a/arch/mips/kernel/scall64-o32.S b/arch/mips/kernel/scall64-o32.S
+index f158c58..8e618e6 100644
+--- a/arch/mips/kernel/scall64-o32.S
++++ b/arch/mips/kernel/scall64-o32.S
+@@ -219,3 +219,8 @@ einval: li	v0, -ENOSYS
+ EXPORT(sys32_call_table)
+ #include <asm/syscall_table_64_o32.h>
+ #undef __SYSCALL
++
++	.type	__NR_O32_Linux_syscalls, @object
++__NR_O32_Linux_syscalls:
++	.long	. - sys_call_table
++END(__NR_O32_Linux_syscalls)
+-- 
+1.9.1
+

@@ -1,7 +1,7 @@
-From 8d58c3df53ed7de7aa931755b6c012bd427ee5e0 Mon Sep 17 00:00:00 2001
+From d554f2594151f13a0fcfd645f3538c365a289665 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 20 Nov 2018 15:15:25 +0530
-Subject: [PATCH v3 3/6] mips: add +1 to __NR_syscalls in uapi header
+Subject: [PATCH 3/8] mips: add +1 to __NR_syscalls in uapi header
 
 All other architectures are hold a value for __NR_syscalls will
 be equal to the last system call number +1.
