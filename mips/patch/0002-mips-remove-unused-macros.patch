@@ -1,0 +1,54 @@
+From 911cc8b44305b8598bde0f6c57f80ef53e234704 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Tue, 20 Nov 2018 15:08:35 +0530
+Subject: [PATCH v3 2/6] mips: remove unused macros
+
+Remove NR_syscalls from asm/unistd.h as there is no
+users to use NR_syscalls macro in mips kernel.
+
+MAX_SYSCALL_NO can also remove as there is commit
+2957c9e61ee9 ("[MIPS] IRIX: Goodbye and thanks for
+all the fish"), eight years ago.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/mips/include/asm/unistd.h | 8 --------
+ arch/mips/kernel/scall32-o32.S | 3 ---
+ 2 files changed, 11 deletions(-)
+
+diff --git a/arch/mips/include/asm/unistd.h b/arch/mips/include/asm/unistd.h
+index c68b8ae..d7ee846 100644
+--- a/arch/mips/include/asm/unistd.h
++++ b/arch/mips/include/asm/unistd.h
+@@ -14,14 +14,6 @@
+ 
+ #include <uapi/asm/unistd.h>
+ 
+-#ifdef CONFIG_MIPS32_N32
+-#define NR_syscalls  (__NR_N32_Linux + __NR_N32_Linux_syscalls)
+-#elif defined(CONFIG_64BIT)
+-#define NR_syscalls  (__NR_64_Linux + __NR_64_Linux_syscalls)
+-#else
+-#define NR_syscalls  (__NR_O32_Linux + __NR_O32_Linux_syscalls)
+-#endif
+-
+ #ifndef __ASSEMBLY__
+ 
+ #define __ARCH_WANT_NEW_STAT
+diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
+index 91d3c8c..fea6edb 100644
+--- a/arch/mips/kernel/scall32-o32.S
++++ b/arch/mips/kernel/scall32-o32.S
+@@ -22,9 +22,6 @@
+ #include <asm/war.h>
+ #include <asm/asm-offsets.h>
+ 
+-/* Highest syscall used of any syscall flavour */
+-#define MAX_SYSCALL_NO	__NR_O32_Linux + __NR_O32_Linux_syscalls
+-
+ 	.align	5
+ NESTED(handle_sys, PT_SIZE, sp)
+ 	.set	noat
+-- 
+1.9.1
+

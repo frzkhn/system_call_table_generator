@@ -1,35 +1,40 @@
-From e5fe576425477281a18d31b9c081fc961848df32 Mon Sep 17 00:00:00 2001
+From 24b5def76dd68ee4f1b0ab6fbd324c9bd3a13049 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 16:13:38 +0530
-Subject: [PATCH v2 5/5] mips: generate uapi header and system call table files
+Date: Mon, 26 Nov 2018 15:55:49 +0530
+Subject: [PATCH v3 6/6] mips: generate uapi header and system call table files
 
 System call table generation script must be run to gener-
-ate unistd_64/n32/o32.h and syscall_table_32_o32/64_64/64-
-_n32/64-o32.h files. This patch will have changes which
-will invokes the script.
+ate unistd_(nr_)n64/n32/o32.h and syscall_table_32_o32/
+64_n64/64_n32/64-o32.h files. This patch will have changes
+which will invokes the script.
 
-This patch will generate unistd_64/n32/o32.h and syscall-
-_table_32_o32/64_64/64-n32/64-o32.h files by the syscall
-table generation script invoked by parisc/Makefile and
-the generated files against the removed files must be
-identical.
+This patch will generate unistd_(nr_)n64/n32/o32.h and
+syscall_table_32_o32/64_n64/64-n32/64-o32.h files by the
+syscall table generation script invoked by parisc/Make-
+file and the generated files against the removed files
+must be identical.
 
 The generated uapi header file will be included in uapi/-
 asm/unistd.h and generated system call table header file
-will be included by kernel/scall32-o32/64-64/64-n32/-
+will be included by kernel/scall32-o32/64-n64/64-n32/-
 64-o32.Sfile.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/mips/Makefile                  |    3 +
  arch/mips/include/asm/Kbuild        |    4 +
- arch/mips/include/uapi/asm/Kbuild   |    3 +
- arch/mips/include/uapi/asm/unistd.h | 1056 +----------------------------------
+ arch/mips/include/uapi/asm/Kbuild   |    6 +
+ arch/mips/include/uapi/asm/unistd.h | 1070 +----------------------------------
+ arch/mips/kernel/Makefile           |    2 +-
+ arch/mips/kernel/ftrace.c           |    4 +-
  arch/mips/kernel/scall32-o32.S      |  372 +-----------
- arch/mips/kernel/scall64-64.S       |  333 +----------
+ arch/mips/kernel/scall64-64.S       |  444 ---------------
  arch/mips/kernel/scall64-n32.S      |  337 +----------
- arch/mips/kernel/scall64-o32.S      |  373 +------------
- 8 files changed, 25 insertions(+), 2456 deletions(-)
+ arch/mips/kernel/scall64-n64.S      |  117 ++++
+ arch/mips/kernel/scall64-o32.S      |  373 +-----------
+ 11 files changed, 150 insertions(+), 2582 deletions(-)
+ delete mode 100644 arch/mips/kernel/scall64-64.S
+ create mode 100644 arch/mips/kernel/scall64-n64.S
 
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
 index 6841049..f0a849a 100644
@@ -46,37 +51,47 @@ index 6841049..f0a849a 100644
  	echo '  install              - install kernel into $(INSTALL_PATH)'
  	echo '  vmlinux.ecoff        - ECOFF boot image'
 diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
-index 9a81e72..4a1a221 100644
+index 9a81e72..f15d5db 100644
 --- a/arch/mips/include/asm/Kbuild
 +++ b/arch/mips/include/asm/Kbuild
 @@ -1,4 +1,8 @@
  # MIPS headers
 +generated-y += syscall_table_32_o32.h
-+generated-y += syscall_table_64_64.h
 +generated-y += syscall_table_64_n32.h
++generated-y += syscall_table_64_n64.h
 +generated-y += syscall_table_64_o32.h
  generic-(CONFIG_GENERIC_CSUM) += checksum.h
  generic-y += current.h
  generic-y += device.h
 diff --git a/arch/mips/include/uapi/asm/Kbuild b/arch/mips/include/uapi/asm/Kbuild
-index 7a4becd..8155667 100644
+index 7a4becd..ed4bd03 100644
 --- a/arch/mips/include/uapi/asm/Kbuild
 +++ b/arch/mips/include/uapi/asm/Kbuild
-@@ -1,5 +1,8 @@
+@@ -1,5 +1,11 @@
  # UAPI Header export list
  include include/uapi/asm-generic/Kbuild.asm
  
-+generated-y += unistd_64.h
 +generated-y += unistd_n32.h
++generated-y += unistd_n64.h
 +generated-y += unistd_o32.h
++generated-y += unistd_nr_n32.h
++generated-y += unistd_nr_n64.h
++generated-y += unistd_nr_o32.h
  generic-y += bpf_perf_event.h
  generic-y += ipcbuf.h
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index 9a19b347..66bc736 100644
+index dac1335..45f26bd 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
-@@ -17,383 +17,8 @@
+@@ -15,385 +15,15 @@
  
+ #include <asm/sgidefs.h>
+ 
++#include <asm/unistd_nr_n32.h>
++#include <asm/unistd_nr_n64.h>
++#include <asm/unistd_nr_o32.h>
++
++
  #if _MIPS_SIM == _MIPS_SIM_ABI32
  
 -/*
@@ -460,8 +475,13 @@ index 9a19b347..66bc736 100644
  
  /*
   * Offset of the last Linux o32 flavoured syscall
-@@ -407,343 +32,8 @@
+@@ -402,348 +32,10 @@
  
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+ 
+-#define __NR_O32_Linux			4000
+-#define __NR_O32_Linux_syscalls		369
+-
  #if _MIPS_SIM == _MIPS_SIM_ABI64
  
 -/*
@@ -801,12 +821,17 @@ index 9a19b347..66bc736 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			329
 -#endif
-+#include <asm/unistd_64.h>
++#include <asm/unistd_n64.h>
  
  /*
   * Offset of the last Linux 64-bit flavoured syscall
-@@ -757,348 +47,8 @@
+@@ -752,353 +44,10 @@
  
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
+ 
+-#define __NR_64_Linux			5000
+-#define __NR_64_Linux_syscalls		329
+-
  #if _MIPS_SIM == _MIPS_SIM_NABI32
  
 -/*
@@ -1155,15 +1180,51 @@ index 9a19b347..66bc736 100644
  /*
   * Offset of the last N32 flavoured syscall
   */
+@@ -1106,7 +55,4 @@
+ 
+ #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+ 
+-#define __NR_N32_Linux			6000
+-#define __NR_N32_Linux_syscalls		333
+-
+ #endif /* _UAPI_ASM_UNISTD_H */
+diff --git a/arch/mips/kernel/Makefile b/arch/mips/kernel/Makefile
+index 210c280..25af613 100644
+--- a/arch/mips/kernel/Makefile
++++ b/arch/mips/kernel/Makefile
+@@ -72,7 +72,7 @@ obj-$(CONFIG_IRQ_GT641XX)	+= irq-gt641xx.o
+ 
+ obj-$(CONFIG_KPROBES)		+= kprobes.o
+ obj-$(CONFIG_32BIT)		+= scall32-o32.o
+-obj-$(CONFIG_64BIT)		+= scall64-64.o
++obj-$(CONFIG_64BIT)		+= scall64-n64.o
+ obj-$(CONFIG_MIPS32_COMPAT)	+= linux32.o ptrace32.o signal32.o
+ obj-$(CONFIG_MIPS32_N32)	+= binfmt_elfn32.o scall64-n32.o signal_n32.o
+ obj-$(CONFIG_MIPS32_O32)	+= binfmt_elfo32.o scall64-o32.o signal_o32.o
+diff --git a/arch/mips/kernel/ftrace.c b/arch/mips/kernel/ftrace.c
+index f32caaf..1e9353a 100644
+--- a/arch/mips/kernel/ftrace.c
++++ b/arch/mips/kernel/ftrace.c
+@@ -413,8 +413,8 @@ unsigned long __init arch_syscall_addr(int nr)
+ 	if (nr >= __NR_N32_Linux && nr < __NR_N32_Linux + __NR_N32_Linux_syscalls)
+ 		return (unsigned long)sysn32_call_table[nr - __NR_N32_Linux];
+ #endif
+-	if (nr >= __NR_64_Linux  && nr < __NR_64_Linux + __NR_64_Linux_syscalls)
+-		return (unsigned long)sys_call_table[nr - __NR_64_Linux];
++	if (nr >= __NR_N64_Linux  && nr < __NR_N64_Linux + __NR_N64_Linux_syscalls)
++		return (unsigned long)sys_call_table[nr - __NR_N64_Linux];
+ #ifdef CONFIG_MIPS32_O32
+ 	if (nr >= __NR_O32_Linux && nr < __NR_O32_Linux + __NR_O32_Linux_syscalls)
+ 		return (unsigned long)sys32_call_table[nr - __NR_O32_Linux];
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index 4eee437..c98ffd7 100644
+index 43fa5cd..d9434cd 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
-@@ -220,375 +220,9 @@ einval: li	v0, -ENOSYS
- #define mipsmt_sys_sched_getaffinity sys_sched_getaffinity
+@@ -217,375 +217,9 @@ einval: li	v0, -ENOSYS
+ #define sys_sched_getaffinity	mipsmt_sys_sched_getaffinity
  #endif /* CONFIG_MIPS_MT_FPAFF */
  
-+#define __SYSCALL(nr, entry, nargs) PTR entry
++#define __SYSCALL(nr, entry, nargs)	PTR entry
  	.align	2
  	.type	sys_call_table, @object
  EXPORT(sys_call_table)
@@ -1539,17 +1600,125 @@ index 4eee437..c98ffd7 100644
 +#include <asm/syscall_table_32_o32.h>
 +#undef __SYSCALL
 diff --git a/arch/mips/kernel/scall64-64.S b/arch/mips/kernel/scall64-64.S
-index 0b67fed..43114ba 100644
+deleted file mode 100644
+index 0b67fed..0000000
 --- a/arch/mips/kernel/scall64-64.S
-+++ b/arch/mips/kernel/scall64-64.S
-@@ -109,336 +109,9 @@ illegal_syscall:
- 	j	n64_syscall_exit
- 	END(handle_sys64)
- 
-+#define __SYSCALL(nr, entry, nargs) PTR entry
- 	.align	3
- 	.type	sys_call_table, @object
- EXPORT(sys_call_table)
++++ /dev/null
+@@ -1,444 +0,0 @@
+-/*
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
+- *
+- * Copyright (C) 1995, 96, 97, 98, 99, 2000, 01, 02 by Ralf Baechle
+- * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+- * Copyright (C) 2001 MIPS Technologies, Inc.
+- */
+-#include <linux/errno.h>
+-#include <asm/asm.h>
+-#include <asm/asmmacro.h>
+-#include <asm/irqflags.h>
+-#include <asm/mipsregs.h>
+-#include <asm/regdef.h>
+-#include <asm/stackframe.h>
+-#include <asm/asm-offsets.h>
+-#include <asm/sysmips.h>
+-#include <asm/thread_info.h>
+-#include <asm/unistd.h>
+-#include <asm/war.h>
+-
+-#ifndef CONFIG_BINFMT_ELF32
+-/* Neither O32 nor N32, so define handle_sys here */
+-#define handle_sys64 handle_sys
+-#endif
+-
+-	.align	5
+-NESTED(handle_sys64, PT_SIZE, sp)
+-#if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
+-	/*
+-	 * When 32-bit compatibility is configured scall_o32.S
+-	 * already did this.
+-	 */
+-	.set	noat
+-	SAVE_SOME
+-	TRACE_IRQS_ON_RELOAD
+-	STI
+-	.set	at
+-#endif
+-
+-#if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
+-	ld	t1, PT_EPC(sp)		# skip syscall on return
+-	daddiu	t1, 4			# skip to next instruction
+-	sd	t1, PT_EPC(sp)
+-#endif
+-
+-	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
+-
+-	li	t1, _TIF_WORK_SYSCALL_ENTRY
+-	LONG_L	t0, TI_FLAGS($28)	# syscall tracing enabled?
+-	and	t0, t1, t0
+-	bnez	t0, syscall_trace_entry
+-
+-syscall_common:
+-	dsubu	t2, v0, __NR_64_Linux
+-	sltiu   t0, t2, __NR_64_Linux_syscalls
+-	beqz	t0, illegal_syscall
+-
+-	dsll	t0, t2, 3		# offset into table
+-	dla	t2, sys_call_table
+-	daddu	t0, t2, t0
+-	ld	t2, (t0)		# syscall routine
+-	beqz	t2, illegal_syscall
+-
+-	jalr	t2			# Do The Real Thing (TM)
+-
+-	li	t0, -EMAXERRNO - 1	# error?
+-	sltu	t0, t0, v0
+-	sd	t0, PT_R7(sp)		# set error flag
+-	beqz	t0, 1f
+-
+-	ld	t1, PT_R2(sp)		# syscall number
+-	dnegu	v0			# error
+-	sd	t1, PT_R0(sp)		# save it for syscall restarting
+-1:	sd	v0, PT_R2(sp)		# result
+-
+-n64_syscall_exit:
+-	j	syscall_exit_partial
+-
+-/* ------------------------------------------------------------------------ */
+-
+-syscall_trace_entry:
+-	SAVE_STATIC
+-	move	a0, sp
+-	move	a1, v0
+-	jal	syscall_trace_enter
+-
+-	bltz	v0, 1f			# seccomp failed? Skip syscall
+-
+-	RESTORE_STATIC
+-	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+-	ld	a0, PT_R4(sp)		# Restore argument registers
+-	ld	a1, PT_R5(sp)
+-	ld	a2, PT_R6(sp)
+-	ld	a3, PT_R7(sp)
+-	ld	a4, PT_R8(sp)
+-	ld	a5, PT_R9(sp)
+-	j	syscall_common
+-
+-1:	j	syscall_exit
+-
+-illegal_syscall:
+-	/* This also isn't a 64-bit syscall, throw an error.  */
+-	li	v0, ENOSYS			# error
+-	sd	v0, PT_R2(sp)
+-	li	t0, 1				# set error flag
+-	sd	t0, PT_R7(sp)
+-	j	n64_syscall_exit
+-	END(handle_sys64)
+-
+-	.align	3
+-	.type	sys_call_table, @object
+-EXPORT(sys_call_table)
 -	PTR	sys_read			/* 5000 */
 -	PTR	sys_write
 -	PTR	sys_open
@@ -1880,8 +2049,6 @@ index 0b67fed..43114ba 100644
 -	PTR	sys_rseq
 -	PTR	sys_io_pgetevents
 -	.size	sys_call_table,.-sys_call_table
-+#include <asm/syscall_table_64_64.h>
-+#undef __SYSCALL
 diff --git a/arch/mips/kernel/scall64-n32.S b/arch/mips/kernel/scall64-n32.S
 index 6468546..c761ddf 100644
 --- a/arch/mips/kernel/scall64-n32.S
@@ -2228,6 +2395,129 @@ index 6468546..c761ddf 100644
 -	PTR	compat_sys_io_pgetevents
 -	.size	sysn32_call_table,.-sysn32_call_table
 +#include <asm/syscall_table_64_n32.h>
++#undef __SYSCALL
+diff --git a/arch/mips/kernel/scall64-n64.S b/arch/mips/kernel/scall64-n64.S
+new file mode 100644
+index 0000000..402a085
+--- /dev/null
++++ b/arch/mips/kernel/scall64-n64.S
+@@ -0,0 +1,117 @@
++/*
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file "COPYING" in the main directory of this archive
++ * for more details.
++ *
++ * Copyright (C) 1995, 96, 97, 98, 99, 2000, 01, 02 by Ralf Baechle
++ * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
++ * Copyright (C) 2001 MIPS Technologies, Inc.
++ */
++#include <linux/errno.h>
++#include <asm/asm.h>
++#include <asm/asmmacro.h>
++#include <asm/irqflags.h>
++#include <asm/mipsregs.h>
++#include <asm/regdef.h>
++#include <asm/stackframe.h>
++#include <asm/asm-offsets.h>
++#include <asm/sysmips.h>
++#include <asm/thread_info.h>
++#include <asm/unistd.h>
++#include <asm/war.h>
++
++#ifndef CONFIG_BINFMT_ELF32
++/* Neither O32 nor N32, so define handle_sys here */
++#define handle_sys64 handle_sys
++#endif
++
++	.align	5
++NESTED(handle_sys64, PT_SIZE, sp)
++#if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
++	/*
++	 * When 32-bit compatibility is configured scall_o32.S
++	 * already did this.
++	 */
++	.set	noat
++	SAVE_SOME
++	TRACE_IRQS_ON_RELOAD
++	STI
++	.set	at
++#endif
++
++#if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
++	ld	t1, PT_EPC(sp)		# skip syscall on return
++	daddiu	t1, 4			# skip to next instruction
++	sd	t1, PT_EPC(sp)
++#endif
++
++	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
++
++	li	t1, _TIF_WORK_SYSCALL_ENTRY
++	LONG_L	t0, TI_FLAGS($28)	# syscall tracing enabled?
++	and	t0, t1, t0
++	bnez	t0, syscall_trace_entry
++
++syscall_common:
++	dsubu	t2, v0, __NR_N64_Linux
++	sltiu   t0, t2, __NR_N64_Linux_syscalls
++	beqz	t0, illegal_syscall
++
++	dsll	t0, t2, 3		# offset into table
++	dla	t2, sys_call_table
++	daddu	t0, t2, t0
++	ld	t2, (t0)		# syscall routine
++	beqz	t2, illegal_syscall
++
++	jalr	t2			# Do The Real Thing (TM)
++
++	li	t0, -EMAXERRNO - 1	# error?
++	sltu	t0, t0, v0
++	sd	t0, PT_R7(sp)		# set error flag
++	beqz	t0, 1f
++
++	ld	t1, PT_R2(sp)		# syscall number
++	dnegu	v0			# error
++	sd	t1, PT_R0(sp)		# save it for syscall restarting
++1:	sd	v0, PT_R2(sp)		# result
++
++n64_syscall_exit:
++	j	syscall_exit_partial
++
++/* ------------------------------------------------------------------------ */
++
++syscall_trace_entry:
++	SAVE_STATIC
++	move	a0, sp
++	move	a1, v0
++	jal	syscall_trace_enter
++
++	bltz	v0, 1f			# seccomp failed? Skip syscall
++
++	RESTORE_STATIC
++	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
++	ld	a0, PT_R4(sp)		# Restore argument registers
++	ld	a1, PT_R5(sp)
++	ld	a2, PT_R6(sp)
++	ld	a3, PT_R7(sp)
++	ld	a4, PT_R8(sp)
++	ld	a5, PT_R9(sp)
++	j	syscall_common
++
++1:	j	syscall_exit
++
++illegal_syscall:
++	/* This also isn't a 64-bit syscall, throw an error.  */
++	li	v0, ENOSYS			# error
++	sd	v0, PT_R2(sp)
++	li	t0, 1				# set error flag
++	sd	t0, PT_R7(sp)
++	j	n64_syscall_exit
++	END(handle_sys64)
++
++#define __SYSCALL(nr, entry, nargs) PTR entry
++	.align	3
++	.type	sys_call_table, @object
++EXPORT(sys_call_table)
++#include <asm/syscall_table_64_n64.h>
 +#undef __SYSCALL
 diff --git a/arch/mips/kernel/scall64-o32.S b/arch/mips/kernel/scall64-o32.S
 index eb53d8ea..f158c58 100644

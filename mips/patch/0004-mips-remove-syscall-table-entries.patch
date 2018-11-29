@@ -1,7 +1,7 @@
-From abbea40c6941d1b340dd6d47b2ac8b0aa32408b8 Mon Sep 17 00:00:00 2001
+From 4c4d0b0d77a88fb97da3fbfa9e5f1236bf10e3d6 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 8 Nov 2018 15:12:11 +0530
-Subject: [PATCH v2 3/5] mips: remove syscall table entries
+Subject: [PATCH v3 4/6] mips: remove syscall table entries
 
 The config flag - CONFIG_MIPS_MT_FPAFF uses to check whether which
 syscall entries need to be used in scall32-o32.S file.
@@ -20,10 +20,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index a9b895f..4eee437 100644
+index 10f6367..43fa5cd 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
-@@ -208,6 +208,18 @@ einval: li	v0, -ENOSYS
+@@ -205,6 +205,18 @@ einval: li	v0, -ENOSYS
  	jr	ra
  	END(sys_syscall)
  
@@ -35,14 +35,14 @@ index a9b895f..4eee437 100644
 +	 * these hooks for the 32-bit kernel - there is no MIPS64 MT processor
 +	 * atm.
 +	 */
-+#define mipsmt_sys_sched_setaffinity sys_sched_setaffinity
-+#define mipsmt_sys_sched_getaffinity sys_sched_getaffinity
++#define sys_sched_setaffinity	mipsmt_sys_sched_setaffinity
++#define sys_sched_getaffinity	mipsmt_sys_sched_getaffinity
 +#endif /* CONFIG_MIPS_MT_FPAFF */
 +
  	.align	2
  	.type	sys_call_table, @object
  EXPORT(sys_call_table)
-@@ -450,20 +462,8 @@ EXPORT(sys_call_table)
+@@ -447,20 +459,8 @@ EXPORT(sys_call_table)
  	PTR	sys_tkill
  	PTR	sys_sendfile64
  	PTR	sys_futex

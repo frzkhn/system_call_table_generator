@@ -1,7 +1,7 @@
-From 9e07a94a7409a02120d1191ad291b0f570853e76 Mon Sep 17 00:00:00 2001
+From 4ee73d90bd9e4c2bb01ba78aa1050feef057000d Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 16:01:07 +0530
-Subject: [PATCH v2 2/5] mips: add +1 to __NR_syscalls in uapi header
+Date: Tue, 20 Nov 2018 15:15:25 +0530
+Subject: [PATCH v3 3/6] mips: add +1 to __NR_syscalls in uapi header
 
 All other architectures are hold a value for __NR_syscalls will
 be equal to the last system call number +1.
@@ -16,36 +16,16 @@ system call number +1.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/mips/include/asm/unistd.h      | 6 +++---
- arch/mips/include/uapi/asm/unistd.h | 6 +++---
- arch/mips/kernel/ftrace.c           | 6 +++---
- arch/mips/kernel/scall32-o32.S      | 6 +++---
- arch/mips/kernel/scall64-64.S       | 2 +-
- arch/mips/kernel/scall64-n32.S      | 4 ++--
- arch/mips/kernel/scall64-o32.S      | 6 +++---
- 7 files changed, 18 insertions(+), 18 deletions(-)
+ arch/mips/include/uapi/asm/unistd.h | 12 ++++++------
+ arch/mips/kernel/ftrace.c           |  6 +++---
+ arch/mips/kernel/scall32-o32.S      |  4 ++--
+ arch/mips/kernel/scall64-64.S       |  2 +-
+ arch/mips/kernel/scall64-n32.S      |  4 ++--
+ arch/mips/kernel/scall64-o32.S      |  6 +++---
+ 6 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/arch/mips/include/asm/unistd.h b/arch/mips/include/asm/unistd.h
-index c68b8ae..16f21c3 100644
---- a/arch/mips/include/asm/unistd.h
-+++ b/arch/mips/include/asm/unistd.h
-@@ -15,11 +15,11 @@
- #include <uapi/asm/unistd.h>
- 
- #ifdef CONFIG_MIPS32_N32
--#define NR_syscalls  (__NR_N32_Linux + __NR_N32_Linux_syscalls)
-+#define NR_syscalls  (__NR_N32_Linux + __NR_N32_Linux_syscalls - 1)
- #elif defined(CONFIG_64BIT)
--#define NR_syscalls  (__NR_64_Linux + __NR_64_Linux_syscalls)
-+#define NR_syscalls  (__NR_64_Linux + __NR_64_Linux_syscalls - 1)
- #else
--#define NR_syscalls  (__NR_O32_Linux + __NR_O32_Linux_syscalls)
-+#define NR_syscalls  (__NR_O32_Linux + __NR_O32_Linux_syscalls - 1)
- #endif
- 
- #ifndef __ASSEMBLY__
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index 0ccf954..9a19b347 100644
+index 6914be5..dac1335 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
 @@ -392,7 +392,7 @@
@@ -57,6 +37,15 @@ index 0ccf954..9a19b347 100644
  #endif
  
  /*
+@@ -403,7 +403,7 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+ 
+ #define __NR_O32_Linux			4000
+-#define __NR_O32_Linux_syscalls		368
++#define __NR_O32_Linux_syscalls		369
+ 
+ #if _MIPS_SIM == _MIPS_SIM_ABI64
+ 
 @@ -742,7 +742,7 @@
  #define __NR_io_pgetevents		(__NR_Linux + 328)
  
@@ -66,6 +55,15 @@ index 0ccf954..9a19b347 100644
  #endif
  
  /*
+@@ -753,7 +753,7 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
+ 
+ #define __NR_64_Linux			5000
+-#define __NR_64_Linux_syscalls		328
++#define __NR_64_Linux_syscalls		329
+ 
+ #if _MIPS_SIM == _MIPS_SIM_NABI32
+ 
 @@ -1096,7 +1096,7 @@
  #define __NR_io_pgetevents		(__NR_Linux + 332)
  
@@ -75,8 +73,16 @@ index 0ccf954..9a19b347 100644
  #endif
  
  /*
+@@ -1107,6 +1107,6 @@
+ #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+ 
+ #define __NR_N32_Linux			6000
+-#define __NR_N32_Linux_syscalls		332
++#define __NR_N32_Linux_syscalls		333
+ 
+ #endif /* _UAPI_ASM_UNISTD_H */
 diff --git a/arch/mips/kernel/ftrace.c b/arch/mips/kernel/ftrace.c
-index 7f3dfdb..add4301 100644
+index 7f3dfdb..f32caaf 100644
 --- a/arch/mips/kernel/ftrace.c
 +++ b/arch/mips/kernel/ftrace.c
 @@ -410,13 +410,13 @@ unsigned long __init arch_syscall_addr(int nr)
@@ -84,32 +90,23 @@ index 7f3dfdb..add4301 100644
  {
  #ifdef CONFIG_MIPS32_N32
 -	if (nr >= __NR_N32_Linux && nr <= __NR_N32_Linux + __NR_N32_Linux_syscalls)
-+	if (nr >= __NR_N32_Linux && nr <= __NR_N32_Linux + __NR_N32_Linux_syscalls - 1)
++	if (nr >= __NR_N32_Linux && nr < __NR_N32_Linux + __NR_N32_Linux_syscalls)
  		return (unsigned long)sysn32_call_table[nr - __NR_N32_Linux];
  #endif
 -	if (nr >= __NR_64_Linux  && nr <= __NR_64_Linux + __NR_64_Linux_syscalls)
-+	if (nr >= __NR_64_Linux  && nr <= __NR_64_Linux + __NR_64_Linux_syscalls - 1)
++	if (nr >= __NR_64_Linux  && nr < __NR_64_Linux + __NR_64_Linux_syscalls)
  		return (unsigned long)sys_call_table[nr - __NR_64_Linux];
  #ifdef CONFIG_MIPS32_O32
 -	if (nr >= __NR_O32_Linux && nr <= __NR_O32_Linux + __NR_O32_Linux_syscalls)
-+	if (nr >= __NR_O32_Linux && nr <= __NR_O32_Linux + __NR_O32_Linux_syscalls - 1)
++	if (nr >= __NR_O32_Linux && nr < __NR_O32_Linux + __NR_O32_Linux_syscalls)
  		return (unsigned long)sys32_call_table[nr - __NR_O32_Linux];
  #endif
  
 diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
-index 91d3c8c..a9b895f 100644
+index fea6edb..10f6367 100644
 --- a/arch/mips/kernel/scall32-o32.S
 +++ b/arch/mips/kernel/scall32-o32.S
-@@ -23,7 +23,7 @@
- #include <asm/asm-offsets.h>
- 
- /* Highest syscall used of any syscall flavour */
--#define MAX_SYSCALL_NO	__NR_O32_Linux + __NR_O32_Linux_syscalls
-+#define MAX_SYSCALL_NO	__NR_O32_Linux + __NR_O32_Linux_syscalls - 1
- 
- 	.align	5
- NESTED(handle_sys, PT_SIZE, sp)
-@@ -89,7 +89,7 @@ loads_done:
+@@ -86,7 +86,7 @@ loads_done:
  	bnez	t0, syscall_trace_entry # -> yes
  syscall_common:
  	subu	v0, v0, __NR_O32_Linux	# check syscall number
@@ -118,7 +115,7 @@ index 91d3c8c..a9b895f 100644
  	beqz	t0, illegal_syscall
  
  	sll	t0, v0, 2
-@@ -185,7 +185,7 @@ illegal_syscall:
+@@ -182,7 +182,7 @@ illegal_syscall:
  
  	LEAF(sys_syscall)
  	subu	t0, a0, __NR_O32_Linux	# check syscall number
