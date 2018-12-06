@@ -1,7 +1,7 @@
-From b2dfda6d15418d6f6ec4abfef49935b1978bc3d1 Mon Sep 17 00:00:00 2001
+From 1d2b159569ad023a4b9c8f54d945e6892d2bd5d1 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 12 Sep 2018 10:53:41 +0530
-Subject: [PATCH v2 1/4] powerpc: add __NR_syscalls along with NR_syscalls
+Subject: [PATCH v4 1/5] powerpc: add __NR_syscalls along with NR_syscalls
 
 NR_syscalls macro holds the number of system call exist
 in powerpc architecture. We have to change the value of
@@ -13,24 +13,24 @@ The syscall.tbl file contains the number of system call
 information. So we have two option to update NR_syscalls
 value.
 
-1. Update NR_syscalls in asm/unistd.h manually by counting
-   the no.of system calls. No need to update NR_syscalls
-   until we either add a new system call or delete existing
-   system call.
+1. Update NR_syscalls in asm/unistd.h manually by count-
+   ing the no.of system calls. No need to update NR_sys-
+   calls until we either add a new system call or delete
+   existing system call.
 
-2. We can keep this feature it above mentioned script, that
-   will count the number of syscalls and keep it in a gener-
-   ated file. In this case we don't need to explicitly up-
-   date NR_syscalls in asm/unistd.h file.
+2. We can keep this feature in above mentioned script,
+   that will count the number of syscalls and keep it in
+   a generated file. In this case we don't need to expli-
+   citly update NR_syscalls in asm/unistd.h file.
 
-The 2nd option will be the recommended one. For that, I added
-the __NR_syscalls macro in uapi/asm/unistd.h along with NR_-
-syscalls asm/unistd.h. The macro __NR_syscalls also added for
-making the name convention same across all architecture. While
-__NR_syscalls isn't strictly part of the uapi, having it as
-part of the generated header to simplifies the implementation.
-We also need to enclose this macro with #ifdef __KERNEL__ to
-avoid side effects.
+The 2nd option will be the recommended one. For that, I
+added the __NR_syscalls macro in uapi/asm/unistd.h along
+with NR_syscalls asm/unistd.h. The macro __NR_syscalls
+also added for making the name convention same across all
+architecture. While __NR_syscalls isn't strictly part of
+the uapi, having it as part of the generated header to
+simplifies the implementation. We also need to enclose
+this macro with #ifdef __KERNEL__ to avoid side effects.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -39,7 +39,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  2 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/arch/powerpc/include/asm/unistd.h b/arch/powerpc/include/asm/unistd.h
-index b0de85b..57adfd1 100644
+index b0de85b..a3c35e6 100644
 --- a/arch/powerpc/include/asm/unistd.h
 +++ b/arch/powerpc/include/asm/unistd.h
 @@ -11,8 +11,7 @@
@@ -48,12 +48,12 @@ index b0de85b..57adfd1 100644
  
 -
 -#define NR_syscalls		389
-+#define NR_syscalls __NR_syscalls
++#define NR_syscalls	__NR_syscalls
  
  #define __NR__exit __NR_exit
  
 diff --git a/arch/powerpc/include/uapi/asm/unistd.h b/arch/powerpc/include/uapi/asm/unistd.h
-index 985534d..8b7fcd4 100644
+index 985534d..7195868 100644
 --- a/arch/powerpc/include/uapi/asm/unistd.h
 +++ b/arch/powerpc/include/uapi/asm/unistd.h
 @@ -10,7 +10,6 @@
@@ -69,7 +69,7 @@ index 985534d..8b7fcd4 100644
  #define __NR_io_pgetevents	388
  
 +#ifdef __KERNEL__
-+#define __NR_syscalls           389
++#define __NR_syscalls		389
 +#endif
 +
  #endif /* _UAPI_ASM_POWERPC_UNISTD_H_ */
