@@ -1,7 +1,7 @@
-From 24b5def76dd68ee4f1b0ab6fbd324c9bd3a13049 Mon Sep 17 00:00:00 2001
+From ba57e1289014f896b75407ec06027fc058249812 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 29 Nov 2018 13:50:19 +0530
-Subject: [PATCH v3 0/6] mips: system call table generation support
+Date: Thu, 6 Dec 2018 10:30:44 +0530
+Subject: [PATCH v4 0/7] mips: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -47,6 +47,12 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in
 the syscall.tbl.
 
+Changes since v3:
+ - rearranged the patches for '64' to 'n64' conver-
+   sion.
+ - moved the unistd_nr_*.h files to asm/unistd.h
+ - modified the *.sh files.
+
 Changes since v2:
  - fixed __NR_syscalls assign issue.
 
@@ -57,9 +63,10 @@ Changes since v1:
  - added "comments" in syscall_*.tbl.
  - changed from generic-y to generated-y in Kbuild.
 
-Firoz Khan (6):
+Firoz Khan (7):
   mips: add __NR_syscalls along with __NR_Linux_syscalls
   mips: remove unused macros
+  mips: rename macros and files from '64' to 'n64'
   mips: add +1 to __NR_syscalls in uapi header
   mips: remove syscall table entries
   mips: add system call table generation support
@@ -67,9 +74,20 @@ Firoz Khan (6):
 
  arch/mips/Makefile                        |    3 +
  arch/mips/include/asm/Kbuild              |    4 +
- arch/mips/include/asm/unistd.h            |    8 -
+ arch/mips/include/asm/asm.h               |    6 +-
+ arch/mips/include/asm/fpregdef.h          |    4 +-
+ arch/mips/include/asm/fw/arc/hinv.h       |    2 +-
+ arch/mips/include/asm/regdef.h            |    4 +-
+ arch/mips/include/asm/sigcontext.h        |    4 +-
+ arch/mips/include/asm/unistd.h            |   11 +-
  arch/mips/include/uapi/asm/Kbuild         |    6 +
- arch/mips/include/uapi/asm/unistd.h       | 1065 +----------------------------
+ arch/mips/include/uapi/asm/fcntl.h        |    2 +-
+ arch/mips/include/uapi/asm/reg.h          |    4 +-
+ arch/mips/include/uapi/asm/sgidefs.h      |    2 +-
+ arch/mips/include/uapi/asm/sigcontext.h   |    4 +-
+ arch/mips/include/uapi/asm/stat.h         |    4 +-
+ arch/mips/include/uapi/asm/statfs.h       |    4 +-
+ arch/mips/include/uapi/asm/unistd.h       | 1069 +----------------------------
  arch/mips/kernel/Makefile                 |    2 +-
  arch/mips/kernel/ftrace.c                 |    8 +-
  arch/mips/kernel/scall32-o32.S            |  391 +----------
@@ -78,13 +96,16 @@ Firoz Khan (6):
  arch/mips/kernel/scall64-n64.S            |  117 ++++
  arch/mips/kernel/scall64-o32.S            |  379 +---------
  arch/mips/kernel/syscalls/Makefile        |   96 +++
- arch/mips/kernel/syscalls/syscall_n32.tbl |  343 ++++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl |  343 +++++++++
  arch/mips/kernel/syscalls/syscall_n64.tbl |  339 +++++++++
  arch/mips/kernel/syscalls/syscall_o32.tbl |  382 +++++++++++
- arch/mips/kernel/syscalls/syscallhdr.sh   |   36 +
- arch/mips/kernel/syscalls/syscallnr.sh    |   30 +
+ arch/mips/kernel/syscalls/syscallhdr.sh   |   37 +
+ arch/mips/kernel/syscalls/syscallnr.sh    |   28 +
  arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
- 19 files changed, 1430 insertions(+), 2600 deletions(-)
+ arch/mips/kvm/entry.c                     |    4 +-
+ arch/mips/vdso/vdso.h                     |    2 +-
+ arch/mips/vdso/vdso.lds.S                 |    2 +-
+ 33 files changed, 1450 insertions(+), 2634 deletions(-)
  delete mode 100644 arch/mips/kernel/scall64-64.S
  create mode 100644 arch/mips/kernel/scall64-n64.S
  create mode 100644 arch/mips/kernel/syscalls/Makefile

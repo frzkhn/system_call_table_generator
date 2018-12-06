@@ -1,7 +1,7 @@
-From 07f695281e4aee2b4dc4c9e71fa0858e22e8da22 Mon Sep 17 00:00:00 2001
+From 4f0ea70e5c169a90ce54ac1f1b2cf70d5f7b8682 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 14 Nov 2018 15:48:51 +0530
-Subject: [PATCH v3 1/6] mips: add __NR_syscalls along with __NR_Linux_syscalls
+Subject: [PATCH v4 1/7] mips: add __NR_syscalls along with __NR_Linux_syscalls
 
 __NR_Linux_syscalls macro holds the number of system call
 exist in mips architecture. We have to change the value of

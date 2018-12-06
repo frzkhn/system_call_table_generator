@@ -1,7 +1,7 @@
-From ca9310e2ba410ed7f4e883bd75e8db9d17151dd3 Mon Sep 17 00:00:00 2001
+From 8711b7f1b9636cc3ab4baca75f46e56e197ef723 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 14 Sep 2018 11:24:11 +0530
-Subject: [PATCH v3 5/6] mips: add system call table generation support
+Subject: [PATCH v4 6/7] mips: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -28,14 +28,15 @@ Adding a new table entry consisting of:
 	- Entry point name.
 	- Compat entry name, if required.
 
-syscallhdr.sh and syscalltbl.sh will generate uapi
-header unistd_64/n32/o32.h and syscall_table_32_o32/-
-64_64/64-n32/64-o32.h files respectively. Both .sh files
-will parse the content syscall.tbl to generate the header
-and table files. unistd_64/n32/o32.h will be included by
-uapi/asm/unistd.h and syscall_table_32_o32/64_64/64-n32-
+syscallhdr.sh, syscallnr.sh and syscalltbl.sh will gene-
+rate uapi header unistd_n64/n32/o32.h, unistd_nr_n64/n32/-
+o32.h and syscall_table_32_o32/64_n64/64-n32/64-o32.h files
+respectively. All *.sh files will parse the content sys-
+call.tbl to generate the header and table files. unistd-
+_n64/n32/o32.h and unistd_nr_n64/n32/o32.h will be included
+by uapi/asm/unistd.h and syscall_table_32_o32/64_n64/64-n32-
 /64-o32.h is included by kernel/syscall_table32_o32/64-
-_64/64-n32/64-o32.S - the real system call table.
+_n64/64-n32/64-o32.S - the real system call table.
 
 ARM, s390 and x86 architecuture does have similar support.
 I leverage their implementation to come up with a generic
@@ -47,10 +48,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/mips/kernel/syscalls/syscall_n32.tbl | 343 +++++++++++++++++++++++++++
  arch/mips/kernel/syscalls/syscall_n64.tbl | 339 ++++++++++++++++++++++++++
  arch/mips/kernel/syscalls/syscall_o32.tbl | 382 ++++++++++++++++++++++++++++++
- arch/mips/kernel/syscalls/syscallhdr.sh   |  36 +++
- arch/mips/kernel/syscalls/syscallnr.sh    |  30 +++
+ arch/mips/kernel/syscalls/syscallhdr.sh   |  37 +++
+ arch/mips/kernel/syscalls/syscallnr.sh    |  28 +++
  arch/mips/kernel/syscalls/syscalltbl.sh   |  36 +++
- 7 files changed, 1262 insertions(+)
+ 7 files changed, 1261 insertions(+)
  create mode 100644 arch/mips/kernel/syscalls/Makefile
  create mode 100644 arch/mips/kernel/syscalls/syscall_n32.tbl
  create mode 100644 arch/mips/kernel/syscalls/syscall_n64.tbl
@@ -1245,10 +1246,10 @@ index 0000000..3d5a47b
 +368	o32	io_pgetevents			sys_io_pgetevents		compat_sys_io_pgetevents
 diff --git a/arch/mips/kernel/syscalls/syscallhdr.sh b/arch/mips/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..6794cc1
+index 0000000..d2bcfa8
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,37 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -1284,13 +1285,14 @@ index 0000000..6794cc1
 +	printf "#endif\n"
 +	printf "\n"
 +	printf "#endif /* %s */" "${fileguard}"
++	printf "\n"
 +) > "$out"
 diff --git a/arch/mips/kernel/syscalls/syscallnr.sh b/arch/mips/kernel/syscalls/syscallnr.sh
 new file mode 100644
-index 0000000..742327f
+index 0000000..60bbdb3
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/syscallnr.sh
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,28 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -1313,13 +1315,11 @@ index 0000000..742327f
 +		nxt=$((nr+1))
 +	done
 +
-+	printf "\n"
-+	printf "#ifdef __KERNEL__\n"
 +	printf "#define __NR_%s_Linux\t%s\n" "${prefix}" "${offset}"
 +	printf "#define __NR_%s_Linux_syscalls\t%s\n" "${prefix}" "${nxt}"
-+	printf "#endif\n"
 +	printf "\n"
 +	printf "#endif /* %s */" "${fileguard}"
++	printf "\n"
 +) > "$out"
 diff --git a/arch/mips/kernel/syscalls/syscalltbl.sh b/arch/mips/kernel/syscalls/syscalltbl.sh
 new file mode 100644
