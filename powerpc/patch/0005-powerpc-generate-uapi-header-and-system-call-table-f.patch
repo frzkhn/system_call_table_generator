@@ -1,7 +1,7 @@
-From faebedb57e2769140ff53bdd24cdb082d3de0d90 Mon Sep 17 00:00:00 2001
+From 7bce7c8edb4a39d0d5cc47326d8694eb84e71e7b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 26 Nov 2018 13:46:08 +0530
-Subject: [PATCH v3 4/4] powerpc: generate uapi header and system call table
+Date: Wed, 5 Dec 2018 10:35:02 +0530
+Subject: [PATCH v4 5/5] powerpc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -25,10 +25,10 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/powerpc/include/uapi/asm/Kbuild        |   2 +
  arch/powerpc/include/uapi/asm/unistd.h      | 392 +--------------------------
  arch/powerpc/kernel/Makefile                |  10 -
- arch/powerpc/kernel/systbl.S                |  36 +--
+ arch/powerpc/kernel/systbl.S                |  52 +---
  arch/powerpc/kernel/systbl_chk.c            |  60 -----
  arch/powerpc/platforms/cell/spu_callbacks.c |  17 +-
- 9 files changed, 27 insertions(+), 892 deletions(-)
+ 9 files changed, 26 insertions(+), 909 deletions(-)
  delete mode 100644 arch/powerpc/include/asm/systbl.h
  delete mode 100644 arch/powerpc/kernel/systbl_chk.c
 
@@ -899,7 +899,7 @@ index 53d4b8d..dffdfd6 100644
  $(obj)/built-in.a:		prom_init_check
  
 diff --git a/arch/powerpc/kernel/systbl.S b/arch/powerpc/kernel/systbl.S
-index 9ff1913..d756348 100644
+index 0fa84e1..e11872b 100644
 --- a/arch/powerpc/kernel/systbl.S
 +++ b/arch/powerpc/kernel/systbl.S
 @@ -16,28 +16,6 @@
@@ -907,13 +907,13 @@ index 9ff1913..d756348 100644
  #include <asm/ppc_asm.h>
  
 -#ifdef CONFIG_PPC64
--#define SYSCALL(func)		.8byte	DOTSYM(sys_##func),DOTSYM(sys_##func)
--#define COMPAT_SYS(func)	.8byte	DOTSYM(sys_##func),DOTSYM(compat_sys_##func)
--#define PPC_SYS(func)		.8byte	DOTSYM(ppc_##func),DOTSYM(ppc_##func)
--#define OLDSYS(func)		.8byte	DOTSYM(sys_ni_syscall),DOTSYM(sys_ni_syscall)
--#define SYS32ONLY(func)		.8byte	DOTSYM(sys_ni_syscall),DOTSYM(compat_sys_##func)
--#define PPC64ONLY(func)		.8byte	DOTSYM(ppc_##func),DOTSYM(sys_ni_syscall)
--#define SYSX(f, f3264, f32)	.8byte	DOTSYM(f),DOTSYM(f3264)
+-#define SYSCALL(func)		.8byte	DOTSYM(sys_##func)
+-#define COMPAT_SYS(func)	.8byte	DOTSYM(sys_##func)
+-#define PPC_SYS(func)		.8byte	DOTSYM(ppc_##func)
+-#define OLDSYS(func)		.8byte	DOTSYM(sys_ni_syscall)
+-#define SYS32ONLY(func)		.8byte	DOTSYM(sys_ni_syscall)
+-#define PPC64ONLY(func)		.8byte	DOTSYM(ppc_##func)
+-#define SYSX(f, f3264, f32)	.8byte	DOTSYM(f)
 -#else
 -#define SYSCALL(func)		.long	sys_##func
 -#define COMPAT_SYS(func)	.long	sys_##func
@@ -931,25 +931,46 @@ index 9ff1913..d756348 100644
  .section .rodata,"a"
  
  #ifdef CONFIG_PPC64
-@@ -47,5 +25,17 @@
+@@ -46,27 +24,21 @@
+ 
  .globl sys_call_table
  sys_call_table:
- 
-+#if defined CONFIG_PPC64 && defined(CONFIG_COMPAT)
-+#define __SYSCALL(nr, entry, nargs) .8byte entry
- #define compat_sys_sigsuspend	sys_sigsuspend
 -#include <asm/systbl.h>
-+#include <asm/syscall_table_c32.h>
-+#undef __SYSCALL
-+#elif defined CONFIG_PPC64 && !defined(CONFIG_COMPAT)
-+#define __SYSCALL(nr, entry, nargs) .8byte entry
+-
+-#undef SYSCALL
+-#undef COMPAT_SYS
+-#undef PPC_SYS
+-#undef OLDSYS
+-#undef SYS32ONLY
+-#undef PPC64ONLY
+-#undef SYSX
++#ifdef CONFIG_PPC64
++#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
 +#include <asm/syscall_table_64.h>
 +#undef __SYSCALL
 +#else
-+#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry, nargs) .long DOTSYM(entry)
 +#include <asm/syscall_table_32.h>
 +#undef __SYSCALL
 +#endif
+ 
+ #ifdef CONFIG_COMPAT
+-#define SYSCALL(func)		.8byte	DOTSYM(sys_##func)
+-#define COMPAT_SYS(func)	.8byte	DOTSYM(compat_sys_##func)
+-#define PPC_SYS(func)		.8byte	DOTSYM(ppc_##func)
+-#define OLDSYS(func)		.8byte	DOTSYM(sys_ni_syscall)
+-#define SYS32ONLY(func)		.8byte	DOTSYM(compat_sys_##func)
+-#define PPC64ONLY(func)		.8byte	DOTSYM(sys_ni_syscall)
+-#define SYSX(f, f3264, f32)	.8byte	DOTSYM(f3264)
+-
+ .globl compat_sys_call_table
+ compat_sys_call_table:
+ #define compat_sys_sigsuspend	sys_sigsuspend
+-#include <asm/systbl.h>
++#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
++#include <asm/syscall_table_c32.h>
++#undef __SYSCALL
+ #endif
 diff --git a/arch/powerpc/kernel/systbl_chk.c b/arch/powerpc/kernel/systbl_chk.c
 deleted file mode 100644
 index 4653258..0000000

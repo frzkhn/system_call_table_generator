@@ -1,7 +1,7 @@
-From faebedb57e2769140ff53bdd24cdb082d3de0d90 Mon Sep 17 00:00:00 2001
+From 7bce7c8edb4a39d0d5cc47326d8694eb84e71e7b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 29 Nov 2018 09:25:17 +0530
-Subject: [PATCH v3 0/4] powerpc: system call table generation support
+Date: Fri, 7 Dec 2018 11:32:32 +0530
+Subject: [PATCH v4 0/5] powerpc: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -48,39 +48,48 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in the
 syscall.tbl.
 
-changes since v2:
+Changes since v3:
+ - split compat syscall table out from native table.
+ - modified the script to add new line in the generated
+   file.
+
+Changes since v2:
  - modified/optimized the syscall.tbl to avoid duplicate
    for the spu entries.
  - updated the syscalltbl.sh to meet the above point.
 
-changes since v1:
+Changes since v1:
  - optimized/updated the syscall table generation 
    scripts.
  - fixed all mixed indentation issues in syscall.tbl.
  - added "comments" in syscall_*.tbl.
  - changed from generic-y to generated-y in Kbuild.
 
-Firoz Khan (4):
+Firoz Khan (5):
   powerpc: add __NR_syscalls along with NR_syscalls
   powerpc: move macro definition from asm/systbl.h
   powerpc: add system call table generation support
+  powerpc: split compat syscall table out from native table
   powerpc: generate uapi header and system call table files
 
  arch/powerpc/Makefile                       |   3 +
  arch/powerpc/include/asm/Kbuild             |   4 +
+ arch/powerpc/include/asm/syscall.h          |   3 +-
  arch/powerpc/include/asm/systbl.h           | 396 --------------------------
  arch/powerpc/include/asm/unistd.h           |   3 +-
  arch/powerpc/include/uapi/asm/Kbuild        |   2 +
  arch/powerpc/include/uapi/asm/unistd.h      | 389 +------------------------
  arch/powerpc/kernel/Makefile                |  10 -
+ arch/powerpc/kernel/entry_64.S              |   7 +-
  arch/powerpc/kernel/syscalls/Makefile       |  63 ++++
  arch/powerpc/kernel/syscalls/syscall.tbl    | 427 ++++++++++++++++++++++++++++
- arch/powerpc/kernel/syscalls/syscallhdr.sh  |  36 +++
+ arch/powerpc/kernel/syscalls/syscallhdr.sh  |  37 +++
  arch/powerpc/kernel/syscalls/syscalltbl.sh  |  36 +++
- arch/powerpc/kernel/systbl.S                |  37 +--
+ arch/powerpc/kernel/systbl.S                |  40 ++-
  arch/powerpc/kernel/systbl_chk.c            |  60 ----
+ arch/powerpc/kernel/vdso.c                  |   7 +-
  arch/powerpc/platforms/cell/spu_callbacks.c |  17 +-
- 14 files changed, 591 insertions(+), 892 deletions(-)
+ 17 files changed, 606 insertions(+), 898 deletions(-)
  delete mode 100644 arch/powerpc/include/asm/systbl.h
  create mode 100644 arch/powerpc/kernel/syscalls/Makefile
  create mode 100644 arch/powerpc/kernel/syscalls/syscall.tbl

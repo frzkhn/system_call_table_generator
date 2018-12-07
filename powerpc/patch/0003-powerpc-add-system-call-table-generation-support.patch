@@ -1,7 +1,7 @@
-From 328f802e1562ac501b36fa3f66507350c89de593 Mon Sep 17 00:00:00 2001
+From bfd770c529507244001ee3f65adb9b695de4ca44 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 12 Sep 2018 11:04:03 +0530
-Subject: [PATCH v3 3/4] powerpc: add system call table generation support
+Subject: [PATCH v4 3/5] powerpc: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add or
@@ -42,9 +42,9 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/powerpc/kernel/syscalls/Makefile      |  63 +++++
  arch/powerpc/kernel/syscalls/syscall.tbl   | 427 +++++++++++++++++++++++++++++
- arch/powerpc/kernel/syscalls/syscallhdr.sh |  36 +++
+ arch/powerpc/kernel/syscalls/syscallhdr.sh |  37 +++
  arch/powerpc/kernel/syscalls/syscalltbl.sh |  36 +++
- 4 files changed, 562 insertions(+)
+ 4 files changed, 563 insertions(+)
  create mode 100644 arch/powerpc/kernel/syscalls/Makefile
  create mode 100644 arch/powerpc/kernel/syscalls/syscall.tbl
  create mode 100644 arch/powerpc/kernel/syscalls/syscallhdr.sh
@@ -554,10 +554,10 @@ index 0000000..db3bbb8
 +388	nospu	io_pgetevents			sys_io_pgetevents		compat_sys_io_pgetevents
 diff --git a/arch/powerpc/kernel/syscalls/syscallhdr.sh b/arch/powerpc/kernel/syscalls/syscallhdr.sh
 new file mode 100644
-index 0000000..41cf165
+index 0000000..c0a9a32
 --- /dev/null
 +++ b/arch/powerpc/kernel/syscalls/syscallhdr.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,37 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -593,10 +593,11 @@ index 0000000..41cf165
 +	printf "#endif\n"
 +	printf "\n"
 +	printf "#endif /* %s */" "${fileguard}"
++	printf "\n"
 +) > "$out"
 diff --git a/arch/powerpc/kernel/syscalls/syscalltbl.sh b/arch/powerpc/kernel/syscalls/syscalltbl.sh
 new file mode 100644
-index 0000000..45b5bae
+index 0000000..fd62049
 --- /dev/null
 +++ b/arch/powerpc/kernel/syscalls/syscalltbl.sh
 @@ -0,0 +1,36 @@
@@ -615,10 +616,10 @@ index 0000000..45b5bae
 +	t_entry="$3"
 +
 +	while [ $t_nxt -lt $t_nr ]; do
-+		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall, )\n" "${t_nxt}"
 +		t_nxt=$((t_nxt+1))
 +	done
-+	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s, )\n" "${t_nxt}" "${t_entry}"
 +}
 +
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
