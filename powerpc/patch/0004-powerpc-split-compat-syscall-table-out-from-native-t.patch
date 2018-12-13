@@ -1,7 +1,7 @@
-From 2f134cf4a68c12353387bdae7a4b20db70d0e4ae Mon Sep 17 00:00:00 2001
+From 6cf7ee1683dcf2070c5d628e85a6a52e4aaf2005 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 5 Dec 2018 09:29:56 +0530
-Subject: [PATCH v4 4/5] powerpc: split compat syscall table out from native
+Subject: [PATCH v5 4/5] powerpc: split compat syscall table out from native
  table
 
 PowerPC uses a syscall table with native and compat calls

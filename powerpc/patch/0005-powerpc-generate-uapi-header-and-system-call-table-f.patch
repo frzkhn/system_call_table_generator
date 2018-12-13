@@ -1,7 +1,7 @@
-From 7bce7c8edb4a39d0d5cc47326d8694eb84e71e7b Mon Sep 17 00:00:00 2001
+From fcab65d4f1ce2e5769eb1fd5c7dd20f13a4a8e7c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 5 Dec 2018 10:35:02 +0530
-Subject: [PATCH v4 5/5] powerpc: generate uapi header and system call table
+Subject: [PATCH v5 5/5] powerpc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -899,7 +899,7 @@ index 53d4b8d..dffdfd6 100644
  $(obj)/built-in.a:		prom_init_check
  
 diff --git a/arch/powerpc/kernel/systbl.S b/arch/powerpc/kernel/systbl.S
-index 0fa84e1..e11872b 100644
+index 0fa84e1..23265a2 100644
 --- a/arch/powerpc/kernel/systbl.S
 +++ b/arch/powerpc/kernel/systbl.S
 @@ -16,28 +16,6 @@
@@ -949,7 +949,7 @@ index 0fa84e1..e11872b 100644
 +#include <asm/syscall_table_64.h>
 +#undef __SYSCALL
 +#else
-+#define __SYSCALL(nr, entry, nargs) .long DOTSYM(entry)
++#define __SYSCALL(nr, entry, nargs) .long entry
 +#include <asm/syscall_table_32.h>
 +#undef __SYSCALL
 +#endif
