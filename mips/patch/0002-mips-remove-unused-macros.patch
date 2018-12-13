@@ -1,7 +1,7 @@
-From e84344da198c4a2000d849f6d0625413d8187a0b Mon Sep 17 00:00:00 2001
+From 2b67bc9dbc9f8fb57e56e78c913b829458e63d73 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 20 Nov 2018 15:08:35 +0530
-Subject: [PATCH v4 2/7] mips: remove unused macros
+Subject: [PATCH v5 2/7] mips: remove unused macros
 
 Remove NR_syscalls from asm/unistd.h as there is no
 users to use NR_syscalls macro in mips kernel.

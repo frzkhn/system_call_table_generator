@@ -1,7 +1,7 @@
-From 8711b7f1b9636cc3ab4baca75f46e56e197ef723 Mon Sep 17 00:00:00 2001
+From b24eb38691681846315147f77e63d774cfa5ff4c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 14 Sep 2018 11:24:11 +0530
-Subject: [PATCH v4 6/7] mips: add system call table generation support
+Subject: [PATCH v5 6/7] mips: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,

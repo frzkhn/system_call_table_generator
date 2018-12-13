@@ -1,7 +1,7 @@
-From 6520414067e9b911b3e9209899aef299f9b49691 Mon Sep 17 00:00:00 2001
+From 1c51e784a18177e5973eb6c6250031ad2a725d77 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 8 Nov 2018 15:12:11 +0530
-Subject: [PATCH v4 5/7] mips: remove syscall table entries
+Subject: [PATCH v5 5/7] mips: remove syscall table entries
 
 The config flag - CONFIG_MIPS_MT_FPAFF uses to check whether which
 syscall entries need to be used in scall32-o32.S file.

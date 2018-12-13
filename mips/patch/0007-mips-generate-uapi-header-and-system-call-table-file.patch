@@ -1,7 +1,7 @@
-From ba57e1289014f896b75407ec06027fc058249812 Mon Sep 17 00:00:00 2001
+From 20eea3b78f4bc543623e51542dd00e5afe05def4 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 6 Dec 2018 09:48:06 +0530
-Subject: [PATCH v4 7/7] mips: generate uapi header and system call table files
+Date: Thu, 13 Dec 2018 11:08:12 +0530
+Subject: [PATCH v5 7/7] mips: generate uapi header and system call table files
 
 System call table generation script must be run to gener-
 ate unistd_(nr_)n64/n32/o32.h and syscall_table_32_o32/
@@ -25,12 +25,12 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
  arch/mips/include/asm/Kbuild        |    4 +
  arch/mips/include/asm/unistd.h      |    3 +
  arch/mips/include/uapi/asm/Kbuild   |    6 +
- arch/mips/include/uapi/asm/unistd.h | 1061 +----------------------------------
+ arch/mips/include/uapi/asm/unistd.h | 1070 +----------------------------------
  arch/mips/kernel/scall32-o32.S      |  372 +-----------
  arch/mips/kernel/scall64-n32.S      |  337 +----------
  arch/mips/kernel/scall64-n64.S      |  333 +----------
  arch/mips/kernel/scall64-o32.S      |  373 +-----------
- 9 files changed, 31 insertions(+), 2461 deletions(-)
+ 9 files changed, 34 insertions(+), 2467 deletions(-)
 
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
 index 6841049..f0a849a 100644
@@ -90,17 +90,17 @@ index 7a4becd..ed4bd03 100644
  generic-y += bpf_perf_event.h
  generic-y += ipcbuf.h
 diff --git a/arch/mips/include/uapi/asm/unistd.h b/arch/mips/include/uapi/asm/unistd.h
-index b10e94c..022c07c 100644
+index e4a7b46..4abe387 100644
 --- a/arch/mips/include/uapi/asm/unistd.h
 +++ b/arch/mips/include/uapi/asm/unistd.h
-@@ -17,1081 +17,26 @@
+@@ -17,1081 +17,23 @@
  
  #if _MIPS_SIM == _MIPS_SIM_ABI32
  
 -/*
 - * Linux o32 style syscalls are in the range from 4000 to 4999.
 - */
- #define __NR_Linux			4000
+-#define __NR_Linux			4000
 -#define __NR_syscall			(__NR_Linux +	0)
 -#define __NR_exit			(__NR_Linux +	1)
 -#define __NR_fork			(__NR_Linux +	2)
@@ -474,6 +474,7 @@ index b10e94c..022c07c 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			369
 -#endif
++#define __NR_Linux	4000
 +#include <asm/unistd_o32.h>
  
  #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
@@ -481,12 +482,12 @@ index b10e94c..022c07c 100644
 -#define __NR_O32_Linux			4000
 -#define __NR_O32_Linux_syscalls		369
 -
- #if _MIPS_SIM == _MIPS_SIM_ABIN64
+ #if _MIPS_SIM == _MIPS_SIM_ABI64
  
 -/*
 - * Linux 64-bit syscalls are in the range from 5000 to 5999.
 - */
- #define __NR_Linux			5000
+-#define __NR_Linux			5000
 -#define __NR_read			(__NR_Linux +	0)
 -#define __NR_write			(__NR_Linux +	1)
 -#define __NR_open			(__NR_Linux +	2)
@@ -820,19 +821,20 @@ index b10e94c..022c07c 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			329
 -#endif
++#define __NR_Linux	5000
 +#include <asm/unistd_n64.h>
  
- #endif /* _MIPS_SIM == _MIPS_SIM_ABIN64 */
+ #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
  
 -#define __NR_N64_Linux			5000
 -#define __NR_N64_Linux_syscalls		329
 -
  #if _MIPS_SIM == _MIPS_SIM_NABI32
  
- /*
-  * Linux N32 syscalls are in the range from 6000 to 6999.
-  */
- #define __NR_Linux			6000
+-/*
+- * Linux N32 syscalls are in the range from 6000 to 6999.
+- */
+-#define __NR_Linux			6000
 -#define __NR_read			(__NR_Linux +	0)
 -#define __NR_write			(__NR_Linux +	1)
 -#define __NR_open			(__NR_Linux +	2)
@@ -1170,6 +1172,7 @@ index b10e94c..022c07c 100644
 -#ifdef __KERNEL__
 -#define __NR_syscalls			333
 -#endif
++#define __NR_Linux	6000
 +#include <asm/unistd_n32.h>
  
  #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
