@@ -1,7 +1,7 @@
-From fcab65d4f1ce2e5769eb1fd5c7dd20f13a4a8e7c Mon Sep 17 00:00:00 2001
+From aa79171eb6cf9273d1c28640081d3d553e9d630c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 5 Dec 2018 10:35:02 +0530
-Subject: [PATCH v5 5/5] powerpc: generate uapi header and system call table
+Date: Mon, 17 Dec 2018 15:46:59 +0530
+Subject: [PATCH v6 5/5] powerpc: generate uapi header and system call table
  files
 
 System call table generation script must be run to gener-
@@ -460,7 +460,7 @@ index c4321b9..0000000
 -SYSCALL(rseq)
 -COMPAT_SYS(io_pgetevents)
 diff --git a/arch/powerpc/include/uapi/asm/Kbuild b/arch/powerpc/include/uapi/asm/Kbuild
-index a658091..61398cc 100644
+index 3712152..8ab8ba1 100644
 --- a/arch/powerpc/include/uapi/asm/Kbuild
 +++ b/arch/powerpc/include/uapi/asm/Kbuild
 @@ -1,6 +1,8 @@
@@ -469,9 +469,9 @@ index a658091..61398cc 100644
  
 +generated-y += unistd_32.h
 +generated-y += unistd_64.h
- generic-y += bpf_perf_event.h
  generic-y += param.h
  generic-y += poll.h
+ generic-y += resource.h
 diff --git a/arch/powerpc/include/uapi/asm/unistd.h b/arch/powerpc/include/uapi/asm/unistd.h
 index 7195868..5f84e3d 100644
 --- a/arch/powerpc/include/uapi/asm/unistd.h

@@ -1,7 +1,7 @@
-From 5920f53855c1fb6b489d59361be81babdcb59141 Mon Sep 17 00:00:00 2001
+From 1587778ec88d2cde70b0edcbb85a8aaa421b1f4b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Fri, 9 Nov 2018 15:18:07 +0530
-Subject: [PATCH v5 2/5] powerpc: move macro definition from asm/systbl.h
+Subject: [PATCH v6 2/5] powerpc: move macro definition from asm/systbl.h
 
 Move the macro definition for compat_sys_sigsuspend from
 asm/systbl.h to the file which it is getting included.

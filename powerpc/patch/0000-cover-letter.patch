@@ -1,7 +1,7 @@
-From fcab65d4f1ce2e5769eb1fd5c7dd20f13a4a8e7c Mon Sep 17 00:00:00 2001
+From aa79171eb6cf9273d1c28640081d3d553e9d630c Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 13 Dec 2018 13:56:04 +0530
-Subject: [PATCH v5 0/5] powerpc: system call table generation support
+Date: Mon, 17 Dec 2018 15:56:14 +0530
+Subject: [PATCH v6 0/5] powerpc: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -47,6 +47,9 @@ issue. We need to add two dozen of system calls to
 solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in the
 syscall.tbl.
+
+Changes since v5:
+ - rebased with 4.20-rc7.
 
 Changes since v4:
  - DOTSYM macro removed for ppc32, which was causing
