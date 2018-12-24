@@ -1,0 +1,30 @@
+From c974bfe12c966ad282fd22128fdff4b89862a43f Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Mon, 24 Dec 2018 13:52:09 +0530
+Subject: [PATCH 2/2] scripts: mips support
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/mips/kernel/syscalls/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/mips/kernel/syscalls/Makefile b/arch/mips/kernel/syscalls/Makefile
+index a3d4bec..8b7013e 100644
+--- a/arch/mips/kernel/syscalls/Makefile
++++ b/arch/mips/kernel/syscalls/Makefile
+@@ -8,9 +8,9 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
+ syscalln32 := $(srctree)/$(src)/syscall_n32.tbl
+ syscalln64 := $(srctree)/$(src)/syscall_n64.tbl
+ syscallo32 := $(srctree)/$(src)/syscall_o32.tbl
+-syshdr := $(srctree)/$(src)/syscallhdr.sh
+-sysnr := $(srctree)/$(src)/syscallnr.sh
+-systbl := $(srctree)/$(src)/syscalltbl.sh
++syshdr := $(srctree)/scripts/syscallhdr.sh
++sysnr := $(srctree)/scripts/syscallnr.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
+ 
+ quiet_cmd_syshdr = SYSHDR  $@
+       cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
+-- 
+1.9.1
+
