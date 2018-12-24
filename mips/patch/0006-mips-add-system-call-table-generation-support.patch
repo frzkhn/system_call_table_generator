@@ -1,7 +1,7 @@
-From b24eb38691681846315147f77e63d774cfa5ff4c Mon Sep 17 00:00:00 2001
+From f7e18b88e0a7d62704442a331313f6f41390fb18 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Fri, 14 Sep 2018 11:24:11 +0530
-Subject: [PATCH v5 6/7] mips: add system call table generation support
+Date: Thu, 13 Dec 2018 14:37:38 +0530
+Subject: [PATCH v6 6/7] mips: add system call table generation support
 
 The system call tables are in different format in all
 architecture and it will be difficult to manually add,
@@ -43,6 +43,22 @@ I leverage their implementation to come up with a generic
 solution.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+[paul.burton@mips.com:
+ - Change sysnr_pfx_unistd_nr_n64 to 64.]
+Signed-off-by: Paul Burton <paul.burton@mips.com>
+Cc: linux-mips@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: arnd@arndb.de
+Cc: deepa.kernel@gmail.com
+Cc: marcin.juszkiewicz@linaro.org
 ---
  arch/mips/kernel/syscalls/Makefile        |  96 ++++++++
  arch/mips/kernel/syscalls/syscall_n32.tbl | 343 +++++++++++++++++++++++++++
@@ -62,7 +78,7 @@ Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 
 diff --git a/arch/mips/kernel/syscalls/Makefile b/arch/mips/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..6ec0b26
+index 0000000..a3d4bec
 --- /dev/null
 +++ b/arch/mips/kernel/syscalls/Makefile
 @@ -0,0 +1,96 @@
@@ -115,7 +131,7 @@ index 0000000..6ec0b26
 +$(uapi)/unistd_nr_n32.h: $(syscalln32) $(sysnr)
 +	$(call if_changed,sysnr)
 +
-+sysnr_pfx_unistd_nr_n64 := N64
++sysnr_pfx_unistd_nr_n64 := 64
 +sysnr_offset_unistd_nr_n64 := 5000
 +$(uapi)/unistd_nr_n64.h: $(syscalln64) $(sysnr)
 +	$(call if_changed,sysnr)

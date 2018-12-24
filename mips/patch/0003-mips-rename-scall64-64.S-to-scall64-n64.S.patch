@@ -1,0 +1,56 @@
+From 430ada344c664edae99055808b0b6fa6e9955119 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Thu, 13 Dec 2018 14:37:35 +0530
+Subject: [PATCH v6 3/7] mips: rename scall64-64.S to scall64-n64.S
+
+When we get nanoMIPS support we'll be introducing the p32
+ABI, and there's a reasonable chance that the equivalent
+p64 ABI may come along in the future. Using 'n64' now would
+avoid confusion in that case where we may have 2 different
+64-bit ABIs.
+
+Suggested-by: Paul Burton <paul.burton@mips.com>
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+[paul.burton@mips.com:
+  - Remove UAPI macro renaming, github code search shows at least the
+    chromium project uses __NR_64_Linux & __NR_64_Linux_syscalls.]
+Signed-off-by: Paul Burton <paul.burton@mips.com>
+Cc: linux-mips@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: arnd@arndb.de
+Cc: deepa.kernel@gmail.com
+Cc: marcin.juszkiewicz@linaro.org
+---
+ arch/mips/kernel/Makefile                        | 2 +-
+ arch/mips/kernel/{scall64-64.S => scall64-n64.S} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename arch/mips/kernel/{scall64-64.S => scall64-n64.S} (100%)
+
+diff --git a/arch/mips/kernel/Makefile b/arch/mips/kernel/Makefile
+index 210c280..25af613 100644
+--- a/arch/mips/kernel/Makefile
++++ b/arch/mips/kernel/Makefile
+@@ -72,7 +72,7 @@ obj-$(CONFIG_IRQ_GT641XX)	+= irq-gt641xx.o
+ 
+ obj-$(CONFIG_KPROBES)		+= kprobes.o
+ obj-$(CONFIG_32BIT)		+= scall32-o32.o
+-obj-$(CONFIG_64BIT)		+= scall64-64.o
++obj-$(CONFIG_64BIT)		+= scall64-n64.o
+ obj-$(CONFIG_MIPS32_COMPAT)	+= linux32.o ptrace32.o signal32.o
+ obj-$(CONFIG_MIPS32_N32)	+= binfmt_elfn32.o scall64-n32.o signal_n32.o
+ obj-$(CONFIG_MIPS32_O32)	+= binfmt_elfo32.o scall64-o32.o signal_o32.o
+diff --git a/arch/mips/kernel/scall64-64.S b/arch/mips/kernel/scall64-n64.S
+similarity index 100%
+rename from arch/mips/kernel/scall64-64.S
+rename to arch/mips/kernel/scall64-n64.S
+-- 
+1.9.1
+

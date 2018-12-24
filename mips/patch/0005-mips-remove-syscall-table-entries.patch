@@ -1,7 +1,7 @@
-From 1c51e784a18177e5973eb6c6250031ad2a725d77 Mon Sep 17 00:00:00 2001
+From 792fa1bceb9232a10af9f39ea873d26ec2d73b74 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 8 Nov 2018 15:12:11 +0530
-Subject: [PATCH v5 5/7] mips: remove syscall table entries
+Date: Thu, 13 Dec 2018 14:37:37 +0530
+Subject: [PATCH v6 5/7] mips: remove syscall table entries
 
 The config flag - CONFIG_MIPS_MT_FPAFF uses to check whether which
 syscall entries need to be used in scall32-o32.S file.
@@ -15,6 +15,20 @@ ecture, we need to remove mipsmt_sys_sched_setaffinity and mipsmt-
 _sys_sched_getaffinity from the table and define it in other way.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+Signed-off-by: Paul Burton <paul.burton@mips.com>
+Cc: linux-mips@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: arnd@arndb.de
+Cc: deepa.kernel@gmail.com
+Cc: marcin.juszkiewicz@linaro.org
 ---
  arch/mips/kernel/scall32-o32.S | 24 ++++++++++++------------
  1 file changed, 12 insertions(+), 12 deletions(-)

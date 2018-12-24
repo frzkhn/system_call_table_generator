@@ -1,7 +1,7 @@
-From 3832c8d34d9615e538f14b2e80bbfb1cdd302161 Mon Sep 17 00:00:00 2001
+From a3ffbcf86c1ead26e65ed53c599cb0c631718090 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Wed, 14 Nov 2018 15:48:51 +0530
-Subject: [PATCH v5 1/7] mips: add __NR_syscalls along with __NR_Linux_syscalls
+Date: Thu, 13 Dec 2018 14:37:33 +0530
+Subject: [PATCH v6 1/7] mips: add __NR_syscalls along with __NR_Linux_syscalls
 
 __NR_Linux_syscalls macro holds the number of system call
 exist in mips architecture. We have to change the value of
@@ -33,6 +33,20 @@ simplifies the implementation. We also need to enclose
 this macro with #ifdef __KERNEL__ to avoid side effects.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+Signed-off-by: Paul Burton <paul.burton@mips.com>
+Cc: linux-mips@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: arnd@arndb.de
+Cc: deepa.kernel@gmail.com
+Cc: marcin.juszkiewicz@linaro.org
 ---
  arch/mips/include/uapi/asm/unistd.h | 17 ++++++++++++++---
  1 file changed, 14 insertions(+), 3 deletions(-)

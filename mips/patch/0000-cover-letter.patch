@@ -1,7 +1,7 @@
-From 20eea3b78f4bc543623e51542dd00e5afe05def4 Mon Sep 17 00:00:00 2001
+From 9590fd0f3b344b25ff00898954bd734310b043ce Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Thu, 13 Dec 2018 11:28:49 +0530
-Subject: [PATCH v5 0/7] mips: system call table generation support
+Date: Mon, 24 Dec 2018 13:56:34 +0530
+Subject: [PATCH v6 0/7] mips: system call table generation support
 
 The purpose of this patch series is, we can easily
 add/modify/delete system call table support by cha-
@@ -47,6 +47,9 @@ solve Y2038 issue. So this patch series will help to
 add new system calls easily by adding new entry in
 the syscall.tbl.
 
+Changes since v5.
+ - changed from n64 to 64, authored by Paul.
+
 Changes since v4:
  - _MIPS_SIM_ABIN64 (suppose to be _MIPS_SIM_NABI64)
    macro rename back to _MIPS_SIM_ABI64 to avoid
@@ -71,7 +74,7 @@ Changes since v1:
 Firoz Khan (7):
   mips: add __NR_syscalls along with __NR_Linux_syscalls
   mips: remove unused macros
-  mips: rename macros and files from '64' to 'n64'
+  mips: rename scall64-64.S to scall64-n64.S
   mips: add +1 to __NR_syscalls in uapi header
   mips: remove syscall table entries
   mips: add system call table generation support
@@ -79,11 +82,11 @@ Firoz Khan (7):
 
  arch/mips/Makefile                        |    3 +
  arch/mips/include/asm/Kbuild              |    4 +
- arch/mips/include/asm/unistd.h            |   11 +-
+ arch/mips/include/asm/unistd.h            |    3 +
  arch/mips/include/uapi/asm/Kbuild         |    6 +
  arch/mips/include/uapi/asm/unistd.h       | 1074 +----------------------------
  arch/mips/kernel/Makefile                 |    2 +-
- arch/mips/kernel/ftrace.c                 |    8 +-
+ arch/mips/kernel/ftrace.c                 |    6 +-
  arch/mips/kernel/scall32-o32.S            |  391 +----------
  arch/mips/kernel/scall64-64.S             |  444 ------------
  arch/mips/kernel/scall64-n32.S            |  341 +--------
@@ -96,7 +99,7 @@ Firoz Khan (7):
  arch/mips/kernel/syscalls/syscallhdr.sh   |   37 +
  arch/mips/kernel/syscalls/syscallnr.sh    |   28 +
  arch/mips/kernel/syscalls/syscalltbl.sh   |   36 +
- 19 files changed, 1427 insertions(+), 2614 deletions(-)
+ 19 files changed, 1426 insertions(+), 2605 deletions(-)
  delete mode 100644 arch/mips/kernel/scall64-64.S
  create mode 100644 arch/mips/kernel/scall64-n64.S
  create mode 100644 arch/mips/kernel/syscalls/Makefile
