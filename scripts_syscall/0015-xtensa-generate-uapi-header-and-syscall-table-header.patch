@@ -1,20 +1,35 @@
-From 5b3cf7b8f032f6cf2e9c629a1b12de50676a823b Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Thu, 27 Dec 2018 11:12:35 +0530
-Subject: [PATCH] scripts: parisc support
+From ec307aff27f915ecceeedc20fc20de21997f9e38 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 18:43:02 +0530
+Subject: [PATCH 15/22] xtensa: generate uapi header and syscall table header
+ files
 
+Unified system call table generation script must be run to
+generate unistd_32.h and syscall_table.h files. This patch
+will have changes which will invokes the script.
+
+This patch will generate unistd_32.h and syscall_table.h
+files by the syscall table generation script invoked by
+xtensa/Makefile and the generated files against the removed
+files must be identical.
+
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/syscall.c file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/parisc/kernel/syscalls/Makefile      | 11 ++++++++--
- arch/parisc/kernel/syscalls/syscallhdr.sh | 36 -------------------------------
- arch/parisc/kernel/syscalls/syscalltbl.sh | 36 -------------------------------
- 3 files changed, 9 insertions(+), 74 deletions(-)
- delete mode 100644 arch/parisc/kernel/syscalls/syscallhdr.sh
- delete mode 100644 arch/parisc/kernel/syscalls/syscalltbl.sh
+ arch/xtensa/kernel/syscalls/Makefile      | 11 ++++++++--
+ arch/xtensa/kernel/syscalls/syscallhdr.sh | 36 -------------------------------
+ arch/xtensa/kernel/syscalls/syscalltbl.sh | 32 ---------------------------
+ 3 files changed, 9 insertions(+), 70 deletions(-)
+ delete mode 100644 arch/xtensa/kernel/syscalls/syscallhdr.sh
+ delete mode 100644 arch/xtensa/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
-index c22a21c..e24272d 100644
---- a/arch/parisc/kernel/syscalls/Makefile
-+++ b/arch/parisc/kernel/syscalls/Makefile
+diff --git a/arch/xtensa/kernel/syscalls/Makefile b/arch/xtensa/kernel/syscalls/Makefile
+index 659faef..75c7421 100644
+--- a/arch/xtensa/kernel/syscalls/Makefile
++++ b/arch/xtensa/kernel/syscalls/Makefile
 @@ -6,8 +6,9 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
  
@@ -40,10 +55,10 @@ index c22a21c..e24272d 100644
  quiet_cmd_systbl = SYSTBL  $@
        cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
  		   '$(systbl_abis_$(basetarget))'		\
-diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
+diff --git a/arch/xtensa/kernel/syscalls/syscallhdr.sh b/arch/xtensa/kernel/syscalls/syscallhdr.sh
 deleted file mode 100644
-index 50242b7..0000000
---- a/arch/parisc/kernel/syscalls/syscallhdr.sh
+index d37db64..0000000
+--- a/arch/xtensa/kernel/syscalls/syscallhdr.sh
 +++ /dev/null
 @@ -1,36 +0,0 @@
 -#!/bin/sh
@@ -55,7 +70,7 @@ index 50242b7..0000000
 -prefix="$4"
 -offset="$5"
 -
--fileguard=_UAPI_ASM_PARISC_`basename "$out" | sed \
+-fileguard=_UAPI_ASM_XTENSA_`basename "$out" | sed \
 -	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 -	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -64,7 +79,7 @@ index 50242b7..0000000
 -	printf "\n"
 -
 -	nxt=0
--	while read nr abi name entry compat ; do
+-	while read nr abi name entry ; do
 -		if [ -z "$offset" ]; then
 -			printf "#define __NR_%s%s\t%s\n" \
 -				"${prefix}" "${name}" "${nr}"
@@ -82,12 +97,12 @@ index 50242b7..0000000
 -	printf "\n"
 -	printf "#endif /* %s */" "${fileguard}"
 -) > "$out"
-diff --git a/arch/parisc/kernel/syscalls/syscalltbl.sh b/arch/parisc/kernel/syscalls/syscalltbl.sh
+diff --git a/arch/xtensa/kernel/syscalls/syscalltbl.sh b/arch/xtensa/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index 45b5bae..0000000
---- a/arch/parisc/kernel/syscalls/syscalltbl.sh
+index 904b8e6..0000000
+--- a/arch/xtensa/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
-@@ -1,36 +0,0 @@
+@@ -1,32 +0,0 @@
 -#!/bin/sh
 -# SPDX-License-Identifier: GPL-2.0
 -
@@ -103,10 +118,10 @@ index 45b5bae..0000000
 -	t_entry="$3"
 -
 -	while [ $t_nxt -lt $t_nr ]; do
--		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+-		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
 -		t_nxt=$((t_nxt+1))
 -	done
--	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 -}
 -
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -115,12 +130,8 @@ index 45b5bae..0000000
 -		offset=0
 -	fi
 -
--	while read nr abi name entry compat ; do
--		if [ "$my_abi" = "c32" ] && [ ! -z "$compat" ]; then
--			emit $((nxt+offset)) $((nr+offset)) $compat
--		else
--			emit $((nxt+offset)) $((nr+offset)) $entry
--		fi
+-	while read nr abi name entry ; do
+-		emit $((nxt+offset)) $((nr+offset)) $entry
 -		nxt=$((nr+1))
 -	done
 -) > "$out"

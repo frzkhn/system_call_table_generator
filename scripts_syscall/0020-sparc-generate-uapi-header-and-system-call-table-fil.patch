@@ -1,15 +1,27 @@
-From 30802183c7bc99b86905de523fc62a6a54751405 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Thu, 27 Dec 2018 11:58:21 +0530
-Subject: [PATCH] scripts: sparc support
+From 275b46cf370c7e3fd68da586274dea1b7a26bce5 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 19:06:09 +0530
+Subject: [PATCH 20/22] sparc: generate uapi header and system call table files
 
+Unified system call table generation script must be run to
+generate unistd_32/64.h and syscall_table_32/64/c32.h files.
+This patch will have changes which will invokes the script.
+
+This patch will generate unistd_32/64.h and syscall_table-
+_32/64/c32.h files by the syscall table generation script
+invoked by parisc/Makefile and the generated files against
+the removed files must be identical.
+
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/systbls_32/64.S file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  arch/sparc/kernel/syscalls/Makefile      | 11 ++++++++--
  arch/sparc/kernel/syscalls/syscallhdr.sh | 36 --------------------------------
  arch/sparc/kernel/syscalls/syscalltbl.sh | 36 --------------------------------
- arch/sparc/kernel/systbls_32.S           |  1 +
- arch/sparc/kernel/systbls_64.S           |  2 ++
- 5 files changed, 12 insertions(+), 74 deletions(-)
+ 3 files changed, 9 insertions(+), 74 deletions(-)
  delete mode 100644 arch/sparc/kernel/syscalls/syscallhdr.sh
  delete mode 100644 arch/sparc/kernel/syscalls/syscalltbl.sh
 
@@ -86,7 +98,7 @@ index 626b574..0000000
 -) > "$out"
 diff --git a/arch/sparc/kernel/syscalls/syscalltbl.sh b/arch/sparc/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index 77cf014..0000000
+index ffe954b..0000000
 --- a/arch/sparc/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
 @@ -1,36 +0,0 @@
@@ -105,10 +117,10 @@ index 77cf014..0000000
 -	t_entry="$3"
 -
 -	while [ $t_nxt -lt $t_nr ]; do
--		printf "__SYSCALL(%s, sys_nis_syscall, )\n" "${t_nxt}"
+-		printf "__SYSCALL(%s,sys_nis_syscall)\n" "${t_nxt}"
 -		t_nxt=$((t_nxt+1))
 -	done
--	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 -}
 -
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -126,30 +138,6 @@ index 77cf014..0000000
 -		nxt=$((nr+1))
 -	done
 -) > "$out"
-diff --git a/arch/sparc/kernel/systbls_32.S b/arch/sparc/kernel/systbls_32.S
-index ab9e4d5..d929b89 100644
---- a/arch/sparc/kernel/systbls_32.S
-+++ b/arch/sparc/kernel/systbls_32.S
-@@ -14,5 +14,6 @@
- 	.align 4
- 	.globl sys_call_table
- sys_call_table:
-+#define sys_nis_syscall	sys_ni_syscall
- #include <asm/syscall_table_32.h>	/* 32-bit native syscalls */
- #undef __SYSCALL
-diff --git a/arch/sparc/kernel/systbls_64.S b/arch/sparc/kernel/systbls_64.S
-index a27394b..d4f1f88 100644
---- a/arch/sparc/kernel/systbls_64.S
-+++ b/arch/sparc/kernel/systbls_64.S
-@@ -10,6 +10,8 @@
-  * Copyright (C) 1995 Adrian M. Rodriguez (adrian@remus.rutgers.edu)
-  */
- 
-+#define sys_nis_syscall	sys_ni_syscall
-+
- #define __SYSCALL(nr, entry, nargs) .word entry
- 	.text
- 	.align	4
 -- 
 1.9.1
 

@@ -1,20 +1,34 @@
-From 4edcf56625e0ee92f1c799b97dde046be66287d1 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Tue, 25 Dec 2018 10:24:53 +0530
-Subject: [PATCH] scripts: alpha support
+From 610cf8f481ff29f7258b0343f081483cff867775 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 18:49:45 +0530
+Subject: [PATCH 17/22] sh: generate uapi header and syscall table header files
 
+Unified system call table generation script must be run to
+generate unistd_32.h and syscall_table.h files. This patch
+will have changes which will invokes the script.
+
+This patch will generate unistd_32.h and syscall_table.h
+files by the syscall table generation script invoked by
+sh/Makefile and the generated files against the removed
+files must be identical.
+
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/syscall_32.S file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/alpha/kernel/syscalls/Makefile      | 11 ++++++++--
- arch/alpha/kernel/syscalls/syscallhdr.sh | 36 --------------------------------
- arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ----------------------------
+ arch/sh/kernel/syscalls/Makefile      | 11 +++++++++--
+ arch/sh/kernel/syscalls/syscallhdr.sh | 36 -----------------------------------
+ arch/sh/kernel/syscalls/syscalltbl.sh | 32 -------------------------------
  3 files changed, 9 insertions(+), 70 deletions(-)
- delete mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
- delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+ delete mode 100644 arch/sh/kernel/syscalls/syscallhdr.sh
+ delete mode 100644 arch/sh/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+diff --git a/arch/sh/kernel/syscalls/Makefile b/arch/sh/kernel/syscalls/Makefile
 index 659faef..75c7421 100644
---- a/arch/alpha/kernel/syscalls/Makefile
-+++ b/arch/alpha/kernel/syscalls/Makefile
+--- a/arch/sh/kernel/syscalls/Makefile
++++ b/arch/sh/kernel/syscalls/Makefile
 @@ -6,8 +6,9 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
  
@@ -40,10 +54,10 @@ index 659faef..75c7421 100644
  quiet_cmd_systbl = SYSTBL  $@
        cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
  		   '$(systbl_abis_$(basetarget))'		\
-diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
+diff --git a/arch/sh/kernel/syscalls/syscallhdr.sh b/arch/sh/kernel/syscalls/syscallhdr.sh
 deleted file mode 100644
-index e5b99bd..0000000
---- a/arch/alpha/kernel/syscalls/syscallhdr.sh
+index 1de0334..0000000
+--- a/arch/sh/kernel/syscalls/syscallhdr.sh
 +++ /dev/null
 @@ -1,36 +0,0 @@
 -#!/bin/sh
@@ -55,7 +69,7 @@ index e5b99bd..0000000
 -prefix="$4"
 -offset="$5"
 -
--fileguard=_UAPI_ASM_ALPHA_`basename "$out" | sed \
+-fileguard=_UAPI_ASM_SH_`basename "$out" | sed \
 -	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 -	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -82,10 +96,10 @@ index e5b99bd..0000000
 -	printf "\n"
 -	printf "#endif /* %s */" "${fileguard}"
 -) > "$out"
-diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
+diff --git a/arch/sh/kernel/syscalls/syscalltbl.sh b/arch/sh/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index 85d78d9..0000000
---- a/arch/alpha/kernel/syscalls/syscalltbl.sh
+index 904b8e6..0000000
+--- a/arch/sh/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
 @@ -1,32 +0,0 @@
 -#!/bin/sh
@@ -103,10 +117,10 @@ index 85d78d9..0000000
 -	t_entry="$3"
 -
 -	while [ $t_nxt -lt $t_nr ]; do
--		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+-		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
 -		t_nxt=$((t_nxt+1))
 -	done
--	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 -}
 -
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (

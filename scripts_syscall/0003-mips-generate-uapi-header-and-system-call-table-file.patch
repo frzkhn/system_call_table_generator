@@ -1,7 +1,23 @@
-From 911c122979ac0d4c9c9bd481f3fd1174e53585d6 Mon Sep 17 00:00:00 2001
+From 8c7d8c014c972a9782fbb17d61a2fac1dd811598 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 24 Dec 2018 17:05:17 +0530
-Subject: [PATCH 2/2] scripts: mips support
+Date: Wed, 2 Jan 2019 15:38:51 +0530
+Subject: [PATCH 03/22] mips: generate uapi header and system call table files
+
+Unified system call table generation script must be run
+to generate unistd_(nr_)n64/n32/o32.h and syscall_table-
+_32_o32/64_n64/64_n32/64-o32.h files. This patch will
+have changes which will invokes the script.
+
+This patch will generate unistd_(nr_)n64/n32/o32.h and
+syscall_table_32_o32/64_n64/64-n32/64-o32.h files by the
+syscall table generation script invoked by parisc/Make-
+file and the generated files against the removed files
+must be identical.
+
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/scall32-o32/64-n64/64-n32/-
+64-o32.Sfile.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
@@ -110,7 +126,7 @@ index 60bbdb3..0000000
 -) > "$out"
 diff --git a/arch/mips/kernel/syscalls/syscalltbl.sh b/arch/mips/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index acd338d..0000000
+index 1e25707..0000000
 --- a/arch/mips/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
 @@ -1,36 +0,0 @@
@@ -129,10 +145,10 @@ index acd338d..0000000
 -	t_entry="$3"
 -
 -	while [ $t_nxt -lt $t_nr ]; do
--		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+-		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
 -		t_nxt=$((t_nxt+1))
 -	done
--	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 -}
 -
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (

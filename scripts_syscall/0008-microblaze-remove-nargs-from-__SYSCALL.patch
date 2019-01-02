@@ -1,0 +1,53 @@
+From 75814d9d4c6ac2552c37fa53c944594f3d004729 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 17:13:47 +0530
+Subject: [PATCH 08/22] microblaze: remove nargs from __SYSCALL
+
+The __SYSCALL macro's arguments are system call number,
+system call entry name and number of arguments for the
+system call.
+
+Argument- nargs in __SYSCALL(nr, entry, nargs) is neither
+calculated nor used anywhere. So it would be better to
+keep the implementaion as  __SYSCALL(nr, entry). This will
+unifies the implementation with some other architetures
+too.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/microblaze/kernel/syscall_table.S        | 2 +-
+ arch/microblaze/kernel/syscalls/syscalltbl.sh | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/microblaze/kernel/syscall_table.S b/arch/microblaze/kernel/syscall_table.S
+index ce00664..91ade44 100644
+--- a/arch/microblaze/kernel/syscall_table.S
++++ b/arch/microblaze/kernel/syscall_table.S
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ ENTRY(sys_call_table)
+ #include <asm/syscall_table.h>
+ #undef __SYSCALL
+diff --git a/arch/microblaze/kernel/syscalls/syscalltbl.sh b/arch/microblaze/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/microblaze/kernel/syscalls/syscalltbl.sh
++++ b/arch/microblaze/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+-- 
+1.9.1
+

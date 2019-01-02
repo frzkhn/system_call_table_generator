@@ -1,15 +1,27 @@
-From 2ab1348a0128060513703adabdc1239463dea3b3 Mon Sep 17 00:00:00 2001
+From 2235080df3e6da79e7de76130d1998a64910f32f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Dec 2018 17:03:44 +0530
-Subject: [PATCH 1/2] scripts: move syscall generation script in common
- location
+Subject: [PATCH 01/22] scripts: unify system call table generation scripts
+
+System call table generation support is provided for
+alpha, ia64, m68k, microblaze, mips, parisc, powerpc,
+sh, sparc and xtensa architectures. The implementat-
+ions are almost similar across all the above archte-
+ctures.
+
+In order to reduce the source code across all the
+above architectures, create common ".sh" files and
+keep it in the common directory, script/.
+
+This will be a generic scripts which can use for all
+the above architectures.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
  scripts/syscallhdr.sh | 37 +++++++++++++++++++++++++++++++++++++
  scripts/syscallnr.sh  | 32 ++++++++++++++++++++++++++++++++
- scripts/syscalltbl.sh | 36 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 105 insertions(+)
+ scripts/syscalltbl.sh | 37 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 106 insertions(+)
  create mode 100644 scripts/syscallhdr.sh
  create mode 100644 scripts/syscallnr.sh
  create mode 100644 scripts/syscalltbl.sh
@@ -97,10 +109,10 @@ index 0000000..8cf33fa
 +) > "$out"
 diff --git a/scripts/syscalltbl.sh b/scripts/syscalltbl.sh
 new file mode 100644
-index 0000000..acd338d
+index 0000000..f60f762
 --- /dev/null
 +++ b/scripts/syscalltbl.sh
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,37 @@
 +#!/bin/sh
 +# SPDX-License-Identifier: GPL-2.0
 +
@@ -116,10 +128,10 @@ index 0000000..acd338d
 +	t_entry="$3"
 +
 +	while [ $t_nxt -lt $t_nr ]; do
-+		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
 +		t_nxt=$((t_nxt+1))
 +	done
-+	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 +}
 +
 +grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -129,7 +141,8 @@ index 0000000..acd338d
 +	fi
 +
 +	while read nr abi name entry compat ; do
-+		if [ "$my_abi" = "64_o32" ] && [ ! -z "$compat" ]; then
++		if [ "$my_abi" = "c32" -o "$my_abi" = "64_o32" ] &&
++			[ ! -z "$compat" ]; then
 +			emit $((nxt+offset)) $((nr+offset)) $compat
 +		else
 +			emit $((nxt+offset)) $((nr+offset)) $entry

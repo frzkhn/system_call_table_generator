@@ -1,20 +1,35 @@
-From d22f7bfa53c5f7b52bc16a44698b549302de1cd4 Mon Sep 17 00:00:00 2001
-From: Firoz Khan <firozk@codeaurora.org>
-Date: Thu, 27 Dec 2018 11:43:11 +0530
-Subject: [PATCH] scripts: powerpc support
+From 93e6e244324ce0359f629df461284c6e0fef219b Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 17:16:30 +0530
+Subject: [PATCH 09/22] microblaze: generate uapi header and system call table
+ files
 
+Unified system call table generation script must be run to
+generate unistd_32.h and syscall_table.h files. This patch
+will have changes which will invokes the script.
+
+This patch will generate unistd_32.h and syscall_table.h
+files by the syscall table generation script invoked by
+microblaze/Makefile and the generated files against the
+removed files must be identical.
+
+The generated uapi header file will be included in uapi/-
+asm/unistd.h and generated system call table header file
+will be included by kernel/syscall_table.S file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
- arch/powerpc/kernel/syscalls/Makefile      | 11 +++++++--
- arch/powerpc/kernel/syscalls/syscallhdr.sh | 37 ------------------------------
- arch/powerpc/kernel/syscalls/syscalltbl.sh | 36 -----------------------------
- 3 files changed, 9 insertions(+), 75 deletions(-)
- delete mode 100644 arch/powerpc/kernel/syscalls/syscallhdr.sh
- delete mode 100644 arch/powerpc/kernel/syscalls/syscalltbl.sh
+ arch/microblaze/kernel/syscalls/Makefile      | 11 ++++++--
+ arch/microblaze/kernel/syscalls/syscallhdr.sh | 36 ---------------------------
+ arch/microblaze/kernel/syscalls/syscalltbl.sh | 32 ------------------------
+ 3 files changed, 9 insertions(+), 70 deletions(-)
+ delete mode 100644 arch/microblaze/kernel/syscalls/syscallhdr.sh
+ delete mode 100644 arch/microblaze/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/powerpc/kernel/syscalls/Makefile b/arch/powerpc/kernel/syscalls/Makefile
-index 27b4895..5cbbd70 100644
---- a/arch/powerpc/kernel/syscalls/Makefile
-+++ b/arch/powerpc/kernel/syscalls/Makefile
+diff --git a/arch/microblaze/kernel/syscalls/Makefile b/arch/microblaze/kernel/syscalls/Makefile
+index 659faef..75c7421 100644
+--- a/arch/microblaze/kernel/syscalls/Makefile
++++ b/arch/microblaze/kernel/syscalls/Makefile
 @@ -6,8 +6,9 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
  
@@ -40,12 +55,12 @@ index 27b4895..5cbbd70 100644
  quiet_cmd_systbl = SYSTBL  $@
        cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
  		   '$(systbl_abis_$(basetarget))'		\
-diff --git a/arch/powerpc/kernel/syscalls/syscallhdr.sh b/arch/powerpc/kernel/syscalls/syscallhdr.sh
+diff --git a/arch/microblaze/kernel/syscalls/syscallhdr.sh b/arch/microblaze/kernel/syscalls/syscallhdr.sh
 deleted file mode 100644
-index c0a9a32..0000000
---- a/arch/powerpc/kernel/syscalls/syscallhdr.sh
+index 2e9062a..0000000
+--- a/arch/microblaze/kernel/syscalls/syscallhdr.sh
 +++ /dev/null
-@@ -1,37 +0,0 @@
+@@ -1,36 +0,0 @@
 -#!/bin/sh
 -# SPDX-License-Identifier: GPL-2.0
 -
@@ -55,7 +70,7 @@ index c0a9a32..0000000
 -prefix="$4"
 -offset="$5"
 -
--fileguard=_UAPI_ASM_POWERPC_`basename "$out" | sed \
+-fileguard=_UAPI_ASM_MICROBLAZE_`basename "$out" | sed \
 -	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 -	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -64,7 +79,7 @@ index c0a9a32..0000000
 -	printf "\n"
 -
 -	nxt=0
--	while read nr abi name entry compat ; do
+-	while read nr abi name entry ; do
 -		if [ -z "$offset" ]; then
 -			printf "#define __NR_%s%s\t%s\n" \
 -				"${prefix}" "${name}" "${nr}"
@@ -81,14 +96,13 @@ index c0a9a32..0000000
 -	printf "#endif\n"
 -	printf "\n"
 -	printf "#endif /* %s */" "${fileguard}"
--	printf "\n"
 -) > "$out"
-diff --git a/arch/powerpc/kernel/syscalls/syscalltbl.sh b/arch/powerpc/kernel/syscalls/syscalltbl.sh
+diff --git a/arch/microblaze/kernel/syscalls/syscalltbl.sh b/arch/microblaze/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index fd62049..0000000
---- a/arch/powerpc/kernel/syscalls/syscalltbl.sh
+index 904b8e6..0000000
+--- a/arch/microblaze/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
-@@ -1,36 +0,0 @@
+@@ -1,32 +0,0 @@
 -#!/bin/sh
 -# SPDX-License-Identifier: GPL-2.0
 -
@@ -104,10 +118,10 @@ index fd62049..0000000
 -	t_entry="$3"
 -
 -	while [ $t_nxt -lt $t_nr ]; do
--		printf "__SYSCALL(%s,sys_ni_syscall, )\n" "${t_nxt}"
+-		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
 -		t_nxt=$((t_nxt+1))
 -	done
--	printf "__SYSCALL(%s,%s, )\n" "${t_nxt}" "${t_entry}"
+-	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
 -}
 -
 -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
@@ -116,12 +130,8 @@ index fd62049..0000000
 -		offset=0
 -	fi
 -
--	while read nr abi name entry compat ; do
--		if [ "$my_abi" = "c32" ] && [ ! -z "$compat" ]; then
--			emit $((nxt+offset)) $((nr+offset)) $compat
--		else
--			emit $((nxt+offset)) $((nr+offset)) $entry
--		fi
+-	while read nr abi name entry ; do
+-		emit $((nxt+offset)) $((nr+offset)) $entry
 -		nxt=$((nr+1))
 -	done
 -) > "$out"
