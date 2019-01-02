@@ -1,0 +1,34 @@
+From 7c506c8a0bdce4974038af581c0f1be177ac2d92 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 20:27:31 +0530
+Subject: [PATCH 0/2] powerpc: Unify the system call scripts
+
+System call table generation support is provided for
+alpha, ia64, m68k, microblaze, mips, parisc, powerpc,
+sh, sparc and xtensa architectures. The implementat-
+ions are almost similar across all the above archte-
+ctures. In order to reduce the source code across all
+the above architectures, create common ".sh" files and
+keep it in the common directory, script/. This will 
+be a generic scripts which can use for all the above
+architectures.
+
+This patch depends on;
+ https://lore.kernel.org/lkml/1546439331-18646-1-git-send-email-firoz.khan@linaro.org/
+
+Firoz Khan (2):
+  powerpc: remove nargs from __SYSCALL
+  powerpc: generate uapi header and system call table files
+
+ arch/powerpc/kernel/syscalls/Makefile       | 11 +++++++--
+ arch/powerpc/kernel/syscalls/syscallhdr.sh  | 37 -----------------------------
+ arch/powerpc/kernel/syscalls/syscalltbl.sh  | 36 ----------------------------
+ arch/powerpc/kernel/systbl.S                |  6 ++---
+ arch/powerpc/platforms/cell/spu_callbacks.c |  2 +-
+ 5 files changed, 13 insertions(+), 79 deletions(-)
+ delete mode 100644 arch/powerpc/kernel/syscalls/syscallhdr.sh
+ delete mode 100644 arch/powerpc/kernel/syscalls/syscalltbl.sh
+
+-- 
+1.9.1
+

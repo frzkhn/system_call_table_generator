@@ -1,0 +1,82 @@
+From 79a69ad24476cb9b05005ac1a7e2ab40fd6088ab Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 16:01:37 +0530
+Subject: [PATCH 1/2] powerpc: remove nargs from __SYSCALL
+
+The __SYSCALL macro's arguments are system call number,
+system call entry name and number of arguments for the
+system call.
+
+Argument- nargs in __SYSCALL(nr, entry, nargs) is neither
+calculated nor used anywhere. So it would be better to
+keep the implementaion as  __SYSCALL(nr, entry). This will
+unifies the implementation with some other architetures
+too.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/powerpc/kernel/syscalls/syscalltbl.sh  | 4 ++--
+ arch/powerpc/kernel/systbl.S                | 6 +++---
+ arch/powerpc/platforms/cell/spu_callbacks.c | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/powerpc/kernel/syscalls/syscalltbl.sh b/arch/powerpc/kernel/syscalls/syscalltbl.sh
+index fd62049..f7393a7 100644
+--- a/arch/powerpc/kernel/syscalls/syscalltbl.sh
++++ b/arch/powerpc/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s,sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s,%s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/powerpc/kernel/systbl.S b/arch/powerpc/kernel/systbl.S
+index 23265a2..02f28fa 100644
+--- a/arch/powerpc/kernel/systbl.S
++++ b/arch/powerpc/kernel/systbl.S
+@@ -25,11 +25,11 @@
+ .globl sys_call_table
+ sys_call_table:
+ #ifdef CONFIG_PPC64
+-#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
++#define __SYSCALL(nr, entry)	.8byte DOTSYM(entry)
+ #include <asm/syscall_table_64.h>
+ #undef __SYSCALL
+ #else
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ #include <asm/syscall_table_32.h>
+ #undef __SYSCALL
+ #endif
+@@ -38,7 +38,7 @@ sys_call_table:
+ .globl compat_sys_call_table
+ compat_sys_call_table:
+ #define compat_sys_sigsuspend	sys_sigsuspend
+-#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
++#define __SYSCALL(nr, entry)	.8byte DOTSYM(entry)
+ #include <asm/syscall_table_c32.h>
+ #undef __SYSCALL
+ #endif
+diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
+index 125f2a5..b5f35cb 100644
+--- a/arch/powerpc/platforms/cell/spu_callbacks.c
++++ b/arch/powerpc/platforms/cell/spu_callbacks.c
+@@ -34,7 +34,7 @@
+  */
+ 
+ static void *spu_syscall_table[] = {
+-#define __SYSCALL(nr, entry, nargs) entry,
++#define __SYSCALL(nr, entry)	entry,
+ #include <asm/syscall_table_spu.h>
+ #undef __SYSCALL
+ };
+-- 
+1.9.1
+
