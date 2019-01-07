@@ -1,7 +1,7 @@
-From 85db9f79d40166bd25bb8777b4a94fd088b4c44e Mon Sep 17 00:00:00 2001
+From cadc77a879e464e179e96c968f3fcbc698d299b1 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
-Date: Mon, 7 Jan 2019 19:47:56 +0530
-Subject: [PATCH v2 0/2] c6x: system call table generation for asm-generic
+Date: Mon, 7 Jan 2019 20:16:30 +0530
+Subject: [PATCH 0/3] c6x: system call table generation for asm-generic
 
 This will be an automated scripts to provide easy support
 for add/modify/delete the system call entry by add entry 
@@ -17,8 +17,9 @@ This patch depends on:
  https://lore.kernel.org/lkml/1546439331-18646-1-git-send-email-firoz.khan@linaro.org/
  https://lore.kernel.org/lkml/1546520681-24453-1-git-send-email-firoz.khan@linaro.org/
 
-Firoz Khan (2):
+Firoz Khan (3):
   c6x: add Makefile to invoke syscall table generation script
+  c6x: add __ARCH_NOMMU as a bugfix
   c6x: generate uapi and kapi headers
 
  arch/c6x/Makefile                  |  3 +++

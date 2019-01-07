@@ -1,7 +1,7 @@
 From b6e39c801f252c48ca196e7ce32e672295551d12 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 7 Jan 2019 19:29:46 +0530
-Subject: [PATCH v2 1/2] c6x: add Makefile to invoke syscall table generation
+Subject: [PATCH 1/3] c6x: add Makefile to invoke syscall table generation
  script
 
 Add Makefile to invoke the system call table generation script
