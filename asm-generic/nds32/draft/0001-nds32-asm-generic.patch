@@ -1,4 +1,4 @@
-From 6cb1e913545c40cf11fcee08367a8ed0bbcbbed8 Mon Sep 17 00:00:00 2001
+From a7ea4375a1dc0d3f8c0ee8b674eea1a26c1b0c4e Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
 Date: Mon, 7 Jan 2019 21:06:15 +0530
 Subject: [PATCH] nds32: asm-generic
@@ -96,7 +96,7 @@ index 7879c06..08d1e6e 100644
  };
 diff --git a/arch/nds32/kernel/syscalls/Makefile b/arch/nds32/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..1865a80
+index 0000000..5544bc9
 --- /dev/null
 +++ b/arch/nds32/kernel/syscalls/Makefile
 @@ -0,0 +1,41 @@
@@ -123,11 +123,11 @@ index 0000000..1865a80
 +		   '$(systbl_abi_$(basetarget))'		\
 +		   '$(systbl_offset_$(basetarget))'
 +
-+syshdr_abis_unistd_32 := common,32,rename,stat64,archs0
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu,archs0,archs1
 +$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+systbl_abis_syscall_table := common,32,rename,stat64,archs0
++systbl_abis_syscall_table := common,32,rename,stat64,mmu,archs0,archs1
 +systbl_abi_syscall_table := 32
 +$(kapi)/syscall_table.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
