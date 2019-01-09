@@ -1,0 +1,135 @@
+From 72d438a2fe68690e46880af4e5a445d5c3822786 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Wed, 9 Jan 2019 19:18:16 +0530
+Subject: [PATCH] hexagon: asm-generic
+
+---
+ arch/hexagon/Makefile                  |  3 +++
+ arch/hexagon/include/asm/Kbuild        |  1 +
+ arch/hexagon/include/uapi/asm/Kbuild   |  1 +
+ arch/hexagon/include/uapi/asm/unistd.h | 11 +++++++--
+ arch/hexagon/kernel/syscalls/Makefile  | 41 ++++++++++++++++++++++++++++++++++
+ arch/hexagon/kernel/syscalltab.c       |  3 ++-
+ 6 files changed, 57 insertions(+), 3 deletions(-)
+ create mode 100644 arch/hexagon/kernel/syscalls/Makefile
+
+diff --git a/arch/hexagon/Makefile b/arch/hexagon/Makefile
+index 4c5858b..eaeec47 100644
+--- a/arch/hexagon/Makefile
++++ b/arch/hexagon/Makefile
+@@ -38,3 +38,6 @@ head-y := arch/hexagon/kernel/head.o
+ core-y += arch/hexagon/kernel/ \
+ 	arch/hexagon/mm/ \
+ 	arch/hexagon/lib/
++
++archheaders:
++       $(Q)$(MAKE) $(build)=arch/hexagon/kernel/syscalls all
+diff --git a/arch/hexagon/include/asm/Kbuild b/arch/hexagon/include/asm/Kbuild
+index 47c4da3..47dd602 100644
+--- a/arch/hexagon/include/asm/Kbuild
++++ b/arch/hexagon/include/asm/Kbuild
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
++generated-y += syscall_table.h
+ generic-y += barrier.h
+ generic-y += bug.h
+ generic-y += bugs.h
+diff --git a/arch/hexagon/include/uapi/asm/Kbuild b/arch/hexagon/include/uapi/asm/Kbuild
+index 61d955c..01b7dbc 100644
+--- a/arch/hexagon/include/uapi/asm/Kbuild
++++ b/arch/hexagon/include/uapi/asm/Kbuild
+@@ -1,4 +1,5 @@
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
+ generic-y += shmparam.h
+ generic-y += ucontext.h
+diff --git a/arch/hexagon/include/uapi/asm/unistd.h b/arch/hexagon/include/uapi/asm/unistd.h
+index c91ca7d..4446388 100644
+--- a/arch/hexagon/include/uapi/asm/unistd.h
++++ b/arch/hexagon/include/uapi/asm/unistd.h
+@@ -27,7 +27,6 @@
+  *  See also:  syscalltab.c
+  */
+ 
+-#define sys_mmap2 sys_mmap_pgoff
+ #define __ARCH_WANT_RENAMEAT
+ #define __ARCH_WANT_STAT64
+ #define __ARCH_WANT_SYS_EXECVE
+@@ -35,4 +34,12 @@
+ #define __ARCH_WANT_SYS_VFORK
+ #define __ARCH_WANT_SYS_FORK
+ 
+-#include <asm-generic/unistd.h>
++#include <asm/bitsperlong.h>
++
++#ifndef __SYSCALL
++#define __SYSCALL(x, y)
++#endif
++
++#if __BITS_PER_LONG == 32
++#include <asm/unistd_32.h>
++#endif
+diff --git a/arch/hexagon/kernel/syscalls/Makefile b/arch/hexagon/kernel/syscalls/Makefile
+new file mode 100644
+index 0000000..824c09f
+--- /dev/null
++++ b/arch/hexagon/kernel/syscalls/Makefile
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0
++kapi := arch/$(SRCARCH)/include/generated/asm
++uapi := arch/$(SRCARCH)/include/generated/uapi/asm
++
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
++	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
++
++syscall := $(srctree)/scripts/syscalls/syscall.tbl
++syshdr := $(srctree)/scripts/syscallhdr.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
++
++quiet_cmd_syshdr = SYSHDR  $@
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
++		   '$(syshdr_offset_$(basetarget))'
++
++quiet_cmd_systbl = SYSTBL  $@
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
++		   '$(systbl_offset_$(basetarget))'
++
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++	$(call if_changed,syshdr)
++
++systbl_abis_syscall_table := common,32,rename,stat64,mmu
++systbl_abi_syscall_table := 32
++$(kapi)/syscall_table.h: $(syscall) $(systbl)
++	$(call if_changed,systbl)
++
++uapisyshdr-y		+= unistd_32.h
++kapisyshdr-y		+= syscall_table.h
++
++targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
++
++PHONY += all
++all: $(addprefix $(uapi)/,$(uapisyshdr-y))
++all: $(addprefix $(kapi)/,$(kapisyshdr-y))
++	@:
+diff --git a/arch/hexagon/kernel/syscalltab.c b/arch/hexagon/kernel/syscalltab.c
+index 7024b1d..e483618 100644
+--- a/arch/hexagon/kernel/syscalltab.c
++++ b/arch/hexagon/kernel/syscalltab.c
+@@ -27,6 +27,7 @@
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
++#define sys_mmap2 sys_mmap_pgoff
+ void *sys_call_table[__NR_syscalls] = {
+-#include <asm/unistd.h>
++#include <asm/syscall_table.h>
+ };
+-- 
+1.9.1
+
