@@ -1,0 +1,135 @@
+From db29575bd990d1778d722e395538ece0bab0e410 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Wed, 9 Jan 2019 17:47:32 +0530
+Subject: [PATCH] csky: asm-generic
+
+---
+ arch/csky/Makefile                  |  3 +++
+ arch/csky/include/asm/Kbuild        |  1 +
+ arch/csky/include/uapi/asm/Kbuild   |  1 +
+ arch/csky/include/uapi/asm/unistd.h | 16 ++++++++++-----
+ arch/csky/kernel/syscall_table.c    |  4 +++-
+ arch/csky/kernel/syscalls/Makefile  | 41 +++++++++++++++++++++++++++++++++++++
+ 6 files changed, 60 insertions(+), 6 deletions(-)
+ create mode 100644 arch/csky/kernel/syscalls/Makefile
+
+diff --git a/arch/csky/Makefile b/arch/csky/Makefile
+index 3607a6e..f4d2e30 100644
+--- a/arch/csky/Makefile
++++ b/arch/csky/Makefile
+@@ -79,6 +79,9 @@ zImage Image uImage: vmlinux
+ archclean:
+ 	$(Q)$(MAKE) $(clean)=$(boot)
+ 
++archheaders:
++	$(Q)$(MAKE) $(build)=arch/csky/kernel/syscalls all
++
+ define archhelp
+   echo  '* zImage       - Compressed kernel image (arch/$(ARCH)/boot/zImage)'
+   echo  '  Image        - Uncompressed kernel image (arch/$(ARCH)/boot/Image)'
+diff --git a/arch/csky/include/asm/Kbuild b/arch/csky/include/asm/Kbuild
+index 2a0abe8..5b5979b 100644
+--- a/arch/csky/include/asm/Kbuild
++++ b/arch/csky/include/asm/Kbuild
+@@ -1,3 +1,4 @@
++generated-y += syscall_table.h
+ generic-y += asm-offsets.h
+ generic-y += bugs.h
+ generic-y += clkdev.h
+diff --git a/arch/csky/include/uapi/asm/Kbuild b/arch/csky/include/uapi/asm/Kbuild
+index c1b06dc..3f03cf6 100644
+--- a/arch/csky/include/uapi/asm/Kbuild
++++ b/arch/csky/include/uapi/asm/Kbuild
+@@ -1,3 +1,4 @@
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
+ generic-y += ucontext.h
+diff --git a/arch/csky/include/uapi/asm/unistd.h b/arch/csky/include/uapi/asm/unistd.h
+index 224c9a9..b892d7d 100644
+--- a/arch/csky/include/uapi/asm/unistd.h
++++ b/arch/csky/include/uapi/asm/unistd.h
+@@ -2,9 +2,15 @@
+ // Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
+ 
+ #define __ARCH_WANT_SYS_CLONE
+-#include <asm-generic/unistd.h>
+ 
+-#define __NR_set_thread_area	(__NR_arch_specific_syscall + 0)
+-__SYSCALL(__NR_set_thread_area, sys_set_thread_area)
+-#define __NR_cacheflush		(__NR_arch_specific_syscall + 1)
+-__SYSCALL(__NR_cacheflush, sys_cacheflush)
++#include <asm/bitsperlong.h>
++
++#ifndef __SYSCALL
++#define __SYSCALL(x, y)
++#endif
++
++#if __BITS_PER_LONG == 32
++#define __NR_set_thread_area	__NR_arch_specific_syscall0
++#define __NR_cacheflush		__NR_arch_specific_syscall1
++#include <asm/unistd_32.h>
++#endif
+diff --git a/arch/csky/kernel/syscall_table.c b/arch/csky/kernel/syscall_table.c
+index a0c238c..9160134 100644
+--- a/arch/csky/kernel/syscall_table.c
++++ b/arch/csky/kernel/syscall_table.c
+@@ -10,5 +10,7 @@
+ #define sys_fadvise64_64 sys_csky_fadvise64_64
+ void * const sys_call_table[__NR_syscalls] __page_aligned_data = {
+ 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
+-#include <asm/unistd.h>
++#define sys_arch_specific_syscall0	sys_set_thread_area
++#define sys_arch_specific_syscall1	sys_cacheflush
++#include <asm/syscall_table.h>
+ };
+diff --git a/arch/csky/kernel/syscalls/Makefile b/arch/csky/kernel/syscalls/Makefile
+new file mode 100644
+index 0000000..cb75b8d
+--- /dev/null
++++ b/arch/csky/kernel/syscalls/Makefile
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0
++kapi := arch/$(SRCARCH)/include/generated/asm
++uapi := arch/$(SRCARCH)/include/generated/uapi/asm
++
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
++	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
++
++syscall := $(srctree)/scripts/syscalls/syscall.tbl
++syshdr := $(srctree)/scripts/syscallhdr.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
++
++quiet_cmd_syshdr = SYSHDR  $@
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
++		   '$(syshdr_offset_$(basetarget))'
++
++quiet_cmd_systbl = SYSTBL  $@
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
++		   '$(systbl_offset_$(basetarget))'
++
++syshdr_abis_unistd_32 := common,32,mmu,archs0,archs1
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++	$(call if_changed,syshdr)
++
++systbl_abis_syscall_table := common,32,mmu,archs0,archs1
++systbl_abi_syscall_table := 32
++$(kapi)/syscall_table.h: $(syscall) $(systbl)
++	$(call if_changed,systbl)
++
++uapisyshdr-y		+= unistd_32.h
++kapisyshdr-y		+= syscall_table.h
++
++targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
++
++PHONY += all
++all: $(addprefix $(uapi)/,$(uapisyshdr-y))
++all: $(addprefix $(kapi)/,$(kapisyshdr-y))
++	@:
+-- 
+1.9.1
+
