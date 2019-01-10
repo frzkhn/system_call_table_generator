@@ -1,0 +1,142 @@
+From 31fb2d5b3d2193658800699ee53701a7d8b2c0bb Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firozk@codeaurora.org>
+Date: Thu, 10 Jan 2019 18:41:50 +0530
+Subject: [PATCH] openrisc: asm-generic
+
+---
+ arch/openrisc/Makefile                  |  3 +++
+ arch/openrisc/include/asm/Kbuild        |  1 +
+ arch/openrisc/include/uapi/asm/Kbuild   |  1 +
+ arch/openrisc/include/uapi/asm/unistd.h | 16 +++++++------
+ arch/openrisc/kernel/sys_call_table.c   |  5 +++-
+ arch/openrisc/kernel/syscalls/Makefile  | 41 +++++++++++++++++++++++++++++++++
+ 6 files changed, 59 insertions(+), 8 deletions(-)
+ create mode 100644 arch/openrisc/kernel/syscalls/Makefile
+
+diff --git a/arch/openrisc/Makefile b/arch/openrisc/Makefile
+index 70e06d3..e0150db 100644
+--- a/arch/openrisc/Makefile
++++ b/arch/openrisc/Makefile
+@@ -52,3 +52,6 @@ endif
+ core-$(BUILTIN_DTB) += arch/openrisc/boot/dts/
+ 
+ all: vmlinux
++
++archheaders:
++	$(Q)$(MAKE) $(build)=arch/openrisc/kernel/syscalls all
+diff --git a/arch/openrisc/include/asm/Kbuild b/arch/openrisc/include/asm/Kbuild
+index eb87cd8..181c3ce 100644
+--- a/arch/openrisc/include/asm/Kbuild
++++ b/arch/openrisc/include/asm/Kbuild
+@@ -1,3 +1,4 @@
++generated-y += syscall_table.h
+ generic-y += barrier.h
+ generic-y += bug.h
+ generic-y += bugs.h
+diff --git a/arch/openrisc/include/uapi/asm/Kbuild b/arch/openrisc/include/uapi/asm/Kbuild
+index 6c6f630..28823e3 100644
+--- a/arch/openrisc/include/uapi/asm/Kbuild
++++ b/arch/openrisc/include/uapi/asm/Kbuild
+@@ -1,5 +1,6 @@
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
+ generic-y += kvm_para.h
+ generic-y += shmparam.h
+ generic-y += ucontext.h
+diff --git a/arch/openrisc/include/uapi/asm/unistd.h b/arch/openrisc/include/uapi/asm/unistd.h
+index ec37df1..55b2e8d 100644
+--- a/arch/openrisc/include/uapi/asm/unistd.h
++++ b/arch/openrisc/include/uapi/asm/unistd.h
+@@ -17,14 +17,16 @@
+  * (at your option) any later version.
+  */
+ 
+-#define sys_mmap2 sys_mmap_pgoff
+-
+-#define __ARCH_WANT_RENAMEAT
+-#define __ARCH_WANT_STAT64
+ #define __ARCH_WANT_SYS_FORK
+ #define __ARCH_WANT_SYS_CLONE
+ 
+-#include <asm-generic/unistd.h>
++#include <asm/bitsperlong.h>
++
++#ifndef __SYSCALL
++#define __SYSCALL(x, y)
++#endif
+ 
+-#define __NR_or1k_atomic __NR_arch_specific_syscall
+-__SYSCALL(__NR_or1k_atomic, sys_or1k_atomic)
++#define __NR_or1k_atomic	__NR_arch_specific_syscall0
++#if __BITS_PER_LONG == 32
++#include <asm/unistd_32.h>
++#endif
+diff --git a/arch/openrisc/kernel/sys_call_table.c b/arch/openrisc/kernel/sys_call_table.c
+index e1f8ce8..6c8e267 100644
+--- a/arch/openrisc/kernel/sys_call_table.c
++++ b/arch/openrisc/kernel/sys_call_table.c
+@@ -20,9 +20,12 @@
+ 
+ #include <asm/syscalls.h>
+ 
++#define sys_mmap2 sys_mmap_pgoff
++
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
+ void *sys_call_table[__NR_syscalls] = {
+-#include <asm/unistd.h>
++#define sys_arch_specific_syscall0	sys_or1k_atomic
++#include <asm/syscall_table_32.h>
+ };
+diff --git a/arch/openrisc/kernel/syscalls/Makefile b/arch/openrisc/kernel/syscalls/Makefile
+new file mode 100644
+index 0000000..824c09f
+--- /dev/null
++++ b/arch/openrisc/kernel/syscalls/Makefile
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0
++kapi := arch/$(SRCARCH)/include/generated/asm
++uapi := arch/$(SRCARCH)/include/generated/uapi/asm
++
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
++	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
++
++syscall := $(srctree)/scripts/syscalls/syscall.tbl
++syshdr := $(srctree)/scripts/syscallhdr.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
++
++quiet_cmd_syshdr = SYSHDR  $@
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
++		   '$(syshdr_offset_$(basetarget))'
++
++quiet_cmd_systbl = SYSTBL  $@
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
++		   '$(systbl_offset_$(basetarget))'
++
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++	$(call if_changed,syshdr)
++
++systbl_abis_syscall_table := common,32,rename,stat64,mmu
++systbl_abi_syscall_table := 32
++$(kapi)/syscall_table.h: $(syscall) $(systbl)
++	$(call if_changed,systbl)
++
++uapisyshdr-y		+= unistd_32.h
++kapisyshdr-y		+= syscall_table.h
++
++targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
++
++PHONY += all
++all: $(addprefix $(uapi)/,$(uapisyshdr-y))
++all: $(addprefix $(kapi)/,$(kapisyshdr-y))
++	@:
+-- 
+1.9.1
+
