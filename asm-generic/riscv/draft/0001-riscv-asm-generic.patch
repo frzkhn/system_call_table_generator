@@ -1,17 +1,16 @@
-From 43f749bbc0f585300398441751f2759c997bdd0c Mon Sep 17 00:00:00 2001
+From 7723a8eceb434b2ceb7b9b2f2d821ae300774328 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firozk@codeaurora.org>
-Date: Wed, 9 Jan 2019 19:55:32 +0530
+Date: Thu, 10 Jan 2019 19:00:22 +0530
 Subject: [PATCH] riscv: asm-generic
 
 ---
- arch/riscv/Makefile                  |  3 ++
- arch/riscv/include/asm/Kbuild        |  2 ++
- arch/riscv/include/asm/unistd.h      |  4 +++
- arch/riscv/include/uapi/asm/Kbuild   |  5 +++
- arch/riscv/include/uapi/asm/unistd.h | 17 +++++----
- arch/riscv/kernel/syscall_table.c    |  4 ++-
- arch/riscv/kernel/syscalls/Makefile  | 70 ++++++++++++++++++++++++++++++++++++
- 7 files changed, 98 insertions(+), 7 deletions(-)
+ arch/riscv/Makefile                  |  3 +++
+ arch/riscv/include/asm/Kbuild        |  1 +
+ arch/riscv/include/uapi/asm/Kbuild   |  2 ++
+ arch/riscv/include/uapi/asm/unistd.h | 12 ++++++++---
+ arch/riscv/kernel/syscall_table.c    |  3 ++-
+ arch/riscv/kernel/syscalls/Makefile  | 41 ++++++++++++++++++++++++++++++++++++
+ 6 files changed, 58 insertions(+), 4 deletions(-)
  create mode 100644 arch/riscv/kernel/syscalls/Makefile
 
 diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
@@ -26,93 +25,68 @@ index 4b594f2..b387129 100644
 +archheaders:
 +	$(Q)$(MAKE) $(build)=arch/riscv/kernel/syscalls all
 diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
-index cccd12c..92ed2db 100644
+index cccd12c..a3b9b91 100644
 --- a/arch/riscv/include/asm/Kbuild
 +++ b/arch/riscv/include/asm/Kbuild
-@@ -1,3 +1,5 @@
-+generated-y += syscall_table_64.h
-+generated-y += syscall_table_c32.h
+@@ -1,3 +1,4 @@
++generated-y += syscall_table.h
  generic-y += bugs.h
  generic-y += checksum.h
  generic-y += compat.h
-diff --git a/arch/riscv/include/asm/unistd.h b/arch/riscv/include/asm/unistd.h
-index fef96f1..f9964e5 100644
---- a/arch/riscv/include/asm/unistd.h
-+++ b/arch/riscv/include/asm/unistd.h
-@@ -19,3 +19,7 @@
- #define __ARCH_WANT_SYS_CLONE
- 
- #include <uapi/asm/unistd.h>
-+
-+#ifndef __LP64__
-+#define sys_arch_specific_syscall0	sys_riscv_flush_icache
-+#endif
 diff --git a/arch/riscv/include/uapi/asm/Kbuild b/arch/riscv/include/uapi/asm/Kbuild
-index d2ee86b..2351f70 100644
+index d2ee86b..439f515 100644
 --- a/arch/riscv/include/uapi/asm/Kbuild
 +++ b/arch/riscv/include/uapi/asm/Kbuild
-@@ -1 +1,6 @@
+@@ -1 +1,3 @@
  include include/uapi/asm-generic/Kbuild.asm
 +
 +generated-y += unistd_32.h
-+generated-y += unistd_64.h
-+generated-y += unistd_nr_64.h
-+generated-y += unistd_nr_c32.h
 diff --git a/arch/riscv/include/uapi/asm/unistd.h b/arch/riscv/include/uapi/asm/unistd.h
-index 1f3bd3e..82b3237 100644
+index 1f3bd3e..ed7ce57 100644
 --- a/arch/riscv/include/uapi/asm/unistd.h
 +++ b/arch/riscv/include/uapi/asm/unistd.h
-@@ -15,11 +15,17 @@
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  */
- 
--#ifdef __LP64__
--#define __ARCH_WANT_NEW_STAT
--#endif /* __LP64__ */
-+#include <asm/bitsperlong.h>
+@@ -19,7 +19,11 @@
+ #define __ARCH_WANT_NEW_STAT
+ #endif /* __LP64__ */
  
 -#include <asm-generic/unistd.h>
++#include <asm/bitsperlong.h>
++
 +#ifndef __SYSCALL
 +#define __SYSCALL(x, y)
-+#endif
-+
-+#if __BITS_PER_LONG == 32
-+#include <asm/unistd_32.h>
-+#elif __BITS_PER_LONG == 64
-+#include <asm/unistd_64.h>
 +#endif
  
  /*
   * Allows the instruction cache to be flushed from userspace.  Despite RISC-V
-@@ -36,6 +42,5 @@
+@@ -36,6 +40,8 @@
   * in there for forwards compatibility.
   */
  #ifndef __NR_riscv_flush_icache
 -#define __NR_riscv_flush_icache (__NR_arch_specific_syscall + 15)
-+#define __NR_riscv_flush_icache	(__NR_arch_specific_syscall0 + 15)
++#define __NR_riscv_flush_icache	__NR_arch_specific_syscall15
++#endif
++#if __BITS_PER_LONG == 32
++#include <asm/unistd_32.h>
  #endif
 -__SYSCALL(__NR_riscv_flush_icache, sys_riscv_flush_icache)
 diff --git a/arch/riscv/kernel/syscall_table.c b/arch/riscv/kernel/syscall_table.c
-index ade52b9..5e77a5a 100644
+index ade52b9..6945713 100644
 --- a/arch/riscv/kernel/syscall_table.c
 +++ b/arch/riscv/kernel/syscall_table.c
-@@ -20,7 +20,9 @@
- #undef __SYSCALL
- #define __SYSCALL(nr, call)	[nr] = (call),
+@@ -22,5 +22,6 @@
  
-+
  void *sys_call_table[__NR_syscalls] = {
  	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
 -#include <asm/unistd.h>
-+#define sys_arch_specific_syscall0	sys_riscv_flush_icache
-+#include <asm/syscall_table_64.h>
++#define sys_arch_specific_syscall15	sys_riscv_flush_icache
++#include <asm/syscall_table_32.h>
  };
 diff --git a/arch/riscv/kernel/syscalls/Makefile b/arch/riscv/kernel/syscalls/Makefile
 new file mode 100644
-index 0000000..4aac807
+index 0000000..824c09f
 --- /dev/null
 +++ b/arch/riscv/kernel/syscalls/Makefile
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,41 @@
 +# SPDX-License-Identifier: GPL-2.0
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
@@ -120,10 +94,8 @@ index 0000000..4aac807
 +_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
 +	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
 +
-+syscall32 := $(srctree)/$(src)/syscall_arm32.tbl
-+syscall64 := $(srctree)/scripts/syscalls/syscall.tbl
++syscall := $(srctree)/scripts/syscalls/syscall.tbl
 +syshdr := $(srctree)/scripts/syscallhdr.sh
-+sysnr := $(srctree)/scripts/syscallnr.sh
 +systbl := $(srctree)/scripts/syscalltbl.sh
 +
 +quiet_cmd_syshdr = SYSHDR  $@
@@ -132,50 +104,23 @@ index 0000000..4aac807
 +		   '$(syshdr_pfx_$(basetarget))'		\
 +		   '$(syshdr_offset_$(basetarget))'
 +
-+quiet_cmd_sysnr = SYSNR  $@
-+      cmd_sysnr = $(CONFIG_SHELL) '$(sysnr)' '$<' '$@'		\
-+		  '$(sysnr_abis_$(basetarget))'			\
-+		  '$(sysnr_pfx_$(basetarget))'			\
-+		  '$(sysnr_offset_$(basetarget))'
-+
 +quiet_cmd_systbl = SYSTBL  $@
 +      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
 +		   '$(systbl_abis_$(basetarget))'		\
 +		   '$(systbl_abi_$(basetarget))'		\
 +		   '$(systbl_offset_$(basetarget))'
 +
-+syshdr_abis_unistd_32 := common,32,stat64,mmu,archs0
-+$(uapi)/unistd_32.h: $(syscall32) $(syshdr)
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+syshdr_abis_unistd_64 := common,64,nwstat,mmu,archs0
-+$(uapi)/unistd_64.h: $(syscall64) $(syshdr)
-+	$(call if_changed,syshdr)
-+
-+sysnr_pfx_unistd_nr_64 := 64
-+$(uapi)/unistd_nr_64.h: $(syscall64) $(sysnr)
-+	$(call if_changed,sysnr)
-+
-+sysnr_pfx_unistd_nr_c32 := c32
-+$(uapi)/unistd_nr_c32.h: $(syscall32) $(sysnr)
-+	$(call if_changed,sysnr)
-+
-+systbl_abis_syscall_table_64 := common,64,nwstat,mmu,archs0
-+systbl_abi_syscall_table_64 := 64
-+$(kapi)/syscall_table_64.h: $(syscall64) $(systbl)
++systbl_abis_syscall_table := common,32,rename,stat64,mmu
++systbl_abi_syscall_table := 32
++$(kapi)/syscall_table.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
 +
-+systbl_abis_syscall_table_c32 := common,32,stat64,mmu,archs0
-+systbl_abi_syscall_table_c32 := c32
-+$(kapi)/syscall_table_c32.h: $(syscall32) $(systbl)
-+	$(call if_changed,systbl)
-+
-+uapisyshdr-y		+= unistd_32.h			\
-+			   unistd_64.h			\
-+			   unistd_nr_64.h		\
-+			   unistd_nr_c32.h
-+kapisyshdr-y		+= syscall_table_64.h		\
-+			   syscall_table_c32.h
++uapisyshdr-y		+= unistd_32.h
++kapisyshdr-y		+= syscall_table.h
 +
 +targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
 +
