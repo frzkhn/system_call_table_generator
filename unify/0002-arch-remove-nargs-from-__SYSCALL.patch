@@ -1,0 +1,428 @@
+From cab73b81156cb176dda5ed966250bbb4dd7b06cf Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 2 Jan 2019 17:03:31 +0530
+Subject: [PATCH 2/4] arch: remove nargs from __SYSCALL
+
+The __SYSCALL macro's arguments are system call number,
+system call entry name and number of arguments for the
+system call.
+
+Argument- nargs in __SYSCALL(nr, entry, nargs) is neither
+calculated nor used anywhere. So it would be better to
+keep the implementaion as  __SYSCALL(nr, entry). This will
+unifies the implementation with some other architetures
+too.
+
+Fix added to alpha, ia64, m68k, microblaze, mips, parisc,
+powerpc, sh, sparc and xtensa.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/alpha/kernel/syscalls/syscalltbl.sh      | 4 ++--
+ arch/alpha/kernel/systbls.S                   | 2 +-
+ arch/ia64/kernel/entry.S                      | 2 +-
+ arch/ia64/kernel/syscalls/syscalltbl.sh       | 4 ++--
+ arch/m68k/kernel/syscalls/syscalltbl.sh       | 4 ++--
+ arch/m68k/kernel/syscalltable.S               | 2 +-
+ arch/microblaze/kernel/syscall_table.S        | 2 +-
+ arch/microblaze/kernel/syscalls/syscalltbl.sh | 4 ++--
+ arch/mips/kernel/scall32-o32.S                | 2 +-
+ arch/mips/kernel/scall64-n32.S                | 2 +-
+ arch/mips/kernel/scall64-n64.S                | 2 +-
+ arch/mips/kernel/scall64-o32.S                | 2 +-
+ arch/mips/kernel/syscalls/syscalltbl.sh       | 4 ++--
+ arch/parisc/kernel/syscall.S                  | 2 +-
+ arch/parisc/kernel/syscalls/syscalltbl.sh     | 4 ++--
+ arch/powerpc/kernel/syscalls/syscalltbl.sh    | 4 ++--
+ arch/powerpc/kernel/systbl.S                  | 6 +++---
+ arch/powerpc/platforms/cell/spu_callbacks.c   | 2 +-
+ arch/sh/kernel/syscalls/syscalltbl.sh         | 4 ++--
+ arch/sh/kernel/syscalls_32.S                  | 2 +-
+ arch/sparc/kernel/syscalls/syscalltbl.sh      | 4 ++--
+ arch/sparc/kernel/systbls_32.S                | 2 +-
+ arch/sparc/kernel/systbls_64.S                | 2 +-
+ arch/xtensa/kernel/syscall.c                  | 2 +-
+ arch/xtensa/kernel/syscalls/syscalltbl.sh     | 4 ++--
+ 25 files changed, 37 insertions(+), 37 deletions(-)
+
+diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/alpha/kernel/syscalls/syscalltbl.sh
++++ b/arch/alpha/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index 9704f22..36c94c8 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -7,7 +7,7 @@
+ 
+ #include <asm/unistd.h>
+ 
+-#define __SYSCALL(nr, entry, nargs) .quad entry
++#define __SYSCALL(nr, entry)	.quad entry
+ 	.data
+ 	.align 3
+ 	.globl sys_call_table
+diff --git a/arch/ia64/kernel/entry.S b/arch/ia64/kernel/entry.S
+index a9992be..204b56d 100644
+--- a/arch/ia64/kernel/entry.S
++++ b/arch/ia64/kernel/entry.S
+@@ -1426,7 +1426,7 @@ END(ftrace_stub)
+ 
+ #endif /* CONFIG_FUNCTION_TRACER */
+ 
+-#define __SYSCALL(nr, entry, nargs) data8 entry
++#define __SYSCALL(nr, entry)	data8 entry
+ 	.rodata
+ 	.align 8
+ 	.globl sys_call_table
+diff --git a/arch/ia64/kernel/syscalls/syscalltbl.sh b/arch/ia64/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/ia64/kernel/syscalls/syscalltbl.sh
++++ b/arch/ia64/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/m68k/kernel/syscalls/syscalltbl.sh b/arch/m68k/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/m68k/kernel/syscalls/syscalltbl.sh
++++ b/arch/m68k/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/m68k/kernel/syscalltable.S b/arch/m68k/kernel/syscalltable.S
+index d329cc7..0082664 100644
+--- a/arch/m68k/kernel/syscalltable.S
++++ b/arch/m68k/kernel/syscalltable.S
+@@ -18,7 +18,7 @@
+ #define sys_mmap2	sys_mmap_pgoff
+ #endif
+ 
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ 	.section .rodata
+ ALIGN
+ ENTRY(sys_call_table)
+diff --git a/arch/microblaze/kernel/syscall_table.S b/arch/microblaze/kernel/syscall_table.S
+index ce00664..91ade44 100644
+--- a/arch/microblaze/kernel/syscall_table.S
++++ b/arch/microblaze/kernel/syscall_table.S
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ ENTRY(sys_call_table)
+ #include <asm/syscall_table.h>
+ #undef __SYSCALL
+diff --git a/arch/microblaze/kernel/syscalls/syscalltbl.sh b/arch/microblaze/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/microblaze/kernel/syscalls/syscalltbl.sh
++++ b/arch/microblaze/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
+index d9434cd..b449b68 100644
+--- a/arch/mips/kernel/scall32-o32.S
++++ b/arch/mips/kernel/scall32-o32.S
+@@ -217,7 +217,7 @@ einval: li	v0, -ENOSYS
+ #define sys_sched_getaffinity	mipsmt_sys_sched_getaffinity
+ #endif /* CONFIG_MIPS_MT_FPAFF */
+ 
+-#define __SYSCALL(nr, entry, nargs)	PTR entry
++#define __SYSCALL(nr, entry) 	PTR entry
+ 	.align	2
+ 	.type	sys_call_table, @object
+ EXPORT(sys_call_table)
+diff --git a/arch/mips/kernel/scall64-n32.S b/arch/mips/kernel/scall64-n32.S
+index c761ddf..35d8c86 100644
+--- a/arch/mips/kernel/scall64-n32.S
++++ b/arch/mips/kernel/scall64-n32.S
+@@ -101,7 +101,7 @@ not_n32_scall:
+ 
+ 	END(handle_sysn32)
+ 
+-#define __SYSCALL(nr, entry, nargs) PTR entry
++#define __SYSCALL(nr, entry)	PTR entry
+ 	.type	sysn32_call_table, @object
+ EXPORT(sysn32_call_table)
+ #include <asm/syscall_table_64_n32.h>
+diff --git a/arch/mips/kernel/scall64-n64.S b/arch/mips/kernel/scall64-n64.S
+index 727fb8a..23b2e2b 100644
+--- a/arch/mips/kernel/scall64-n64.S
++++ b/arch/mips/kernel/scall64-n64.S
+@@ -109,7 +109,7 @@ illegal_syscall:
+ 	j	n64_syscall_exit
+ 	END(handle_sys64)
+ 
+-#define __SYSCALL(nr, entry, nargs) PTR entry
++#define __SYSCALL(nr, entry)	PTR entry
+ 	.align	3
+ 	.type	sys_call_table, @object
+ EXPORT(sys_call_table)
+diff --git a/arch/mips/kernel/scall64-o32.S b/arch/mips/kernel/scall64-o32.S
+index f158c58..e229155 100644
+--- a/arch/mips/kernel/scall64-o32.S
++++ b/arch/mips/kernel/scall64-o32.S
+@@ -213,7 +213,7 @@ einval: li	v0, -ENOSYS
+ 	jr	ra
+ 	END(sys32_syscall)
+ 
+-#define __SYSCALL(nr, entry, nargs) PTR entry
++#define __SYSCALL(nr, entry)	PTR entry
+ 	.align	3
+ 	.type	sys32_call_table,@object
+ EXPORT(sys32_call_table)
+diff --git a/arch/mips/kernel/syscalls/syscalltbl.sh b/arch/mips/kernel/syscalls/syscalltbl.sh
+index acd338d..1e25707 100644
+--- a/arch/mips/kernel/syscalls/syscalltbl.sh
++++ b/arch/mips/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/parisc/kernel/syscall.S b/arch/parisc/kernel/syscall.S
+index 4f77bd9..e843151 100644
+--- a/arch/parisc/kernel/syscall.S
++++ b/arch/parisc/kernel/syscall.S
+@@ -923,7 +923,7 @@ ENTRY(lws_table)
+ END(lws_table)
+ 	/* End of lws table */
+ 
+-#define __SYSCALL(nr, entry, nargs) ASM_ULONG_INSN entry
++#define __SYSCALL(nr, entry)	ASM_ULONG_INSN entry
+ 	.align 8
+ ENTRY(sys_call_table)
+ 	.export sys_call_table,data
+diff --git a/arch/parisc/kernel/syscalls/syscalltbl.sh b/arch/parisc/kernel/syscalls/syscalltbl.sh
+index 45b5bae..f7393a7 100644
+--- a/arch/parisc/kernel/syscalls/syscalltbl.sh
++++ b/arch/parisc/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/powerpc/kernel/syscalls/syscalltbl.sh b/arch/powerpc/kernel/syscalls/syscalltbl.sh
+index fd62049..f7393a7 100644
+--- a/arch/powerpc/kernel/syscalls/syscalltbl.sh
++++ b/arch/powerpc/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s,sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s,%s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/powerpc/kernel/systbl.S b/arch/powerpc/kernel/systbl.S
+index 23265a2..02f28fa 100644
+--- a/arch/powerpc/kernel/systbl.S
++++ b/arch/powerpc/kernel/systbl.S
+@@ -25,11 +25,11 @@
+ .globl sys_call_table
+ sys_call_table:
+ #ifdef CONFIG_PPC64
+-#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
++#define __SYSCALL(nr, entry)	.8byte DOTSYM(entry)
+ #include <asm/syscall_table_64.h>
+ #undef __SYSCALL
+ #else
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ #include <asm/syscall_table_32.h>
+ #undef __SYSCALL
+ #endif
+@@ -38,7 +38,7 @@ sys_call_table:
+ .globl compat_sys_call_table
+ compat_sys_call_table:
+ #define compat_sys_sigsuspend	sys_sigsuspend
+-#define __SYSCALL(nr, entry, nargs) .8byte DOTSYM(entry)
++#define __SYSCALL(nr, entry)	.8byte DOTSYM(entry)
+ #include <asm/syscall_table_c32.h>
+ #undef __SYSCALL
+ #endif
+diff --git a/arch/powerpc/platforms/cell/spu_callbacks.c b/arch/powerpc/platforms/cell/spu_callbacks.c
+index 125f2a5..b5f35cb 100644
+--- a/arch/powerpc/platforms/cell/spu_callbacks.c
++++ b/arch/powerpc/platforms/cell/spu_callbacks.c
+@@ -34,7 +34,7 @@
+  */
+ 
+ static void *spu_syscall_table[] = {
+-#define __SYSCALL(nr, entry, nargs) entry,
++#define __SYSCALL(nr, entry)	entry,
+ #include <asm/syscall_table_spu.h>
+ #undef __SYSCALL
+ };
+diff --git a/arch/sh/kernel/syscalls/syscalltbl.sh b/arch/sh/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/sh/kernel/syscalls/syscalltbl.sh
++++ b/arch/sh/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/sh/kernel/syscalls_32.S b/arch/sh/kernel/syscalls_32.S
+index 96e9c54..bd1a9c5 100644
+--- a/arch/sh/kernel/syscalls_32.S
++++ b/arch/sh/kernel/syscalls_32.S
+@@ -10,7 +10,7 @@
+ #include <linux/sys.h>
+ #include <linux/linkage.h>
+ 
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ 	.data
+ ENTRY(sys_call_table)
+ #include <asm/syscall_table.h>
+diff --git a/arch/sparc/kernel/syscalls/syscalltbl.sh b/arch/sparc/kernel/syscalls/syscalltbl.sh
+index 77cf014..ffe954b 100644
+--- a/arch/sparc/kernel/syscalls/syscalltbl.sh
++++ b/arch/sparc/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_nis_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_nis_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+diff --git a/arch/sparc/kernel/systbls_32.S b/arch/sparc/kernel/systbls_32.S
+index d929b89..121a1a0 100644
+--- a/arch/sparc/kernel/systbls_32.S
++++ b/arch/sparc/kernel/systbls_32.S
+@@ -9,7 +9,7 @@
+  * Copyright (C) 1995 Adrian M. Rodriguez (adrian@remus.rutgers.edu)
+  */
+ 
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry)	.long entry
+ 	.data
+ 	.align 4
+ 	.globl sys_call_table
+diff --git a/arch/sparc/kernel/systbls_64.S b/arch/sparc/kernel/systbls_64.S
+index d4f1f88..7d861d6 100644
+--- a/arch/sparc/kernel/systbls_64.S
++++ b/arch/sparc/kernel/systbls_64.S
+@@ -12,7 +12,7 @@
+ 
+ #define sys_nis_syscall	sys_ni_syscall
+ 
+-#define __SYSCALL(nr, entry, nargs) .word entry
++#define __SYSCALL(nr, entry)	.word entry
+ 	.text
+ 	.align	4
+ #ifdef CONFIG_COMPAT
+diff --git a/arch/xtensa/kernel/syscall.c b/arch/xtensa/kernel/syscall.c
+index 2c415fc..0665339 100644
+--- a/arch/xtensa/kernel/syscall.c
++++ b/arch/xtensa/kernel/syscall.c
+@@ -31,7 +31,7 @@
+ syscall_t sys_call_table[__NR_syscalls] /* FIXME __cacheline_aligned */= {
+ 	[0 ... __NR_syscalls - 1] = (syscall_t)&sys_ni_syscall,
+ 
+-#define __SYSCALL(nr, entry, nargs)[nr] = (syscall_t)entry,
++#define __SYSCALL(nr, entry)[nr] = (syscall_t)entry,
+ #include <asm/syscall_table.h>
+ #undef __SYSCALL
+ };
+diff --git a/arch/xtensa/kernel/syscalls/syscalltbl.sh b/arch/xtensa/kernel/syscalls/syscalltbl.sh
+index 85d78d9..904b8e6 100644
+--- a/arch/xtensa/kernel/syscalls/syscalltbl.sh
++++ b/arch/xtensa/kernel/syscalls/syscalltbl.sh
+@@ -13,10 +13,10 @@ emit() {
+ 	t_entry="$3"
+ 
+ 	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
++		printf "__SYSCALL(%s,sys_ni_syscall)\n" "${t_nxt}"
+ 		t_nxt=$((t_nxt+1))
+ 	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
++	printf "__SYSCALL(%s,%s)\n" "${t_nxt}" "${t_entry}"
+ }
+ 
+ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+-- 
+1.9.1
+

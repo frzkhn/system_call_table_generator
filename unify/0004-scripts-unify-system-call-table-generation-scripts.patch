@@ -1,7 +1,7 @@
-From 2235080df3e6da79e7de76130d1998a64910f32f Mon Sep 17 00:00:00 2001
+From 7c1eb6e31dc1c606fe82bccea7082f8fb5be6b56 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 24 Dec 2018 17:03:44 +0530
-Subject: [PATCH] scripts: unify system call table generation scripts
+Subject: [PATCH 4/4] scripts: unify system call table generation scripts
 
 System call table generation support is provided for
 alpha, ia64, m68k, microblaze, mips, parisc, powerpc,
