@@ -1,8 +1,7 @@
-From c79a1c1c6e63034c065942f852002c50ee95f0ff Mon Sep 17 00:00:00 2001
+From 85767e5bb70fec8ecb4b29f28a4f258359b37bce Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 3 Jan 2019 16:09:37 +0530
-Subject: [PATCH v2] scripts/syscalls: add system call table file for
- asm-generic
+Subject: [PATCH] scripts/syscalls: add system call table file for asm-generic
 
 Add system call table file - syscall.tbl which can be use by
 the system call table generation script to generate the equi-
@@ -20,22 +19,16 @@ This patch is depends on:
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
-Changes since v1:
- - added syscall entry kexec_file_load.
- - modified the custom abi from archsp to archs*.
- - removed the entry cacheflush.
- - modified the entry from arch_specific_syscall to arch_specific_syscall0.
----
- scripts/syscalls/syscall.tbl | 358 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 358 insertions(+)
+ scripts/syscalls/syscall.tbl | 359 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 359 insertions(+)
  create mode 100644 scripts/syscalls/syscall.tbl
 
 diff --git a/scripts/syscalls/syscall.tbl b/scripts/syscalls/syscall.tbl
 new file mode 100644
-index 0000000..4a3395b
+index 0000000..55daece
 --- /dev/null
 +++ b/scripts/syscalls/syscall.tbl
-@@ -0,0 +1,358 @@
+@@ -0,0 +1,359 @@
 +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +#
 +# system call numbers and entry vectors for asm-generic
@@ -359,6 +352,7 @@ index 0000000..4a3395b
 +246	archs2	arch_specific_syscall2		sys_arch_specific_syscall2
 +247	archs3	arch_specific_syscall3		sys_arch_specific_syscall3
 +248	archs4	arch_specific_syscall4		sys_arch_specific_syscall4
++259	archs15	arch_specific_syscall15		sys_arch_specific_syscall15
 +260	common	wait4				sys_wait4			compat_sys_wait4
 +261	common	prlimit64			sys_prlimit64
 +262	common	fanotify_init			sys_fanotify_init
