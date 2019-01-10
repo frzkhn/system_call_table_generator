@@ -86,7 +86,7 @@ new file mode 100644
 index 0000000..824c09f
 --- /dev/null
 +++ b/arch/riscv/kernel/syscalls/Makefile
-@@ -0,0 +1,41 @@
+@@ -0,1 +1,41 @@
 +# SPDX-License-Identifier: GPL-2.0
 +kapi := arch/$(SRCARCH)/include/generated/asm
 +uapi := arch/$(SRCARCH)/include/generated/uapi/asm
@@ -110,11 +110,11 @@ index 0000000..824c09f
 +		   '$(systbl_abi_$(basetarget))'		\
 +		   '$(systbl_offset_$(basetarget))'
 +
-+syshdr_abis_unistd_32 := common,32,rename,stat64,mmu
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu,archs15
 +$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +	$(call if_changed,syshdr)
 +
-+systbl_abis_syscall_table := common,32,rename,stat64,mmu
++systbl_abis_syscall_table := common,32,rename,stat64,mmu,archs15
 +systbl_abi_syscall_table := 32
 +$(kapi)/syscall_table.h: $(syscall) $(systbl)
 +	$(call if_changed,systbl)
