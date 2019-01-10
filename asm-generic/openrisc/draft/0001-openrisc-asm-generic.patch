@@ -68,8 +68,8 @@ index ec37df1..55b2e8d 100644
  
 -#define __NR_or1k_atomic __NR_arch_specific_syscall
 -__SYSCALL(__NR_or1k_atomic, sys_or1k_atomic)
-+#define __NR_or1k_atomic	__NR_arch_specific_syscall0
 +#if __BITS_PER_LONG == 32
++#define __NR_or1k_atomic	__NR_arch_specific_syscall0
 +#include <asm/unistd_32.h>
 +#endif
 diff --git a/arch/openrisc/kernel/sys_call_table.c b/arch/openrisc/kernel/sys_call_table.c
