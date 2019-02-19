@@ -1,4 +1,4 @@
-From 679bb08f1fd9657d65388b874cdffa0574c39ddb Mon Sep 17 00:00:00 2001
+From 18428d2657f7f580f644ea7efa2a24835adbc372 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 7 Jan 2019 20:12:06 +0530
 Subject: [PATCH 2/3] c6x: add __ARCH_NOMMU as a bugfix

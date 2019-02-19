@@ -1,4 +1,4 @@
-From cadc77a879e464e179e96c968f3fcbc698d299b1 Mon Sep 17 00:00:00 2001
+From 5a08da0f066850c4eadb4c4ce4b2629c7e8b0652 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 7 Jan 2019 20:15:05 +0530
 Subject: [PATCH 3/3] c6x: generate uapi and kapi headers
@@ -56,7 +56,7 @@ index 6c6f630..28823e3 100644
  generic-y += shmparam.h
  generic-y += ucontext.h
 diff --git a/arch/c6x/include/uapi/asm/unistd.h b/arch/c6x/include/uapi/asm/unistd.h
-index 9e9ffe5..4633005 100644
+index 9e9ffe5..2901388 100644
 --- a/arch/c6x/include/uapi/asm/unistd.h
 +++ b/arch/c6x/include/uapi/asm/unistd.h
 @@ -20,9 +20,13 @@
@@ -75,11 +75,11 @@ index 9e9ffe5..4633005 100644
 +#endif
 +
 +#if __BITS_PER_LONG == 32
-+#define __NR_cache_sync	__NR_arch_specific_syscall0
++#define __NR_cache_sync	__NR_arch_specific_syscall
 +#include <asm/unistd_32.h>
 +#endif
 diff --git a/arch/c6x/kernel/sys_c6x.c b/arch/c6x/kernel/sys_c6x.c
-index a742ae25..3e4b4e4 100644
+index a742ae25..d985249 100644
 --- a/arch/c6x/kernel/sys_c6x.c
 +++ b/arch/c6x/kernel/sys_c6x.c
 @@ -70,5 +70,6 @@ asmlinkage int sys_cache_sync(unsigned long s, unsigned long e)
@@ -87,7 +87,7 @@ index a742ae25..3e4b4e4 100644
  void *sys_call_table[__NR_syscalls] = {
  	[0 ... __NR_syscalls-1] = sys_ni_syscall,
 -#include <asm/unistd.h>
-+#define sys_arch_specific_syscall0	sys_cache_sync
++#define sys_arch_specific_syscall	sys_cache_sync
 +#include <asm/syscall_table.h>
  };
 -- 
