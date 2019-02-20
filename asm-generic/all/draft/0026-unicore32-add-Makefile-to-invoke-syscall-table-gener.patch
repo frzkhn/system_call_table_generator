@@ -1,0 +1,72 @@
+From 534013c63362d16e5539a4b5cc506ec4639f265f Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 20 Feb 2019 11:16:46 +0530
+Subject: [PATCH 26/27] unicore32: add Makefile to invoke syscall table
+ generation script
+
+Add Makefile to invoke the system call table generation script
+to generate equivalent file for asm-generic/unistd.h, which is
+placed in scripts directory as a common location accessible for
+all the architectures.
+
+scripts/syscallhdr.sh will generate uapi header and scripts-
+/syscalltbl.sh will generate kapi header respectively. There
+is another scripts scripts/syscallnr.sh can generate total
+number of syscall which doesn't invoke from this Makefile.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/unicore32/kernel/syscalls/Makefile | 41 +++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 arch/unicore32/kernel/syscalls/Makefile
+
+diff --git a/arch/unicore32/kernel/syscalls/Makefile b/arch/unicore32/kernel/syscalls/Makefile
+new file mode 100644
+index 0000000..824c09f
+--- /dev/null
++++ b/arch/unicore32/kernel/syscalls/Makefile
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0
++kapi := arch/$(SRCARCH)/include/generated/asm
++uapi := arch/$(SRCARCH)/include/generated/uapi/asm
++
++_dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
++	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
++
++syscall := $(srctree)/scripts/syscalls/syscall.tbl
++syshdr := $(srctree)/scripts/syscallhdr.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
++
++quiet_cmd_syshdr = SYSHDR  $@
++      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
++		   '$(syshdr_abis_$(basetarget))'		\
++		   '$(syshdr_pfx_$(basetarget))'		\
++		   '$(syshdr_offset_$(basetarget))'
++
++quiet_cmd_systbl = SYSTBL  $@
++      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
++		   '$(systbl_abis_$(basetarget))'		\
++		   '$(systbl_abi_$(basetarget))'		\
++		   '$(systbl_offset_$(basetarget))'
++
++syshdr_abis_unistd_32 := common,32,rename,stat64,mmu
++$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++	$(call if_changed,syshdr)
++
++systbl_abis_syscall_table := common,32,rename,stat64,mmu
++systbl_abi_syscall_table := 32
++$(kapi)/syscall_table.h: $(syscall) $(systbl)
++	$(call if_changed,systbl)
++
++uapisyshdr-y		+= unistd_32.h
++kapisyshdr-y		+= syscall_table.h
++
++targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
++
++PHONY += all
++all: $(addprefix $(uapi)/,$(uapisyshdr-y))
++all: $(addprefix $(kapi)/,$(kapisyshdr-y))
++	@:
+-- 
+1.9.1
+

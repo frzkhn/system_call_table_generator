@@ -1,0 +1,124 @@
+From 4b7cbcb28a217aa2db372190b264bba258586856 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Tue, 19 Feb 2019 17:07:39 +0530
+Subject: [PATCH 19/27] arc: generate uapi and kapi headers
+
+Unified system call table generation script need to be invoked
+to generated the uapi and kapi headers. The Makefile changes
+present in this patch will invoke the scripts and generate uapi
+and kapi header files.
+
+The generated files - unistd_*.h and syscall_table_*.h files
+will be included by unistd.h and sys_c6x.c files by replacing
+asm-generic/unistd.h file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/arc/Makefile                  |  3 +++
+ arch/arc/include/asm/Kbuild        |  1 +
+ arch/arc/include/uapi/asm/Kbuild   |  1 +
+ arch/arc/include/uapi/asm/unistd.h | 30 +++++++++++++-----------------
+ arch/arc/kernel/sys.c              |  8 +++++++-
+ 5 files changed, 25 insertions(+), 18 deletions(-)
+
+diff --git a/arch/arc/Makefile b/arch/arc/Makefile
+index df00578..f8958f0 100644
+--- a/arch/arc/Makefile
++++ b/arch/arc/Makefile
+@@ -104,3 +104,6 @@ $(boot_targets): vmlinux
+ 
+ archclean:
+ 	$(Q)$(MAKE) $(clean)=$(boot)
++
++archheaders:
++	$(Q)$(MAKE) $(build)=arch/c6x/kernel/syscalls all
+diff --git a/arch/arc/include/asm/Kbuild b/arch/arc/include/asm/Kbuild
+index feed50c..53525d5 100644
+--- a/arch/arc/include/asm/Kbuild
++++ b/arch/arc/include/asm/Kbuild
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
++generated-y += syscall_table.h
+ generic-y += bugs.h
+ generic-y += compat.h
+ generic-y += device.h
+diff --git a/arch/arc/include/uapi/asm/Kbuild b/arch/arc/include/uapi/asm/Kbuild
+index 0febf1a..97823ec 100644
+--- a/arch/arc/include/uapi/asm/Kbuild
++++ b/arch/arc/include/uapi/asm/Kbuild
+@@ -1,4 +1,5 @@
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
+ generic-y += kvm_para.h
+ generic-y += ucontext.h
+diff --git a/arch/arc/include/uapi/asm/unistd.h b/arch/arc/include/uapi/asm/unistd.h
+index 3b3543f..596514e 100644
+--- a/arch/arc/include/uapi/asm/unistd.h
++++ b/arch/arc/include/uapi/asm/unistd.h
+@@ -23,26 +23,22 @@
+ #define __ARCH_WANT_SYS_VFORK
+ #define __ARCH_WANT_SYS_FORK
+ 
+-#define sys_mmap2 sys_mmap_pgoff
++#include <asm/bitsperlong.h>
+ 
+-#include <asm-generic/unistd.h>
+-
+-#define NR_syscalls	__NR_syscalls
+-
+-/* Generic syscall (fs/filesystems.c - lost in asm-generic/unistd.h */
+-#define __NR_sysfs		(__NR_arch_specific_syscall + 3)
++#ifndef __SYSCALL
++#define __SYSCALL(x, y)
++#endif
+ 
+-/* ARC specific syscall */
+-#define __NR_cacheflush		(__NR_arch_specific_syscall + 0)
+-#define __NR_arc_settls		(__NR_arch_specific_syscall + 1)
+-#define __NR_arc_gettls		(__NR_arch_specific_syscall + 2)
+-#define __NR_arc_usr_cmpxchg	(__NR_arch_specific_syscall + 4)
++#if __BITS_PER_LONG == 32
++#define __NR_cacheflush		__NR_arch_specific_syscall
++#define __NR_arc_settls		__NR_arch_specific_syscall1
++#define __NR_arc_gettls		__NR_arch_specific_syscall2
++#define __NR_sysfs		__NR_arch_specific_syscall3
++#define __NR_arc_usr_cmpxchg	__NR_arch_specific_syscall4
++#include <asm/unistd_32.h>
++#endif
+ 
+-__SYSCALL(__NR_cacheflush, sys_cacheflush)
+-__SYSCALL(__NR_arc_settls, sys_arc_settls)
+-__SYSCALL(__NR_arc_gettls, sys_arc_gettls)
+-__SYSCALL(__NR_arc_usr_cmpxchg, sys_arc_usr_cmpxchg)
+-__SYSCALL(__NR_sysfs, sys_sysfs)
++#define NR_syscalls	__NR_syscalls
+ 
+ #undef __SYSCALL
+ 
+diff --git a/arch/arc/kernel/sys.c b/arch/arc/kernel/sys.c
+index fddecc7..79faeba 100644
+--- a/arch/arc/kernel/sys.c
++++ b/arch/arc/kernel/sys.c
+@@ -7,11 +7,17 @@
+ #include <asm/syscalls.h>
+ 
+ #define sys_clone	sys_clone_wrapper
++#define sys_mmap2	sys_mmap_pgoff
+ 
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
+ void *sys_call_table[NR_syscalls] = {
+ 	[0 ... NR_syscalls-1] = sys_ni_syscall,
+-#include <asm/unistd.h>
++#define sys_arch_specific_syscall	sys_cacheflush
++#define sys_arch_specific_syscall1	sys_arc_settls
++#define sys_arch_specific_syscall2	sys_arc_gettls
++#define sys_arch_specific_syscall3	sys_sysfs
++#define sys_arch_specific_syscall4	sys_arc_usr_cmpxchg
++#include <asm/syscall_table.h>
+ };
+-- 
+1.9.1
+

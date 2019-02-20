@@ -1,0 +1,70 @@
+From 812bd6ccb0cf4817387df47c53912be3d3732d36 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Tue, 19 Feb 2019 12:17:09 +0530
+Subject: [PATCH 10/27] nds32: remove __ARCH_WANT_SYNC_FILE_RANGE2 from
+ asm-generic/unistd.h
+
+__ARCH_WANT_SYNC_FILE_RANGE2 macro is enabled only in nds32 arch-
+tecture. In order to remove the macro from asm-generic/unistd.h,
+add nds32 specific implementation in uapi/asm/unistd.h and kernel/-
+syscall_table.c files.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/nds32/include/uapi/asm/unistd.h | 2 ++
+ arch/nds32/kernel/syscall_table.c    | 5 +++--
+ include/uapi/asm-generic/unistd.h    | 6 ------
+ 3 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/arch/nds32/include/uapi/asm/unistd.h b/arch/nds32/include/uapi/asm/unistd.h
+index c2c3a3e..65946e5 100644
+--- a/arch/nds32/include/uapi/asm/unistd.h
++++ b/arch/nds32/include/uapi/asm/unistd.h
+@@ -7,6 +7,8 @@
+ /* Use the standard ABI for syscalls */
+ #include <asm-generic/unistd.h>
+ 
++#define __NR_sync_file_range2	__NR_sync_file_range
++
+ /* Additional NDS32 specific syscalls. */
+ #define __NR_cacheflush		(__NR_arch_specific_syscall)
+ #define __NR_udftrap		(__NR_arch_specific_syscall + 1)
+diff --git a/arch/nds32/kernel/syscall_table.c b/arch/nds32/kernel/syscall_table.c
+index 7879c06..0d58bbb 100644
+--- a/arch/nds32/kernel/syscall_table.c
++++ b/arch/nds32/kernel/syscall_table.c
+@@ -9,8 +9,9 @@
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
+-#define sys_rt_sigreturn sys_rt_sigreturn_wrapper
+-#define sys_fadvise64_64 sys_fadvise64_64_wrapper
++#define sys_sync_file_range	sys_sync_file_range2
++#define sys_rt_sigreturn	sys_rt_sigreturn_wrapper
++#define sys_fadvise64_64	sys_fadvise64_64_wrapper
+ void *sys_call_table[__NR_syscalls] __aligned(8192) = {
+ 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
+ #include <asm/unistd.h>
+diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
+index d901272..b5f2d62 100644
+--- a/include/uapi/asm-generic/unistd.h
++++ b/include/uapi/asm-generic/unistd.h
+@@ -256,15 +256,9 @@
+ __SYSCALL(__NR_fsync, sys_fsync)
+ #define __NR_fdatasync 83
+ __SYSCALL(__NR_fdatasync, sys_fdatasync)
+-#ifdef __ARCH_WANT_SYNC_FILE_RANGE2
+-#define __NR_sync_file_range2 84
+-__SC_COMP(__NR_sync_file_range2, sys_sync_file_range2, \
+-	  compat_sys_sync_file_range2)
+-#else
+ #define __NR_sync_file_range 84
+ __SC_COMP(__NR_sync_file_range, sys_sync_file_range, \
+ 	  compat_sys_sync_file_range)
+-#endif
+ 
+ /* fs/timerfd.c */
+ #define __NR_timerfd_create 85
+-- 
+1.9.1
+

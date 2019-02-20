@@ -1,0 +1,103 @@
+From db9ec6af60f130d14957674e74213befca41b739 Mon Sep 17 00:00:00 2001
+From: Firoz Khan <firoz.khan@linaro.org>
+Date: Wed, 20 Feb 2019 11:03:22 +0530
+Subject: [PATCH 25/27] openrisc: generate uapi and kapi headers
+
+Unified system call table generation script need to be invoked
+to generated the uapi and kapi headers. The Makefile changes
+present in this patch will invoke the scripts and generate uapi
+and kapi header files.
+
+The generated files - unistd_*.h and syscall_table_*.h files
+will be included by unistd.h and sys_c6x.c files by replacing
+asm-generic/unistd.h file.
+
+Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
+---
+ arch/openrisc/Makefile                  |  3 +++
+ arch/openrisc/include/asm/Kbuild        |  1 +
+ arch/openrisc/include/uapi/asm/Kbuild   |  1 +
+ arch/openrisc/include/uapi/asm/unistd.h | 16 +++++++++-------
+ arch/openrisc/kernel/sys_call_table.c   |  5 ++++-
+ 5 files changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/arch/openrisc/Makefile b/arch/openrisc/Makefile
+index 70e06d3..e0150db 100644
+--- a/arch/openrisc/Makefile
++++ b/arch/openrisc/Makefile
+@@ -52,3 +52,6 @@ endif
+ core-$(BUILTIN_DTB) += arch/openrisc/boot/dts/
+ 
+ all: vmlinux
++
++archheaders:
++	$(Q)$(MAKE) $(build)=arch/openrisc/kernel/syscalls all
+diff --git a/arch/openrisc/include/asm/Kbuild b/arch/openrisc/include/asm/Kbuild
+index eb87cd8..181c3ce 100644
+--- a/arch/openrisc/include/asm/Kbuild
++++ b/arch/openrisc/include/asm/Kbuild
+@@ -1,3 +1,4 @@
++generated-y += syscall_table.h
+ generic-y += barrier.h
+ generic-y += bug.h
+ generic-y += bugs.h
+diff --git a/arch/openrisc/include/uapi/asm/Kbuild b/arch/openrisc/include/uapi/asm/Kbuild
+index 6c6f630..28823e3 100644
+--- a/arch/openrisc/include/uapi/asm/Kbuild
++++ b/arch/openrisc/include/uapi/asm/Kbuild
+@@ -1,5 +1,6 @@
+ include include/uapi/asm-generic/Kbuild.asm
+ 
++generated-y += unistd_32.h
+ generic-y += kvm_para.h
+ generic-y += shmparam.h
+ generic-y += ucontext.h
+diff --git a/arch/openrisc/include/uapi/asm/unistd.h b/arch/openrisc/include/uapi/asm/unistd.h
+index ec37df1..fdbd9ab 100644
+--- a/arch/openrisc/include/uapi/asm/unistd.h
++++ b/arch/openrisc/include/uapi/asm/unistd.h
+@@ -17,14 +17,16 @@
+  * (at your option) any later version.
+  */
+ 
+-#define sys_mmap2 sys_mmap_pgoff
+-
+-#define __ARCH_WANT_RENAMEAT
+-#define __ARCH_WANT_STAT64
+ #define __ARCH_WANT_SYS_FORK
+ #define __ARCH_WANT_SYS_CLONE
+ 
+-#include <asm-generic/unistd.h>
++#include <asm/bitsperlong.h>
++
++#ifndef __SYSCALL
++#define __SYSCALL(x, y)
++#endif
+ 
+-#define __NR_or1k_atomic __NR_arch_specific_syscall
+-__SYSCALL(__NR_or1k_atomic, sys_or1k_atomic)
++#if __BITS_PER_LONG == 32
++#define __NR_or1k_atomic	__NR_arch_specific_syscall
++#include <asm/unistd_32.h>
++#endif
+diff --git a/arch/openrisc/kernel/sys_call_table.c b/arch/openrisc/kernel/sys_call_table.c
+index e1f8ce8..14b7ff5 100644
+--- a/arch/openrisc/kernel/sys_call_table.c
++++ b/arch/openrisc/kernel/sys_call_table.c
+@@ -20,9 +20,12 @@
+ 
+ #include <asm/syscalls.h>
+ 
++#define sys_mmap2 sys_mmap_pgoff
++
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
+ void *sys_call_table[__NR_syscalls] = {
+-#include <asm/unistd.h>
++#define sys_arch_specific_syscall	sys_or1k_atomic
++#include <asm/syscall_table_32.h>
+ };
+-- 
+1.9.1
+
