@@ -1,7 +1,7 @@
-From 0b5812b96f8e7b0c2072a682205109ab65ef336f Mon Sep 17 00:00:00 2001
+From faf0f2794408f5346e62a5a8a6c8551d687c7222 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Mon, 7 Jan 2019 20:12:06 +0530
-Subject: [PATCH 07/27] c6x: add __ARCH_NOMMU as a bugfix
+Subject: [PATCH 08/12] c6x: add __ARCH_NOMMU as a bugfix
 
 Add __ARCH_NOMMU in uapi/asm/unistd.h file as a bugfix.
 

@@ -1,13 +1,12 @@
-From 812bd6ccb0cf4817387df47c53912be3d3732d36 Mon Sep 17 00:00:00 2001
+From 84af1c744fa2bf9611245c8eb62138f8075f828f Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Tue, 19 Feb 2019 12:17:09 +0530
-Subject: [PATCH 10/27] nds32: remove __ARCH_WANT_SYNC_FILE_RANGE2 from
- asm-generic/unistd.h
+Subject: [PATCH 09/12] nds32: remove __ARCH_WANT_SYNC_FILE_RANGE2
 
-__ARCH_WANT_SYNC_FILE_RANGE2 macro is enabled only in nds32 arch-
-tecture. In order to remove the macro from asm-generic/unistd.h,
-add nds32 specific implementation in uapi/asm/unistd.h and kernel/-
-syscall_table.c files.
+__ARCH_WANT_SYNC_FILE_RANGE2 macro is enabled only in
+nds32 archtecture. In order to remove the macro from
+asm-generic/unistd.h, add nds32 specific implementation
+in uapi/asm/unistd.h and kernel/syscall_table.c files.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---

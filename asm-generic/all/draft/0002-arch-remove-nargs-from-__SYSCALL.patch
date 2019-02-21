@@ -1,7 +1,7 @@
-From cab73b81156cb176dda5ed966250bbb4dd7b06cf Mon Sep 17 00:00:00 2001
+From fc77bb301eae651b569cc2afab6e7e0c9f33ef62 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 2 Jan 2019 17:03:31 +0530
-Subject: [PATCH 02/27] arch: remove nargs from __SYSCALL
+Subject: [PATCH 02/12] arch: remove nargs from __SYSCALL
 
 The __SYSCALL macro's arguments are system call number,
 system call entry name and number of arguments for the
@@ -10,11 +10,11 @@ system call.
 Argument- nargs in __SYSCALL(nr, entry, nargs) is neither
 calculated nor used anywhere. So it would be better to
 keep the implementaion as  __SYSCALL(nr, entry). This will
-unifies the implementation with some other architetures
+unifies the implementation with some other architectures
 too.
 
 Fix added to alpha, ia64, m68k, microblaze, mips, parisc,
-powerpc, sh, sparc and xtensa.
+powerpc, sh, sparc and xtensa architectures.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---

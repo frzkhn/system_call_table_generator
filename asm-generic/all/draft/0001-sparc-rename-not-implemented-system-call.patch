@@ -1,14 +1,14 @@
-From f306d75b53afeb786af8925b898b166d817760ad Mon Sep 17 00:00:00 2001
+From a2d1892623e2b253100adfdee8d3e9891e729f43 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 10 Jan 2019 20:22:49 +0530
-Subject: [PATCH 01/27] sparc: rename not implemented system call
+Subject: [PATCH 01/12] sparc: rename not implemented system call
 
-Rename the sparc not implemented system call - sys_nis_syscall to
-sys_ni_syscall to unify the system call table implementation across
-all architectures.
+Rename the sparc not implemented system call - sys_nis_syscall
+to sys_ni_syscall to unify the system call table implementation
+across all architectures.
 
-This is neccessory to do it if we have to keep the scripts in common
-location.
+This is neccessory to do it if we have to keep the scripts in
+common location.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---

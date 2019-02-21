@@ -1,7 +1,7 @@
-From 0c56d4f09dfc16f170d5c6b48b82d8de4b829fb7 Mon Sep 17 00:00:00 2001
+From 0d341730765a41372e27a321a97596db0edbcf2b Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Thu, 3 Jan 2019 16:09:37 +0530
-Subject: [PATCH 05/27] scripts/syscalls: add system call table file for
+Subject: [PATCH 05/12] scripts/syscalls: add system call table file for
  asm-generic
 
 Add system call table file - syscall.tbl which can be use by

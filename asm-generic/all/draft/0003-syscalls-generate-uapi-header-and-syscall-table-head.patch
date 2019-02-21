@@ -1,24 +1,24 @@
-From a5ba179feb0c5df939d99e022efda339b0c65d45 Mon Sep 17 00:00:00 2001
+From e073e2e259b183e404078f90105e69f4c389a9f7 Mon Sep 17 00:00:00 2001
 From: Firoz Khan <firoz.khan@linaro.org>
 Date: Wed, 2 Jan 2019 17:06:11 +0530
-Subject: [PATCH 03/27] arch: generate uapi header and syscall table header
+Subject: [PATCH 03/12] syscalls: generate uapi header and syscall table header
  files
 
 Unified system call table generation script must be run to
 generate unistd_32.h and syscall_table.h files. This patch
 will have changes which will invokes the script.
 
-This patch will generate unistd_32.h and syscall_table.h
+This patch will generate unistd_*.h and syscall_table_*.h
 files by the syscall table generation script invoked by
-alpha/Makefile and the generated files against the removed
+arch/*/Makefile and the generated files against the removed
 files must be identical.
 
 The generated uapi header file will be included in uapi/-
 asm/unistd.h and generated system call table header file
-will be included by kernel/systbls.S file.
+will be included by kernel/sys*.S file.
 
 This change is added to alpha, ia64, m68k, microblaze, mips,
-parisc, powerpc, sh, sparc and xtensa.
+parisc, powerpc, sh, sparc and xtensa architectures.
 
 Signed-off-by: Firoz Khan <firoz.khan@linaro.org>
 ---
